@@ -319,6 +319,105 @@
     });
   }
 
+
+  /* ── WORK MODAL DATA ────────────────────────────────────── */
+  const WORK_COPY = {
+    w1: {
+      client: 'Orange Telecom',
+      name: 'Retail Outreach Campaign',
+      category: 'Field Marketing',
+      img: 'assets/images/work-1.jpg',
+      copy: `<p>Orange Telecom needed to deepen their retail presence across key urban and peri-urban markets in Uganda. We deployed a coordinated field team across multiple regions simultaneously — brand ambassadors trained to convert conversations into connections at the point of sale.</p><p>The campaign ran for eight weeks. Teams operated across Kampala, Jinja, Mbale and Mbarara, visiting over 2,400 retail touchpoints. Every interaction was logged, every outlet mapped. The result was a measurable lift in Orange's shelf presence and a pipeline of newly activated retail partners.</p><p>This is what field marketing looks like when it's done with precision, not just presence.</p>`
+    },
+    w2: {
+      client: "Gorillo's Snacks",
+      name: "Branded Vans & Cannons",
+      category: 'Promotions',
+      img: 'assets/images/work-2.jpg',
+      copy: `<p>Gorillo's Snacks wanted noise — the kind you feel before you see it. We built a mobile activation unit: fully branded vans fitted with product cannon systems that launched snack samples into crowds at high-footfall locations across the city.</p><p>The activation hit markets, taxi parks, university campuses and weekend events. Thousands of samples distributed. Thousands of photos taken. The brand didn't just show up — it became the moment people talked about on the way home.</p><p>BTL done loud. BTL done right.</p>`
+    },
+    w3: {
+      client: 'TotalEnergies',
+      name: 'Brand Experience Event',
+      category: 'Brand Experience',
+      img: 'assets/images/work-3.jpg',
+      copy: `<p>TotalEnergies tasked us with creating an immersive brand experience that would communicate their energy transition message to a business and consumer audience in Uganda. We designed and produced a full-scale brand environment — from spatial layout to staffing to experiential touchpoints.</p><p>Visitors moved through a curated journey: the history of energy, TotalEnergies' operations in Uganda, and a vision of what's next. Interactive stations, product demos, and a live Q&A with brand representatives kept engagement high throughout.</p><p>Premium execution for a global brand, built and delivered by a Ugandan team.</p>`
+    },
+    w4: {
+      client: 'Field Activation',
+      name: 'Pay Campaign',
+      category: 'Sales & Distribution',
+      img: 'assets/images/work-4.jpg',
+      copy: `<p>A direct sales and awareness campaign targeting underserved communities across central and western Uganda. Our field teams were trained on the product, equipped with the tools, and deployed with clear daily targets and geographic mandates.</p><p>Door-to-door. Market stall to market stall. The campaign ran across six districts over twelve weeks, with daily reporting, real-time route adjustments, and weekly performance reviews that kept the team sharp and the numbers moving.</p><p>Sales campaigns fail when the people on the ground aren't fully invested. Ours were.</p>`
+    },
+    w5: {
+      client: 'Orange Telecom',
+      name: 'Internet Packages Campaign',
+      category: 'Communications',
+      img: 'assets/images/work-5.jpg',
+      copy: `<p>Orange needed to communicate a new internet package offering to a mass audience quickly and clearly. The message had to work across demographics — urban professionals, students, small business owners — and it had to drive immediate action.</p><p>We built a multi-channel communication campaign: trained brand communicators at key touch points, one-on-one demonstrations at retail locations, and a community outreach programme that took the message into neighbourhoods rather than waiting for customers to come to the brand.</p><p>Clear message. Right people. Right places. That's communication.</p>`
+    },
+    w6: {
+      client: 'Smile Telecom',
+      name: 'Rural Outreach Campaign',
+      category: 'Field Marketing',
+      img: 'assets/images/work-6.jpg',
+      copy: `<p>Reaching rural Uganda is not the same as reaching Kampala. The infrastructure is different, the culture of communication is different, and the trust dynamic between brand and community requires a different approach entirely.</p><p>We deployed teams into districts across northern and eastern Uganda for Smile Telecom — teams who understood the communities they were entering, spoke the relevant languages, and built genuine connections rather than just completing a call sheet.</p><p>The campaign achieved registration and awareness targets ahead of schedule, with zero incidents and strong community feedback. Rural is not a lesser market. It requires better work.</p>`
+    }
+  };
+
+  /* ── WORK MODAL ─────────────────────────────────────────── */
+  function initWorkModal() {
+    const overlay = document.getElementById('work-modal-overlay');
+    const modal   = document.getElementById('work-modal');
+    if (!overlay || !modal) return;
+
+    const imgEl    = document.getElementById('work-modal-img');
+    const catEl    = document.getElementById('work-modal-cat');
+    const titleEl  = document.getElementById('work-modal-title');
+    const clientEl = document.getElementById('work-modal-client');
+    const copyEl   = document.getElementById('work-modal-copy');
+
+    function openWork(data) {
+      if (imgEl) { imgEl.src = data.img || ''; imgEl.alt = data.name || ''; imgEl.style.display = data.img ? 'block' : 'none'; }
+      if (catEl)    catEl.textContent    = data.category || '';
+      if (titleEl)  titleEl.textContent  = data.name     || '';
+      if (clientEl) clientEl.textContent = data.client   || '';
+      if (copyEl)   copyEl.innerHTML     = data.copy     || '';
+      overlay.classList.add('open'); modal.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      try { if (lenis) lenis.stop(); } catch(e) {}
+      document.body.style.overflow = 'hidden';
+    }
+    function closeWork() {
+      overlay.classList.remove('open'); modal.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      try { if (lenis) lenis.start(); } catch(e) {}
+      document.body.style.overflow = '';
+    }
+
+    overlay.addEventListener('click', closeWork);
+    document.getElementById('work-modal-close')?.addEventListener('click', closeWork);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closeWork(); });
+
+    // Wire up every work card
+    document.querySelectorAll('.work-card').forEach((card, i) => {
+      const keys = ['w1','w2','w3','w4','w5','w6'];
+      const id = card.dataset.workId || keys[i] || null;
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', () => {
+        const data = (id && WORK_COPY[id]) || {
+          client: card.querySelector('.work-client')?.textContent || '',
+          name:   card.querySelector('.work-name')?.textContent  || '',
+          category: card.querySelector('.work-cat')?.textContent || '',
+          img:    card.querySelector('img')?.src || '',
+          copy:   '<p>Campaign details coming soon.</p>'
+        };
+        openWork(data);
+      });
+    });
+  }
+
   /* ── MODALS ─────────────────────────────────────────────── */
   function initModals() {
     const overlay = document.getElementById('modal-overlay');
@@ -493,6 +592,26 @@
     });
   }
 
+
+  /* ── PROOF NUMBER MAGNETIC HOVER ───────────────────────── */
+  function initProofMagnetic() {
+    document.querySelectorAll('.proof-item').forEach(item => {
+      const num = item.querySelector('.proof-number');
+      if (!num) return;
+      item.addEventListener('mousemove', e => {
+        const rect = item.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top  + rect.height / 2;
+        const dx = (e.clientX - cx) * 0.12;
+        const dy = (e.clientY - cy) * 0.12;
+        num.style.transform = `translate(${dx}px,${dy}px) scale(1.05)`;
+      });
+      item.addEventListener('mouseleave', () => {
+        num.style.transform = '';
+      });
+    });
+  }
+
   /* ── INIT ───────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
@@ -508,6 +627,7 @@
     initCounters();
     initTicker();
     initWorkScroll();
+    initWorkModal();
     initModals();
     initFloatingCta();
     initAnchors();
@@ -515,6 +635,7 @@
     initA11y();
     initLegalTabs();
     initFooterEntrance();
+    initProofMagnetic();
 
     document.fonts?.ready.then(() => {
       if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
