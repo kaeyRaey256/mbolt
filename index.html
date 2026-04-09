@@ -10,7 +10,7 @@
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <title>MBolt — Making Your Brand Impossible to Ignore</title>
-  <link rel="icon" type="image/svg+xml" href="assets/icons/icon-bolt.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <link rel="stylesheet" href="css/style.css">
   <!-- Theme init: runs before paint to prevent flash -->
@@ -51,6 +51,22 @@
     <label class="a11y-opt"><input type="checkbox" id="a11y-motion"> Reduce motion</label>
     <span class="a11y-slider-lbl" id="fs-lbl">Font size</span>
     <input type="range" id="a11y-font" min="14" max="21" value="16" step="1" aria-labelledby="fs-lbl">
+  </div>
+</div>
+
+<!-- WORK MODAL -->
+<div class="work-modal-overlay" id="work-modal-overlay" role="presentation" aria-hidden="true"></div>
+<div class="work-modal" id="work-modal" role="dialog" aria-modal="true" aria-labelledby="work-modal-title">
+  <img class="work-modal-img" id="work-modal-img" src="" alt="">
+  <div class="work-modal-accent"></div>
+  <div class="work-modal-body">
+    <button class="work-modal-close" id="work-modal-close" aria-label="Close">
+      <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="work-modal-cat" id="work-modal-cat">Campaign</div>
+    <h2 class="work-modal-title" id="work-modal-title"></h2>
+    <div class="work-modal-client" id="work-modal-client"></div>
+    <div class="work-modal-copy" id="work-modal-copy"></div>
   </div>
 </div>
 
@@ -95,7 +111,8 @@
 <header>
   <nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
     <a href="index.html" class="nav-logo" aria-label="MBolt — home">
-      <img src="assets/icons/logo.svg" alt="MBolt" class="logo-auto-invert">
+      <img src="assets/icons/logo.svg" alt="MBolt" class="logo-colour">
+      <img src="assets/icons/logo-white.svg" alt="MBolt" class="logo-white">
     </a>
     <ul class="nav-links" role="list">
       <li><a href="#work">Work</a></li>
@@ -404,43 +421,55 @@
         <div class="work-card reveal" role="listitem" tabindex="0" aria-label="Orange Telecom: Retail Outreach Campaign">
           <img src="assets/images/work-1.jpg" alt="Orange Telecom retail outreach activation" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">Orange Telecom</div><div class="work-name">Retail Outreach Campaign</div></div>
+          <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Field Marketing</div>
         </div>
         <div class="work-card reveal reveal-d1" role="listitem" tabindex="0" aria-label="Gorillo's Snacks: Branded Vans and Cannons">
           <img src="assets/images/work-2.jpg" alt="Gorillo's Snacks branded activation vans" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">Gorillo's Snacks</div><div class="work-name">Branded Vans &amp; Cannons</div></div>
+          <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Promotions</div>
         </div>
         <div class="work-card reveal reveal-d2" role="listitem" tabindex="0" aria-label="TotalEnergies: Brand Experience Event">
           <img src="assets/images/work-3.jpg" alt="TotalEnergies brand experience event" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">TotalEnergies</div><div class="work-name">Brand Experience Event</div></div>
+          <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Brand Experience</div>
         </div>
         <div class="work-card reveal reveal-d1" role="listitem" tabindex="0" aria-label="Pay Campaign field activation">
           <img src="assets/images/work-4.jpg" alt="Pay campaign field activation" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">Field Activation</div><div class="work-name">Pay Campaign</div></div>
+          <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Sales &amp; Distribution</div>
         </div>
         <div class="work-card reveal reveal-d2" role="listitem" tabindex="0" aria-label="Orange Telecom: Internet Packages Campaign">
           <img src="assets/images/work-5.jpg" alt="Orange internet packages awareness campaign" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">Orange Telecom</div><div class="work-name">Internet Packages Campaign</div></div>
+          <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Communications</div>
         </div>
         <div class="work-card reveal reveal-d3" role="listitem" tabindex="0" aria-label="Smile Telecom: Rural Outreach Campaign">
           <img src="assets/images/work-6.jpg" alt="Smile Telecom rural outreach campaign" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">Smile Telecom</div><div class="work-name">Rural Outreach Campaign</div></div>
+          <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Field Marketing</div>
         </div>
       </div>
 
       <!-- Mobile fallback grid -->
       <div class="work-grid-mobile" role="list" aria-label="Campaign work">
-        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-1.jpg" alt="Orange Telecom retail outreach" loading="lazy"><div class="work-card-over"><div class="work-client">Orange Telecom</div><div class="work-name">Retail Outreach</div></div><div class="work-cat">Field Marketing</div></div>
-        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-2.jpg" alt="Gorillo's branded vans" loading="lazy"><div class="work-card-over"><div class="work-client">Gorillo's Snacks</div><div class="work-name">Branded Vans</div></div><div class="work-cat">Promotions</div></div>
-        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-3.jpg" alt="TotalEnergies experience" loading="lazy"><div class="work-card-over"><div class="work-client">TotalEnergies</div><div class="work-name">Brand Experience</div></div><div class="work-cat">Brand Experience</div></div>
-        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-4.jpg" alt="Pay campaign" loading="lazy"><div class="work-card-over"><div class="work-client">Field Activation</div><div class="work-name">Pay Campaign</div></div><div class="work-cat">Sales</div></div>
-        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-5.jpg" alt="Orange internet" loading="lazy"><div class="work-card-over"><div class="work-client">Orange Telecom</div><div class="work-name">Internet Campaign</div></div><div class="work-cat">Communications</div></div>
-        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-6.jpg" alt="Smile rural" loading="lazy"><div class="work-card-over"><div class="work-client">Smile Telecom</div><div class="work-name">Rural Outreach</div></div><div class="work-cat">Field Marketing</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-1.jpg" alt="Orange Telecom retail outreach" loading="lazy"><div class="work-card-over"><div class="work-client">Orange Telecom</div><div class="work-name">Retail Outreach</div></div><div class="work-card-cta" aria-hidden="true">View activation</div>
+          <div class="work-cat">Field Marketing</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-2.jpg" alt="Gorillo's branded vans" loading="lazy"><div class="work-card-over"><div class="work-client">Gorillo's Snacks</div><div class="work-name">Branded Vans</div></div><div class="work-card-cta" aria-hidden="true">View activation</div>
+          <div class="work-cat">Promotions</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-3.jpg" alt="TotalEnergies experience" loading="lazy"><div class="work-card-over"><div class="work-client">TotalEnergies</div><div class="work-name">Brand Experience</div></div><div class="work-card-cta" aria-hidden="true">View activation</div>
+          <div class="work-cat">Brand Experience</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-4.jpg" alt="Pay campaign" loading="lazy"><div class="work-card-over"><div class="work-client">Field Activation</div><div class="work-name">Pay Campaign</div></div><div class="work-card-cta" aria-hidden="true">View activation</div>
+          <div class="work-cat">Sales</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-5.jpg" alt="Orange internet" loading="lazy"><div class="work-card-over"><div class="work-client">Orange Telecom</div><div class="work-name">Internet Campaign</div></div><div class="work-card-cta" aria-hidden="true">View activation</div>
+          <div class="work-cat">Communications</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-6.jpg" alt="Smile rural" loading="lazy"><div class="work-card-over"><div class="work-client">Smile Telecom</div><div class="work-name">Rural Outreach</div></div><div class="work-card-cta" aria-hidden="true">View activation</div>
+          <div class="work-cat">Field Marketing</div></div>
       </div>
     </div>
   </div>
@@ -617,9 +646,9 @@
       </div>
     </div>
     <div class="socials" aria-label="Social media">
-      <a href="#" class="social-btn" aria-label="LinkedIn — where decisions happen" rel="noopener noreferrer">in</a>
-      <a href="#" class="social-btn" aria-label="Instagram — see our work" rel="noopener noreferrer">ig</a>
-      <a href="#" class="social-btn" aria-label="Facebook" rel="noopener noreferrer">fb</a>
+      <a href="#" class="social-btn" aria-label="LinkedIn" rel="noopener noreferrer"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
+      <a href="#" class="social-btn" aria-label="Instagram" rel="noopener noreferrer"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" fill="var(--bg-white)"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="var(--bg-white)" stroke-width="2" stroke-linecap="round"/></svg></a>
+      <a href="#" class="social-btn" aria-label="Facebook" rel="noopener noreferrer"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
     </div>
   </div>
 
@@ -666,9 +695,9 @@
       <img src="assets/icons/logo-white.svg" alt="MBolt" class="footer-logo-img">
       <p class="footer-tagline">Making your brand impossible to ignore. That's what we do.</p>
       <div class="footer-socials" aria-label="Social media">
-        <a href="#" class="footer-social" aria-label="LinkedIn">in</a>
-        <a href="#" class="footer-social" aria-label="Instagram">ig</a>
-        <a href="#" class="footer-social" aria-label="Facebook">fb</a>
+        <a href="#" class="footer-social" aria-label="LinkedIn"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Instagram"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" fill="var(--bg-white)"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="var(--bg-white)" stroke-width="2" stroke-linecap="round"/></svg></a>
+        <a href="#" class="footer-social" aria-label="Facebook"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
       </div>
     </div>
     <div>
