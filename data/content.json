@@ -1,1 +1,199 @@
+{
+  "brand": {
+    "name": "MBolt",
+    "fullName": "Market Bolt",
+    "tagline": "Making your brand impossible to ignore.",
+    "subTagline": "That's what we do.",
+    "signoff": "— MBolt",
+    "description": "Uganda's leading experiential marketing agency. Fifteen years of showing up, delivering, and being trusted again.",
+    "founded": "2008",
+    "yearsActive": "15+"
+  },
+  "contact": {
+    "phone1": "+256 752 625 755",
+    "phone2": "+256 758 532 555",
+    "email": "hello@market-bolt.com",
+    "website": "www.market-bolt.com",
+    "address": "Plot 1167, Kyebando Central",
+    "pobox": "P.O. Box 21363, Kampala, Uganda"
+  },
+  "socials": {
+    "linkedin": "#",
+    "instagram": "#",
+    "facebook": "#"
+  },
+  "stats": [
+    { "number": "15", "suffix": "+", "label": "Years in the field" },
+    { "number": "10", "suffix": "+", "label": "Major brands activated" },
+    { "number": "4",  "suffix": "",  "label": "Core service pillars" },
+    { "number": "1",  "suffix": "",  "label": "Agency you need" }
+  ],
+  "services": [
+    {
+      "id": "btl",
+      "number": "01",
+      "name": "BTL / Experiential Marketing",
+      "icon": "icons/icon-btl.svg",
+      "description": "We conceptualise and stage real experiences that hit people in the gut. Promotions, field activations, brand experiences — we've been doing this for fifteen years and we still love every second of it.",
+      "tags": ["Promotions", "Field Marketing", "Brand Experiences", "Road Shows", "Event Hospitality", "Exhibition"]
+    },
+    {
+      "id": "comms",
+      "number": "02",
+      "name": "Communications",
+      "icon": "icons/icon-comms.svg",
+      "description": "We build direct communication strategies that connect your brand with real people in memorable ways. One-on-one or mass — education, awareness, sensitisation — we know how to make a message land.",
+      "tags": ["One-on-One Interactions", "Awareness Campaigns", "Education", "Sensitisation"]
+    },
+    {
+      "id": "sales",
+      "number": "03",
+      "name": "Sales & Distribution",
+      "icon": "icons/icon-sales.svg",
+      "description": "Door to door isn't dead — it just needs to be done right. We execute distribution strategies based on your targets, mapping trade routes, placing products, and moving them off shelves.",
+      "tags": ["Trade Route Mapping", "Merchandising", "Placement", "Sales"]
+    },
+    {
+      "id": "supplies",
+      "number": "04",
+      "name": "General Supplies",
+      "icon": "icons/icon-supplies.svg",
+      "description": "We help clients connect the dots in an ever-expanding universe of supplies. Sourcing, delivery, relationships — we use our network and experience to keep you relevant and well-resourced.",
+      "tags": ["Sourcing", "Delivery", "Supply Chain"]
+    }
+  ],
+  "clients": [
+    { "name": "Nile Breweries",    "logo": "images/client-nile-breweries.png" },
+    { "name": "TotalEnergies",     "logo": "images/client-total-energies.png" },
+    { "name": "Zain Uganda",       "logo": "images/client-zain.png" },
+    { "name": "Smile Telecom",     "logo": "images/client-smile.png" },
+    { "name": "Orange Uganda",     "logo": "images/client-orange.png" },
+    { "name": "Hima Cement",       "logo": "images/client-hima.png" },
+    { "name": "Rubis Energy",      "logo": "images/client-rubis.png" },
+    { "name": "Zuku TV",           "logo": "images/client-zuku.png" },
+    { "name": "Gorillo's Snacks",  "logo": "images/client-gorillos.png" },
+    { "name": "Seba's Golden Goodness", "logo": "images/client-sebas.png" }
+  ],
+  "work": [
+    {
+      "id": "orange-retail",
+      "client": "Orange Telecom",
+      "name": "Retail Outreach Campaign",
+      "category": "Field Marketing",
+      "image": "images/work-orange-retail.jpg",
+      "alt": "Orange Telecom retail outreach activation across Uganda"
+    },
+    {
+      "id": "gorillos-vans",
+      "client": "Gorillo's Snacks",
+      "name": "Branded Vans & Cannons",
+      "category": "Promotions",
+      "image": "images/work-gorillos.jpg",
+      "alt": "Gorillo's Snacks branded activation vans and product cannons"
+    },
+    {
+      "id": "total-experience",
+      "client": "TotalEnergies",
+      "name": "Brand Experience Event",
+      "category": "Brand Experience",
+      "image": "images/work-total.jpg",
+      "alt": "TotalEnergies brand experience event activation"
+    },
+    {
+      "id": "pay-campaign",
+      "client": "Field Activation",
+      "name": "Pay Campaign",
+      "category": "Sales & Distribution",
+      "image": "images/work-pay-campaign.jpg",
+      "alt": "Pay campaign sales and distribution activation"
+    },
+    {
+      "id": "orange-internet",
+      "client": "Orange Telecom",
+      "name": "Internet Packages Campaign",
+      "category": "Communications",
+      "image": "images/work-orange-internet.jpg",
+      "alt": "Orange internet packages awareness campaign"
+    },
+    {
+      "id": "smile-rural",
+      "client": "Smile Telecom",
+      "name": "Rural Outreach Campaign",
+      "category": "Field Marketing",
+      "image": "images/work-smile-rural.jpg",
+      "alt": "Smile Telecom rural community outreach campaign"
+    }
+  ],
+  "team": [
+    {
+      "id": "jude",
+      "initials": "JST",
+      "name": "Jude S. Tayebwa",
+      "role": "Managing Director",
+      "photo": "images/team-jude.jpg",
+      "bio": "Two decades in the industry. He's worked with the largest agencies on the continent and knows every angle of what it takes to bring a brand to life in the field.",
+      "quote": "Brings brands to life"
+    },
+    {
+      "id": "patrick",
+      "initials": "PA",
+      "name": "Patrick Angulo",
+      "role": "Director / Head of Operations",
+      "photo": "images/team-patrick.jpg",
+      "bio": "A founding partner whose business acumen was sharpened in India. Fifteen years across hospitality, microfinance and cable television — he makes things happen.",
+      "quote": "We will get it done"
+    },
+    {
+      "id": "abbey",
+      "initials": "ASN",
+      "name": "Abbey Senoga Ntege",
+      "role": "Finance Manager",
+      "photo": "images/team-abbey.jpg",
+      "bio": "A certified accountant with 15 years navigating the financial landscape of Ugandan business. He keeps the ship steady and makes sure every shilling is working hard.",
+      "quote": "Value for money"
+    },
+    {
+      "id": "gerald",
+      "initials": "GM",
+      "name": "Gerald Mukasa",
+      "role": "Admin / Projects Manager",
+      "photo": "images/team-gerald.jpg",
+      "bio": "13 years across telecoms, fintech and health sectors. He keeps the engine running — day to day management of the agency and every project we take on.",
+      "quote": "It has to be done"
+    },
+    {
+      "id": "david",
+      "initials": "DL",
+      "name": "David Lubwama",
+      "role": "Projects Coordinator",
+      "photo": "images/team-david.jpg",
+      "bio": "The energy behind our field executions. He has worked with major brands in the service industry and is the drive behind every field layout we build.",
+      "quote": "Research, Create, Execute, Evaluate"
+    },
+    {
+      "id": "diana",
+      "initials": "DK",
+      "name": "Diana Kisakye",
+      "role": "Logistics Executive",
+      "photo": "images/team-diana.jpg",
+      "bio": "Entrepreneurial mindset, supply chain expertise. Diana brings both innovation and precision to the logistical heartbeat of the agency's daily operations.",
+      "quote": "Always a step ahead"
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "Association with MBolt has been great. They dive into the problem and do not hesitate in giving suggestions. They come up with fresh ideas and have always surpassed expectations.",
+      "name": "Val Muleba",
+      "title": "Product Manager",
+      "company": "GlK Tampeco",
+      "initials": "VM"
+    }
+  ],
+  "nav": [
+    { "label": "Work",     "href": "#work" },
+    { "label": "Services", "href": "#services" },
+    { "label": "About",    "href": "#about" },
+    { "label": "Team",     "href": "#team" }
+  ]
+}
 
