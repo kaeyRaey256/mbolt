@@ -1,185 +1,60 @@
 /**
- * MBolt — main.js
- * All interactivity: cursor, nav, slideshow, counters,
- * scroll reveal, ticker, form, accessibility panel
+ * MBolt v2 — main.js
+ * GSAP + ScrollTrigger + Lenis smooth scroll
+ * Cursor · Nav · Hero · Counters · Horizontal work scroll
+ * Modals · Dark mode · Accessibility · Form · Cookie banner
  */
-
 (function () {
   'use strict';
 
-  /* ── CONTENT ──────────────────────────────────────────────── */
-  let CONTENT = {};
+  /* ── GSAP REGISTRATION ─────────────────────────────────── */
+  // GSAP and ScrollTrigger loaded via CDN in HTML
+  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
+  }
 
+  /* ── STATE ─────────────────────────────────────────────── */
+  let CONTENT = {};
+  let lenis;
+  const IS_TOUCH = window.matchMedia('(hover: none)').matches;
+  const IS_MOBILE = window.innerWidth <= 600;
+
+  /* ── CONTENT LOADER ────────────────────────────────────── */
   async function loadContent() {
     try {
       const res = await fetch('./data/content.json');
       CONTENT = await res.json();
-      buildPage();
     } catch (e) {
-      // If fetch fails (e.g. opened as file://) fallback is already in HTML
-      console.warn('Content JSON not loaded, using static HTML fallback.', e);
+      console.warn('content.json not loaded — static HTML fallback active.', e);
     }
   }
 
-  /* ── BUILD PAGE FROM JSON ─────────────────────────────────── */
-  function buildPage() {
-    buildStats();
-    buildServices();
-    buildClients();
-    buildWork();
-    buildTeam();
-    buildTestimonials();
-    buildContact();
-    buildFooter();
-    // Re-observe any newly added reveal elements
-    document.querySelectorAll('.reveal:not(.observed)').forEach(el => {
-      revealObserver.observe(el);
-      el.classList.add('observed');
+  /* ── LENIS SMOOTH SCROLL ───────────────────────────────── */
+  function initLenis() {
+    if (typeof Lenis === 'undefined') return;
+    lenis = new Lenis({
+      duration: 1.4,
+      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      smoothTouch: false,
     });
+
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(time => lenis.raf(time * 1000));
+      gsap.ticker.lagSmoothing(0);
+    } else {
+      function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+      requestAnimationFrame(raf);
+    }
   }
 
-  function buildStats() {
-    const wrap = document.getElementById('proof-stats');
-    if (!wrap || !CONTENT.stats) return;
-    wrap.innerHTML = CONTENT.stats.map((s, i) => `
-      <div class="proof-item reveal${i ? ' reveal-delay-' + i : ''}">
-        <div class="proof-number" data-target="${s.number}">
-          <span class="proof-count">0</span><sup>${s.suffix}</sup>
-        </div>
-        <div class="proof-label">${s.label}</div>
-      </div>
-    `).join('');
-  }
-
-  function buildServices() {
-    const grid = document.getElementById('services-grid');
-    if (!grid || !CONTENT.services) return;
-    grid.innerHTML = CONTENT.services.map((s, i) => `
-      <div class="service-card reveal${i > 0 ? ' reveal-delay-' + i : ''}" role="listitem">
-        <div class="service-number" aria-hidden="true">${s.number}</div>
-        <div class="service-icon-wrap" aria-hidden="true">
-          ${serviceIconSVG(s.id)}
-        </div>
-        <h3 class="service-name">${s.name}</h3>
-        <p class="service-desc">${s.description}</p>
-        <div class="service-tags">${s.tags.map(t => `<span class="service-tag">${t}</span>`).join('')}</div>
-      </div>
-    `).join('');
-  }
-
-  function serviceIconSVG(id) {
-    const icons = {
-      btl: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z" fill="currentColor" style="color:var(--volt)"/></svg>`,
-      comms: `<svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="color:var(--volt)"/></svg>`,
-      sales: `<svg viewBox="0 0 24 24" fill="none"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="color:var(--volt)"/><polyline points="17 6 23 6 23 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="color:var(--volt)"/></svg>`,
-      supplies: `<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.8" style="color:var(--volt)"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="color:var(--volt)"/></svg>`
-    };
-    return icons[id] || icons.btl;
-  }
-
-  function buildClients() {
-    const wrap = document.getElementById('clients-ticker');
-    if (!wrap || !CONTENT.clients) return;
-    // Duplicate for seamless infinite scroll
-    const pills = CONTENT.clients.map(c => `
-      <div class="client-logo-pill">
-        <img src="assets/${c.logo}" alt="${c.name} logo" loading="lazy"
-             onerror="this.style.display='none'">
-        <span>${c.name}</span>
-      </div>
-    `).join('');
-    wrap.innerHTML = pills + pills; // duplicate
-  }
-
-  function buildWork() {
-    const grid = document.getElementById('work-grid');
-    if (!grid || !CONTENT.work) return;
-    grid.innerHTML = CONTENT.work.map((w, i) => `
-      <div class="work-card reveal${i > 0 ? ' reveal-delay-' + Math.min(i, 5) : ''}"
-           role="listitem" tabindex="0" aria-label="${w.client}: ${w.name}">
-        <img src="assets/${w.image}" alt="${w.alt}" loading="lazy"
-             onerror="this.src='assets/images/placeholder-work.jpg'">
-        <div class="work-card-overlay" aria-hidden="true">
-          <div class="work-card-client">${w.client}</div>
-          <div class="work-card-name">${w.name}</div>
-        </div>
-        <div class="work-card-category" aria-hidden="true">${w.category}</div>
-      </div>
-    `).join('');
-  }
-
-  function buildTeam() {
-    const grid = document.getElementById('team-grid');
-    if (!grid || !CONTENT.team) return;
-    grid.innerHTML = CONTENT.team.map((t, i) => `
-      <div class="team-card reveal${i > 0 ? ' reveal-delay-' + Math.min(i, 5) : ''}" role="listitem">
-        <div class="team-photo-wrap">
-          <img src="assets/${t.photo}" alt="Photo of ${t.name}" loading="lazy"
-               onerror="this.style.display='none'">
-          <div class="team-initials" aria-hidden="true">${t.initials}</div>
-        </div>
-        <div class="team-info">
-          <div class="team-name">${t.name}</div>
-          <div class="team-role">${t.role}</div>
-          <p class="team-bio">${t.bio}</p>
-          <div class="team-quote">${t.quote}</div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function buildTestimonials() {
-    const wrap = document.getElementById('testimonial-wrap');
-    if (!wrap || !CONTENT.testimonials) return;
-    const t = CONTENT.testimonials[0];
-    // Highlight key phrase
-    const highlighted = t.quote.replace('do not hesitate in giving suggestions',
-      '<em>do not hesitate in giving suggestions</em>');
-    wrap.innerHTML = `
-      <blockquote>
-        <p class="testi-quote">${highlighted}</p>
-        <footer class="testi-author">
-          <div class="testi-avatar" aria-hidden="true">${t.initials}</div>
-          <div>
-            <div class="testi-name">${t.name}</div>
-            <div class="testi-title">${t.title}, ${t.company}</div>
-          </div>
-        </footer>
-      </blockquote>
-    `;
-  }
-
-  function buildContact() {
-    const c = CONTENT.contact;
-    if (!c) return;
-    const phone1El = document.getElementById('contact-phone1');
-    const phone2El = document.getElementById('contact-phone2');
-    const emailEl  = document.getElementById('contact-email');
-    const addrEl   = document.getElementById('contact-address');
-    if (phone1El) phone1El.textContent = c.phone1;
-    if (phone2El) phone2El.textContent = c.phone2;
-    if (emailEl)  emailEl.textContent  = c.email;
-    if (addrEl)   addrEl.textContent   = c.address + ', ' + c.pobox;
-  }
-
-  function buildFooter() {
-    const c = CONTENT.contact;
-    if (!c) return;
-    ['footer-phone', 'footer-email', 'footer-address'].forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      if (id === 'footer-phone') el.textContent = c.phone1;
-      if (id === 'footer-email') el.textContent = c.email;
-      if (id === 'footer-address') el.textContent = c.address;
-    });
-  }
-
-  /* ── CUSTOM CURSOR ────────────────────────────────────────── */
+  /* ── CUSTOM CURSOR ─────────────────────────────────────── */
   function initCursor() {
+    if (IS_TOUCH) return;
     const dot  = document.getElementById('cursor-dot');
     const ring = document.getElementById('cursor-ring');
     if (!dot || !ring) return;
-    if (window.matchMedia('(hover: none)').matches) return;
 
     let mx = 0, my = 0, rx = 0, ry = 0;
 
@@ -189,218 +64,389 @@
       dot.style.top  = my + 'px';
     });
 
-    (function animRing() {
-      rx += (mx - rx) * 0.11;
-      ry += (my - ry) * 0.11;
+    (function rafRing() {
+      rx += (mx - rx) * 0.1;
+      ry += (my - ry) * 0.1;
       ring.style.left = rx + 'px';
       ring.style.top  = ry + 'px';
-      requestAnimationFrame(animRing);
+      requestAnimationFrame(rafRing);
     })();
 
-    const hoverEls = 'a, button, input, textarea, select, .work-card, .team-card, .client-logo-pill, .service-card, .social-btn, .footer-social';
-    document.querySelectorAll(hoverEls).forEach(el => {
-      el.addEventListener('mouseenter', () => { dot.classList.add('hover'); ring.classList.add('hover'); });
-      el.addEventListener('mouseleave', () => { dot.classList.remove('hover'); ring.classList.remove('hover'); });
+    // Click ripple
+    document.addEventListener('click', e => {
+      const ripple = document.createElement('div');
+      ripple.className = 'cursor-ripple';
+      ripple.style.left = e.clientX + 'px';
+      ripple.style.top  = e.clientY + 'px';
+      document.body.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+
+    // Context-aware states
+    function addCursorContext(sel, dotClass, ringClass) {
+      document.querySelectorAll(sel).forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          dot.className  = 'cursor-dot '  + dotClass;
+          ring.className = 'cursor-ring ' + ringClass;
+        });
+        el.addEventListener('mouseleave', () => {
+          dot.className  = 'cursor-dot';
+          ring.className = 'cursor-ring';
+        });
+      });
+    }
+
+    addCursorContext('.btn, .nav-cta, .drawer-cta', 'on-btn', 'on-btn expanded');
+    addCursorContext('.service-card, .work-card, .team-card, .culture-card', '', 'expanded');
+    addCursorContext('.client-pill', 'on-volt', 'expanded');
+
+    // Magnetic buttons
+    if (!IS_MOBILE) {
+      document.querySelectorAll('.btn-primary, .nav-cta').forEach(btn => {
+        btn.addEventListener('mousemove', e => {
+          const rect = btn.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top  + rect.height / 2;
+          const dx = (e.clientX - cx) * 0.18;
+          const dy = (e.clientY - cy) * 0.18;
+          btn.style.transform = `translate(${dx}px, ${dy}px) translateY(-2px)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.transform = '';
+        });
+      });
+    }
+  }
+
+  /* ── DARK MODE ─────────────────────────────────────────── */
+  function initTheme() {
+    const saved = localStorage.getItem('mbolt-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = saved || (prefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+
+    document.querySelectorAll('.theme-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('mbolt-theme', next);
+      });
     });
   }
 
-  /* ── NAVBAR ───────────────────────────────────────────────── */
+  /* ── NAVBAR ────────────────────────────────────────────── */
   function initNav() {
     const nav     = document.getElementById('main-nav');
     const burger  = document.getElementById('nav-burger');
     const drawer  = document.getElementById('nav-drawer');
-    const overlay = document.getElementById('nav-overlay');
 
     if (!nav) return;
 
     // Scroll state
     window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 50);
+      nav.classList.toggle('scrolled', window.scrollY > 60);
     }, { passive: true });
 
     // Hamburger
-    if (burger && drawer && overlay) {
-      function openDrawer() {
-        drawer.classList.add('open');
-        overlay.classList.add('open');
-        burger.classList.add('open');
-        burger.setAttribute('aria-expanded', 'true');
-        document.body.style.overflow = 'hidden';
-      }
-      function closeDrawer() {
-        drawer.classList.remove('open');
-        overlay.classList.remove('open');
-        burger.classList.remove('open');
-        burger.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
-      }
-      burger.addEventListener('click', () => burger.classList.contains('open') ? closeDrawer() : openDrawer());
-      overlay.addEventListener('click', closeDrawer);
-      drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeDrawer));
+    if (burger && drawer) {
+      const toggleDrawer = open => {
+        burger.classList.toggle('open', open);
+        drawer.classList.toggle('open', open);
+        burger.setAttribute('aria-expanded', String(open));
+        document.body.style.overflow = open ? 'hidden' : '';
+        if (lenis) open ? lenis.stop() : lenis.start();
+      };
+      burger.addEventListener('click', () => toggleDrawer(!drawer.classList.contains('open')));
+      drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggleDrawer(false)));
+    }
+
+    // Active link highlighting
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    if (sections.length && navLinks.length) {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            navLinks.forEach(a => {
+              a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id || a.getAttribute('href') === 'index.html#' + e.target.id);
+            });
+          }
+        });
+      }, { threshold: 0.4 });
+      sections.forEach(s => obs.observe(s));
     }
   }
 
-  /* ── HERO SLIDESHOW ───────────────────────────────────────── */
-  function initSlideshow() {
-    const slides = document.querySelectorAll('.slide');
-    const dots   = document.querySelectorAll('.slide-dot');
-    if (!slides.length) return;
+  /* ── HERO ANIMATIONS ───────────────────────────────────── */
+  function initHero() {
+    if (typeof gsap === 'undefined') return;
 
-    let current = 0;
-    let timer;
-
-    function goTo(idx) {
-      slides[current].classList.remove('active');
-      dots[current]?.classList.remove('active');
-      current = (idx + slides.length) % slides.length;
-      slides[current].classList.add('active');
-      dots[current]?.classList.add('active');
-    }
-
-    function next() { goTo(current + 1); }
-
-    timer = setInterval(next, 4500);
-
-    dots.forEach((dot, i) => {
-      dot.addEventListener('click', () => {
-        clearInterval(timer);
-        goTo(i);
-        timer = setInterval(next, 4500);
+    // Parallax on hero image
+    const heroBg = document.querySelector('.hero-bg');
+    if (heroBg && typeof ScrollTrigger !== 'undefined') {
+      gsap.to(heroBg, {
+        yPercent: 25,
+        ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
       });
-    });
-
-    // Pause on reduced motion
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      clearInterval(timer);
     }
+
+    // Strike line
+    const strike = document.querySelector('.hero-strike');
+    if (strike) {
+      gsap.to(strike, { width: '100%', duration: 1.2, delay: 3, ease: 'power3.out' });
+    }
+
+    // Entrance sequence
+    const tl = gsap.timeline({ delay: .3 });
+    const heroEyebrow = document.querySelector('.hero-eyebrow');
+    const heroLines   = document.querySelectorAll('.hero-headline .line');
+    const heroSub     = document.querySelector('.hero-sub');
+    const heroSign    = document.querySelector('.hero-signoff');
+    const heroCtAs    = document.querySelector('.hero-ctas');
+
+    if (heroEyebrow) tl.from(heroEyebrow, { y: 20, opacity: 0, duration: .7, ease: 'power3.out' });
+    if (heroLines.length) {
+      heroLines.forEach((line, i) => {
+        tl.from(line, { y: 60, opacity: 0, duration: .8, ease: 'power3.out' }, i === 0 ? '-=.3' : '-=.5');
+      });
+    }
+    if (heroSub)  tl.from(heroSub,  { y: 20, opacity: 0, duration: .7, ease: 'power3.out' }, '-=.4');
+    if (heroSign) tl.from(heroSign, { y: 16, opacity: 0, duration: .6, ease: 'power3.out' }, '-=.3');
+    if (heroCtAs) tl.from(heroCtAs, { y: 20, opacity: 0, duration: .7, ease: 'power3.out' }, '-=.3');
   }
 
-  /* ── SCROLL REVEAL ────────────────────────────────────────── */
-  let revealObserver;
-
+  /* ── SCROLL REVEAL ─────────────────────────────────────── */
   function initReveal() {
-    revealObserver = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          revealObserver.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.12 });
+    const els = document.querySelectorAll('.reveal');
+    if (!els.length) return;
 
-    document.querySelectorAll('.reveal').forEach(el => {
-      revealObserver.observe(el);
-      el.classList.add('observed');
-    });
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      els.forEach(el => {
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top 88%',
+          onEnter: () => el.classList.add('visible'),
+          once: true
+        });
+      });
+    } else {
+      // Pure IntersectionObserver fallback
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      els.forEach(el => obs.observe(el));
+    }
   }
 
-  /* ── COUNTER ANIMATION ────────────────────────────────────── */
+  /* ── COUNTERS ──────────────────────────────────────────── */
   function initCounters() {
-    const proofEl = document.getElementById('proof-stats');
+    const proofEl = document.querySelector('.proof');
     if (!proofEl) return;
 
-    const counterObs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        e.target.querySelectorAll('.proof-count').forEach(span => {
-          const target = parseInt(span.closest('.proof-number').dataset.target, 10);
-          if (isNaN(target)) return;
-          animateCount(span, target);
-        });
-        counterObs.unobserve(e.target);
-      });
-    }, { threshold: 0.5 });
-
-    counterObs.observe(proofEl);
-  }
-
-  function animateCount(el, target) {
-    const duration = 1600;
-    let start = null;
-    function step(ts) {
-      if (!start) start = ts;
-      const progress = Math.min((ts - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // ease-out-cubic
-      el.textContent = Math.round(eased * target);
-      if (progress < 1) requestAnimationFrame(step);
+    function animCount(span, target, dur = 1600) {
+      let start = null;
+      function step(ts) {
+        if (!start) start = ts;
+        const p = Math.min((ts - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        span.textContent = Math.round(ease * target);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
     }
-    requestAnimationFrame(step);
+
+    const obs = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return;
+      proofEl.querySelectorAll('.proof-count').forEach(span => {
+        const t = parseInt(span.closest('.proof-number').dataset.target, 10);
+        if (!isNaN(t)) animCount(span, t);
+      });
+      obs.disconnect();
+    }, { threshold: .5 });
+    obs.observe(proofEl);
   }
 
-  /* ── SERVICE CARD MICRO INTERACTION ──────────────────────── */
-  function initServiceCards() {
-    document.querySelectorAll('.service-card').forEach(card => {
-      card.addEventListener('mouseenter', () => {
-        const num = card.querySelector('.service-number');
-        if (num) { num.style.transform = 'translateX(8px)'; num.style.transition = 'transform .3s'; }
-      });
-      card.addEventListener('mouseleave', () => {
-        const num = card.querySelector('.service-number');
-        if (num) num.style.transform = 'translateX(0)';
+  /* ── HORIZONTAL WORK SCROLL ────────────────────────────── */
+  function initWorkScroll() {
+    if (window.innerWidth <= 768) return;
+    const track = document.querySelector('.work-track');
+    const progress = document.querySelector('.work-progress');
+    if (!track || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+    const cards = track.querySelectorAll('.work-card');
+    const totalWidth = Array.from(cards).reduce((w, c) => w + c.offsetWidth + 24, 0) - window.innerWidth + (window.innerWidth * 0.1);
+
+    const st = ScrollTrigger.create({
+      trigger: '.work-pin-wrap',
+      start: 'top top',
+      end: () => '+=' + totalWidth,
+      pin: '.work-sticky',
+      scrub: 1,
+      onUpdate: self => {
+        gsap.set(track, { x: -self.progress * totalWidth });
+        if (progress) progress.style.width = (self.progress * 100) + '%';
+      }
+    });
+  }
+
+  /* ── SERVICE MODALS ────────────────────────────────────── */
+  function initModals() {
+    const overlay = document.getElementById('modal-overlay');
+    const modal   = document.getElementById('service-modal');
+    if (!overlay || !modal) return;
+
+    function openModal(data) {
+      document.getElementById('modal-num').textContent  = data.number;
+      document.getElementById('modal-name').textContent = data.name;
+      document.getElementById('modal-desc').textContent = data.fullDesc || data.shortDesc;
+      const tagsEl = document.getElementById('modal-tags');
+      tagsEl.innerHTML = data.tags.map(t => `<span class="stag">${t}</span>`).join('');
+      overlay.classList.add('open');
+      modal.classList.add('open');
+      if (lenis) lenis.stop();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      modal.classList.remove('open');
+      if (lenis) lenis.start();
+      document.body.style.overflow = '';
+    }
+
+    overlay.addEventListener('click', closeModal);
+    document.getElementById('modal-close')?.addEventListener('click', closeModal);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    document.querySelectorAll('.service-card[data-service-id]').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.serviceId;
+        const svc = (CONTENT.services || []).find(s => s.id === id);
+        if (svc) openModal(svc);
+        else {
+          // fallback from HTML data attributes
+          openModal({
+            number: card.querySelector('.service-num')?.textContent || '',
+            name: card.querySelector('.h-card')?.textContent || '',
+            shortDesc: card.querySelector('.body-md')?.textContent || '',
+            fullDesc: card.querySelector('.body-md')?.textContent || '',
+            tags: Array.from(card.querySelectorAll('.stag')).map(t => t.textContent)
+          });
+        }
       });
     });
   }
 
-  /* ── WORK CARD KEYBOARD ───────────────────────────────────── */
-  function initWorkCards() {
-    document.querySelectorAll('.work-card').forEach(card => {
-      card.addEventListener('focus', () => {
-        const overlay = card.querySelector('.work-card-overlay');
-        if (overlay) overlay.style.opacity = '1';
+  /* ── FLOATING CTA ──────────────────────────────────────── */
+  function initFloatingCta() {
+    const cta = document.getElementById('floating-cta');
+    const scrollTop = document.getElementById('scroll-top-btn');
+
+    if (cta) {
+      window.addEventListener('scroll', () => {
+        const past = window.scrollY > window.innerHeight * 0.8;
+        const nearBottom = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300;
+        cta.classList.toggle('visible', past && !nearBottom);
+      }, { passive: true });
+    }
+
+    if (scrollTop) {
+      window.addEventListener('scroll', () => {
+        scrollTop.classList.toggle('visible', window.scrollY > 300);
+      }, { passive: true });
+      scrollTop.addEventListener('click', () => {
+        if (lenis) lenis.scrollTo(0);
+        else window.scrollTo({ top: 0, behavior: 'smooth' });
       });
-      card.addEventListener('blur', () => {
-        const overlay = card.querySelector('.work-card-overlay');
-        if (overlay) overlay.style.opacity = '';
+    }
+  }
+
+  /* ── SMOOTH SCROLL ANCHORS ─────────────────────────────── */
+  function initAnchors() {
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (!target) return;
+        e.preventDefault();
+        if (lenis) lenis.scrollTo(target, { offset: -70 });
+        else {
+          const top = target.getBoundingClientRect().top + window.scrollY - 70;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
       });
     });
   }
 
-  /* ── ACCESSIBILITY PANEL ──────────────────────────────────── */
+  /* ── FORM ──────────────────────────────────────────────── */
+  function initForms() {
+    document.querySelectorAll('[data-form]').forEach(form => {
+      const btn = form.querySelector('[data-submit]');
+      if (!btn) return;
+
+      btn.addEventListener('click', () => {
+        const fields = form.querySelectorAll('[required]');
+        let valid = true;
+        fields.forEach(f => {
+          const empty = !f.value.trim();
+          const badEmail = f.type === 'email' && f.value && !/\S+@\S+\.\S+/.test(f.value);
+          f.style.borderColor = (empty || badEmail) ? 'var(--red)' : '';
+          if (empty || badEmail) valid = false;
+        });
+
+        if (!valid) {
+          btn.textContent = 'Please fill in required fields';
+          btn.style.background = '#888';
+          setTimeout(() => {
+            btn.textContent = btn.dataset.label || 'Send';
+            btn.style.background = '';
+          }, 2800);
+          return;
+        }
+
+        btn.textContent = 'Message sent';
+        btn.style.background = 'var(--volt)';
+        btn.disabled = true;
+        // Production: replace with fetch POST to Formspree or backend
+      });
+    });
+  }
+
+  /* ── ACCESSIBILITY PANEL ───────────────────────────────── */
   function initA11y() {
     const toggle   = document.getElementById('a11y-toggle');
     const panel    = document.getElementById('a11y-panel');
     const hcCheck  = document.getElementById('a11y-hc');
     const motCheck = document.getElementById('a11y-motion');
     const fontSldr = document.getElementById('a11y-font');
-
     if (!toggle || !panel) return;
 
-    toggle.addEventListener('click', e => {
-      e.stopPropagation();
-      panel.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', panel.classList.contains('open'));
-    });
-    document.addEventListener('click', e => {
-      if (!panel.contains(e.target) && e.target !== toggle) {
-        panel.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
-    });
+    toggle.addEventListener('click', e => { e.stopPropagation(); panel.classList.toggle('open'); });
+    document.addEventListener('click', e => { if (!panel.contains(e.target) && e.target !== toggle) panel.classList.remove('open'); });
 
     if (hcCheck) {
       hcCheck.addEventListener('change', () => {
         document.body.classList.toggle('high-contrast', hcCheck.checked);
         localStorage.setItem('mbolt-hc', hcCheck.checked ? '1' : '');
       });
-      if (localStorage.getItem('mbolt-hc')) {
-        hcCheck.checked = true;
-        document.body.classList.add('high-contrast');
-      }
+      if (localStorage.getItem('mbolt-hc')) { hcCheck.checked = true; document.body.classList.add('high-contrast'); }
     }
 
     if (motCheck) {
+      const applyMotion = val => {
+        document.body.classList.toggle('reduce-motion', val);
+        document.querySelectorAll('.ticker, .hero-mesh, .scroll-thumb').forEach(el => {
+          el.style.animationPlayState = val ? 'paused' : '';
+        });
+        if (lenis) val ? lenis.stop() : lenis.start();
+      };
       motCheck.addEventListener('change', () => {
-        document.body.classList.toggle('reduce-motion', motCheck.checked);
-        // Pause ticker and slideshow
-        const ticker = document.querySelector('.clients-ticker');
-        if (ticker) ticker.style.animationPlayState = motCheck.checked ? 'paused' : 'running';
+        applyMotion(motCheck.checked);
         localStorage.setItem('mbolt-rm', motCheck.checked ? '1' : '');
       });
-      if (localStorage.getItem('mbolt-rm') ||
-          window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        motCheck.checked = true;
-        document.body.classList.add('reduce-motion');
-      }
+      const saved = localStorage.getItem('mbolt-rm') || (window.matchMedia('(prefers-reduced-motion: reduce)').matches ? '1' : '');
+      if (saved) { motCheck.checked = true; applyMotion(true); }
     }
 
     if (fontSldr) {
@@ -409,79 +455,70 @@
         localStorage.setItem('mbolt-fs', fontSldr.value);
       });
       const savedFs = localStorage.getItem('mbolt-fs');
-      if (savedFs) {
-        fontSldr.value = savedFs;
-        document.documentElement.style.fontSize = savedFs + 'px';
-      }
+      if (savedFs) { fontSldr.value = savedFs; document.documentElement.style.fontSize = savedFs + 'px'; }
     }
   }
 
-  /* ── FORM ─────────────────────────────────────────────────── */
-  function initForm() {
-    const form = document.getElementById('contact-form');
-    const btn  = document.getElementById('form-submit');
-    if (!form || !btn) return;
+  /* ── COOKIE BANNER ─────────────────────────────────────── */
+  function initCookies() {
+    const banner = document.getElementById('cookie-banner');
+    if (!banner) return;
+    if (localStorage.getItem('mbolt-cookies')) return;
+    setTimeout(() => banner.classList.add('visible'), 1500);
 
-    btn.addEventListener('click', () => {
-      const name    = form.querySelector('#f-name')?.value.trim();
-      const company = form.querySelector('#f-company')?.value.trim();
-      const email   = form.querySelector('#f-email')?.value.trim();
-      const moment  = form.querySelector('#f-moment')?.value;
-      const msg     = form.querySelector('#f-message')?.value.trim();
-
-      // Simple validation
-      const valid = name && email && moment && /\S+@\S+\.\S+/.test(email);
-      if (!valid) {
-        btn.textContent = 'Please fill in the key fields';
-        btn.style.background = '#888';
-        setTimeout(() => {
-          btn.textContent = 'Send it ⚡';
-          btn.style.background = '';
-        }, 2800);
-        return;
-      }
-
-      // Success state
-      btn.textContent = 'Message sent ✓';
-      btn.style.background = 'var(--volt)';
-      btn.style.color = '#fff';
-      btn.disabled = true;
-
-      // In production: replace with actual fetch/POST to backend or Formspree
-      console.log('Form submission:', { name, company, email, moment, msg });
+    document.getElementById('cookie-accept')?.addEventListener('click', () => {
+      localStorage.setItem('mbolt-cookies', 'accepted');
+      banner.classList.remove('visible');
+    });
+    document.getElementById('cookie-decline')?.addEventListener('click', () => {
+      localStorage.setItem('mbolt-cookies', 'declined');
+      banner.classList.remove('visible');
     });
   }
 
-  /* ── SMOOTH SCROLL FOR NAV LINKS ──────────────────────────── */
-  function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', e => {
-        const target = document.querySelector(a.getAttribute('href'));
-        if (target) {
-          e.preventDefault();
-          const offset = 70;
-          const top = target.getBoundingClientRect().top + window.scrollY - offset;
-          window.scrollTo({ top, behavior: 'smooth' });
-        }
+  /* ── LEGAL PAGE TABS ───────────────────────────────────── */
+  function initLegalTabs() {
+    const tabs = document.querySelectorAll('.legal-tab');
+    if (!tabs.length) return;
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.legal-section').forEach(s => s.classList.remove('active'));
+        tab.classList.add('active');
+        const target = document.getElementById(tab.dataset.target);
+        if (target) target.classList.add('active');
       });
     });
   }
 
-  /* ── INIT ─────────────────────────────────────────────────── */
-  document.addEventListener('DOMContentLoaded', () => {
-    initCursor();
+  /* ── INIT ──────────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', async () => {
+    initTheme();
+    initCookies();
     initNav();
-    initSlideshow();
+    await loadContent();
+    initLenis();
+    initCursor();
+    initHero();
     initReveal();
+    initCounters();
+    initWorkScroll();
+    initModals();
+    initFloatingCta();
+    initAnchors();
+    initForms();
     initA11y();
-    initSmoothScroll();
-    loadContent().then(() => {
-      // After content built, init card interactions
-      initServiceCards();
-      initWorkCards();
-      initCounters();
+    initLegalTabs();
+
+    // Refresh ScrollTrigger after fonts load
+    document.fonts?.ready.then(() => {
+      if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+    });
+
+    // Resize
+    window.addEventListener('resize', () => {
+      if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
     });
   });
 
 })();
-
