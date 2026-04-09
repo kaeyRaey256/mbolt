@@ -33,17 +33,21 @@
   function initLenis() {
     if (typeof Lenis === 'undefined') return;
     lenis = new Lenis({
-      duration: 1.4,
-      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 0.8,
+      easing: t => t === 1 ? 1 : 1 - Math.pow(2, -10 * t),
       smoothWheel: true,
+      wheelMultiplier: 1.2,
+      touchMultiplier: 1.5,
       smoothTouch: false,
     });
 
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       lenis.on('scroll', ScrollTrigger.update);
+      // GSAP ticker gives time in seconds; Lenis.raf expects milliseconds
       gsap.ticker.add(time => lenis.raf(time * 1000));
       gsap.ticker.lagSmoothing(0);
     } else {
+      // Fallback: rAF gives ms directly
       function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
       requestAnimationFrame(raf);
     }
@@ -56,12 +60,23 @@
     const ring = document.getElementById('cursor-ring');
     if (!dot || !ring) return;
 
-    let mx = 0, my = 0, rx = 0, ry = 0;
+    // Show cursor elements once mouse moves (avoids flash at 0,0 on load)
+    dot.style.opacity  = '0';
+    ring.style.opacity = '0';
+
+    let mx = 0, my = 0, rx = 0, ry = 0, moved = false;
 
     document.addEventListener('mousemove', e => {
       mx = e.clientX; my = e.clientY;
       dot.style.left = mx + 'px';
       dot.style.top  = my + 'px';
+      if (!moved) {
+        moved = true;
+        dot.style.opacity  = '1';
+        ring.style.opacity = '1';
+        // Hide native cursor now we know mouse is active
+        document.body.style.cursor = 'none';
+      }
     });
 
     (function rafRing() {
@@ -96,6 +111,7 @@
       });
     }
 
+    // Buttons: ring expands and turns red, dot stays visible (not hidden)
     addCursorContext('.btn, .nav-cta, .drawer-cta', 'on-btn', 'on-btn expanded');
     addCursorContext('.service-card, .work-card, .team-card, .culture-card', '', 'expanded');
     addCursorContext('.client-pill', 'on-volt', 'expanded');
@@ -118,13 +134,25 @@
     }
   }
 
-  /* ── DARK MODE ─────────────────────────────────────────── */
-  function initTheme() {
-    const saved = localStorage.getItem('mbolt-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefersDark ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
+  /* ── TEAM PHOTO INITIALS FALLBACK ──────────────────────── */
+  function initTeamPhotos() {
+    document.querySelectorAll('.team-photo').forEach(container => {
+      const img = container.querySelector('img');
+      if (!img) return;
+      const applyLoaded = () => {
+        if (img.naturalWidth > 0) container.classList.add('has-photo');
+      };
+      if (img.complete) { applyLoaded(); }
+      else {
+        img.addEventListener('load',  applyLoaded);
+        img.addEventListener('error', () => container.classList.remove('has-photo'));
+      }
+    });
+  }
 
+
+  function initTheme() {
+    // Already applied in <script> in <head> — just wire up the toggle buttons
     document.querySelectorAll('.theme-toggle').forEach(btn => {
       btn.addEventListener('click', () => {
         const current = document.documentElement.getAttribute('data-theme');
@@ -496,6 +524,7 @@
     initTheme();
     initCookies();
     initNav();
+    initTeamPhotos();
     await loadContent();
     initLenis();
     initCursor();
