@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Market Bolt — Uganda's leading experiential marketing agency. BTL, field marketing, communications, and sales activation. Making your brand impossible to ignore.">
+  <meta property="og:title" content="MBolt — Making Your Brand Impossible to Ignore">
+  <meta property="og:description" content="Uganda's leading experiential marketing agency. 15+ years. Countrywide reach.">
+  <meta property="og:image" content="assets/images/og-image.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>MBolt — Making Your Brand Impossible to Ignore</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon-bolt.svg">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
+<!-- FLOATING CTA — desktop -->
+<div class="floating-cta" id="floating-cta" aria-hidden="true">
+  <a href="#contact" tabindex="-1">
+    Brief us
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+  </a>
+</div>
+
+<!-- SCROLL TO TOP — mobile -->
+<button class="scroll-top-btn" id="scroll-top-btn" aria-label="Scroll to top">
+  <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<!-- ACCESSIBILITY WIDGET -->
+<div class="a11y-wrap" role="complementary" aria-label="Accessibility options">
+  <button class="a11y-toggle" id="a11y-toggle" aria-label="Accessibility settings" aria-expanded="false" aria-controls="a11y-panel">⊕</button>
+  <div class="a11y-panel" id="a11y-panel" role="dialog" aria-label="Accessibility settings">
+    <div class="a11y-title">Accessibility</div>
+    <label class="a11y-opt"><input type="checkbox" id="a11y-hc"> High contrast</label>
+    <label class="a11y-opt"><input type="checkbox" id="a11y-motion"> Reduce motion</label>
+    <span class="a11y-slider-lbl" id="fs-lbl">Font size</span>
+    <input type="range" id="a11y-font" min="14" max="21" value="16" step="1" aria-labelledby="fs-lbl">
+  </div>
+</div>
+
+<!-- SERVICE MODAL -->
+<div class="modal-overlay" id="modal-overlay" role="presentation" aria-hidden="true"></div>
+<div class="modal" id="service-modal" role="dialog" aria-modal="true" aria-labelledby="modal-name">
+  <div class="modal-accent"></div>
+  <div class="modal-body">
+    <div class="modal-header">
+      <div>
+        <div class="eyebrow" id="modal-eyebrow">Service Detail</div>
+        <h2 class="h-card" id="modal-name" style="font-size:1.4rem; letter-spacing:-.02em;"></h2>
+      </div>
+      <button class="modal-close" id="modal-close" aria-label="Close service detail">
+        <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <p class="body-md" id="modal-desc"></p>
+    <div class="modal-tags" id="modal-tags"></div>
+    <div class="modal-cta">
+      <a href="#contact" class="btn btn-primary" id="modal-cta-btn">
+        <span>Brief us on this</span>
+        <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      </a>
+    </div>
+    <div class="modal-num" id="modal-num" aria-hidden="true">01</div>
+  </div>
+</div>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookie-banner" role="region" aria-label="Cookie notice">
+  <p class="cookie-text">We use cookies to improve your experience on our site. See our <a href="legal.html">Privacy Policy</a> for details.</p>
+  <div class="cookie-btns">
+    <button class="cookie-accept" id="cookie-accept">Accept</button>
+    <button class="cookie-decline" id="cookie-decline">Decline</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════════════════════ -->
+<header>
+  <nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+    <a href="index.html" class="nav-logo" aria-label="MBolt — home">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z" fill="currentColor"/>
+      </svg>
+      M<span class="v">Bolt</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="careers.html">Careers</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <a href="#contact" class="nav-cta">
+        Brief us
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      </a>
+      <button class="nav-burger" id="nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Drawer -->
+  <div class="nav-drawer" id="nav-drawer" aria-label="Mobile navigation">
+    <svg class="drawer-watermark" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z" fill="currentColor"/></svg>
+    <nav>
+      <a href="#work">Work</a>
+      <a href="#services">Services</a>
+      <a href="#about">About</a>
+      <a href="#team">Team</a>
+      <a href="careers.html">Careers</a>
+    </nav>
+    <div class="drawer-bottom">
+      <a href="#contact" class="drawer-cta">Brief us</a>
+      <button class="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ════════════════════════════════════════════════════════
+     01 — HERO
+════════════════════════════════════════════════════════ -->
+<!--
+  IMAGE REQUIRED: assets/images/hero.jpg
+  Full-bleed hero. Energy, people, brand activation moment.
+  Minimum 1920×1080px. Landscape. This is the site's first impression.
+-->
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-bg" aria-hidden="true" role="img" aria-label="Brand activation photography"></div>
+  <div class="hero-overlay" aria-hidden="true"></div>
+  <div class="hero-mesh"   aria-hidden="true"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow" aria-hidden="true">
+      <span class="dot"></span>
+      Experiential Marketing
+      <span class="dot"></span>
+      BTL
+      <span class="dot"></span>
+      Communications
+    </div>
+
+    <h1 class="hero-headline" id="hero-heading">
+      <span class="line size-lg">Making your brand</span>
+      <span class="line size-xl">impossible</span>
+      <span class="line size-md">to ignore.</span>
+    </h1>
+
+    <p class="hero-sub" aria-label="That's what we do.">That's what we do.</p>
+
+    <div class="hero-signoff" aria-label="MBolt">
+      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z" fill="currentColor"/></svg>
+      <span class="dash" aria-hidden="true">—</span>
+      MBolt
+    </div>
+
+    <div class="hero-ctas" role="group" aria-label="Call to action">
+      <a href="#contact" class="btn btn-primary">
+        <span>Brief us</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      </a>
+      <a href="#work" class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,.25);">
+        <span>See our work</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-strike" aria-hidden="true"></div>
+
+  <div class="hero-scroll" aria-hidden="true">
+    <div class="scroll-track"><div class="scroll-thumb"></div></div>
+    <span class="scroll-label">Scroll</span>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     02 — PROOF STRIP
+════════════════════════════════════════════════════════ -->
+<section class="proof" aria-label="Key credentials">
+  <div class="proof-item reveal">
+    <div class="proof-number" data-target="15"><span class="proof-count">15</span><sup>+</sup></div>
+    <div class="proof-label">Years in the field</div>
+  </div>
+  <div class="proof-item reveal reveal-d1">
+    <div class="proof-number" data-target="10"><span class="proof-count">10</span><sup>+</sup></div>
+    <div class="proof-label">Major brands activated</div>
+  </div>
+  <div class="proof-item reveal reveal-d2">
+    <div class="proof-number" data-target="4"><span class="proof-count">4</span><sup></sup></div>
+    <div class="proof-label">Service pillars</div>
+  </div>
+  <div class="proof-item reveal reveal-d3">
+    <div class="proof-number" data-target="1"><span class="proof-count">1</span><sup></sup></div>
+    <div class="proof-label">Agency you need</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     03 — SERVICES
+════════════════════════════════════════════════════════ -->
+<section class="section" id="services" aria-labelledby="services-heading">
+  <div class="reveal"><div class="eyebrow">What We Do</div></div>
+  <h2 class="h-section reveal reveal-d1" id="services-heading">
+    We don't just run campaigns.<br><em>We create moments.</em>
+  </h2>
+  <p class="body-lg reveal reveal-d2" style="margin-top:1rem; max-width:560px;">
+    Four pillars. One mission. Making sure people don't just see your brand — they feel it, remember it, and talk about it.
+  </p>
+
+  <div class="services-grid" role="list">
+
+    <div class="service-card reveal" role="listitem" data-service-id="btl" tabindex="0" aria-label="BTL / Experiential Marketing — click to learn more">
+      <div class="service-num" aria-hidden="true">01</div>
+      <div class="service-icon" aria-hidden="true">
+        <img src="assets/icons/icon-btl.svg" alt="" width="20" height="20">
+      </div>
+      <h3 class="h-card">BTL / Experiential Marketing</h3>
+      <p class="body-md" style="margin-top:.6rem;">We stage real experiences that hit people in the gut. Promotions, field activations, brand experiences — fifteen years of bringing brands to life in the real world.</p>
+      <div class="service-tags" aria-label="Includes">
+        <span class="stag">Promotions</span>
+        <span class="stag">Field Marketing</span>
+        <span class="stag">Brand Experiences</span>
+        <span class="stag">Road Shows</span>
+      </div>
+      <div class="service-cta-hint" aria-hidden="true">
+        See full detail
+        <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-d1" role="listitem" data-service-id="comms" tabindex="0" aria-label="Communications — click to learn more">
+      <div class="service-num" aria-hidden="true">02</div>
+      <div class="service-icon" aria-hidden="true">
+        <img src="assets/icons/icon-comms.svg" alt="" width="20" height="20">
+      </div>
+      <h3 class="h-card">Communications</h3>
+      <p class="body-md" style="margin-top:.6rem;">We make messages land. One-on-one or mass — education, awareness, sensitisation — we understand this audience and how to reach them in ways that stick.</p>
+      <div class="service-tags" aria-label="Includes">
+        <span class="stag">One-on-One</span>
+        <span class="stag">Awareness Campaigns</span>
+        <span class="stag">Education</span>
+        <span class="stag">Sensitisation</span>
+      </div>
+      <div class="service-cta-hint" aria-hidden="true">
+        See full detail
+        <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-d2" role="listitem" data-service-id="sales" tabindex="0" aria-label="Sales and Distribution — click to learn more">
+      <div class="service-num" aria-hidden="true">03</div>
+      <div class="service-icon" aria-hidden="true">
+        <img src="assets/icons/icon-sales.svg" alt="" width="20" height="20">
+      </div>
+      <h3 class="h-card">Sales &amp; Distribution</h3>
+      <p class="body-md" style="margin-top:.6rem;">Door to door, done right. Products moved. Targets hit. Trade route mapping, placement, merchandising — we have the field teams and the infrastructure.</p>
+      <div class="service-tags" aria-label="Includes">
+        <span class="stag">Trade Route Mapping</span>
+        <span class="stag">Merchandising</span>
+        <span class="stag">Placement</span>
+      </div>
+      <div class="service-cta-hint" aria-hidden="true">
+        See full detail
+        <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <div class="service-card reveal reveal-d3" role="listitem" data-service-id="supplies" tabindex="0" aria-label="General Supplies — click to learn more">
+      <div class="service-num" aria-hidden="true">04</div>
+      <div class="service-icon" aria-hidden="true">
+        <img src="assets/icons/icon-supplies.svg" alt="" width="20" height="20">
+      </div>
+      <h3 class="h-card">General Supplies</h3>
+      <p class="body-md" style="margin-top:.6rem;">Fifteen years of operating in Uganda means fifteen years of building a supply network. We source what you need, when you need it — and we deliver.</p>
+      <div class="service-tags" aria-label="Includes">
+        <span class="stag">Sourcing</span>
+        <span class="stag">Delivery</span>
+        <span class="stag">Supply Chain</span>
+      </div>
+      <div class="service-cta-hint" aria-hidden="true">
+        See full detail
+        <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Section CTA -->
+  <div style="margin-top:2.5rem; display:flex; align-items:center; gap:1rem;" class="reveal">
+    <a href="#contact" class="btn btn-primary">
+      <span>Activate your brand</span>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="divider" aria-hidden="true">
+  <div class="divider-line"></div>
+  <div class="divider-bolt"><svg viewBox="0 0 24 24"><path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z"/></svg></div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     04 — CLIENTS
+════════════════════════════════════════════════════════ -->
+<section class="section section-alt" id="about" aria-labelledby="clients-heading">
+  <div class="section-header">
+    <div>
+      <div class="eyebrow reveal">Trusted by the names that matter</div>
+      <h2 class="h-section reveal reveal-d1" id="clients-heading">
+        Fifteen years of<br><em>trusted partnerships.</em>
+      </h2>
+    </div>
+    <p class="body-md reveal reveal-d2" style="max-width:280px; text-align:right;">
+      From multinationals to homegrown champions — these are the brands that keep coming back.
+    </p>
+  </div>
+
+  <div class="ticker-wrap" aria-label="Our clients">
+    <!--
+      CLIENT LOGOS: assets/images/client-1.png through client-10.png
+      PNG with transparent background. Height 48px minimum.
+    -->
+    <div class="ticker" id="clients-ticker">
+      <div class="client-pill"><img src="assets/images/client-1.png" alt="Nile Breweries"><span>Nile Breweries</span></div>
+      <div class="client-pill"><img src="assets/images/client-2.png" alt="TotalEnergies"><span>TotalEnergies</span></div>
+      <div class="client-pill"><img src="assets/images/client-3.png" alt="Zain Uganda"><span>Zain Uganda</span></div>
+      <div class="client-pill"><img src="assets/images/client-4.png" alt="Smile Telecom"><span>Smile Telecom</span></div>
+      <div class="client-pill"><img src="assets/images/client-5.png" alt="Orange Uganda"><span>Orange Uganda</span></div>
+      <div class="client-pill"><img src="assets/images/client-6.png" alt="Hima Cement"><span>Hima Cement</span></div>
+      <div class="client-pill"><img src="assets/images/client-7.png" alt="Rubis Energy"><span>Rubis Energy</span></div>
+      <div class="client-pill"><img src="assets/images/client-8.png" alt="Zuku TV"><span>Zuku TV</span></div>
+      <div class="client-pill"><img src="assets/images/client-9.png" alt="Gorillo's Snacks"><span>Gorillo's Snacks</span></div>
+      <div class="client-pill"><img src="assets/images/client-10.png" alt="Seba's Golden Goodness"><span>Seba's Golden Goodness</span></div>
+      <!-- Duplicate for seamless loop -->
+      <div class="client-pill" aria-hidden="true"><img src="assets/images/client-1.png" alt=""><span>Nile Breweries</span></div>
+      <div class="client-pill" aria-hidden="true"><img src="assets/images/client-2.png" alt=""><span>TotalEnergies</span></div>
+      <div class="client-pill" aria-hidden="true"><img src="assets/images/client-3.png" alt=""><span>Zain Uganda</span></div>
+      <div class="client-pill" aria-hidden="true"><img src="assets/images/client-4.png" alt=""><span>Smile Telecom</span></div>
+      <div class="client-pill" aria-hidden="true"><img src="assets/images/client-5.png" alt=""><span>Orange Uganda</span></div>
+      <div class="client-pill" aria-hidden="true"><img src="assets/images/client-6.png" alt=""><span>Hima Cement</span></div>
+      <div class="client-pill" aria-hidden="true"><img src="assets/images/client-7.png" alt=""><span>Rubis Energy</span></div>
+      <div class="client-pill" aria-hidden="true"><img src="assets/images/client-8.png" alt=""><span>Zuku TV</span></div>
+      <div class="client-pill" aria-hidden="true"><img src="assets/images/client-9.png" alt=""><span>Gorillo's Snacks</span></div>
+      <div class="client-pill" aria-hidden="true"><img src="assets/images/client-10.png" alt=""><span>Seba's Golden Goodness</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="divider" aria-hidden="true">
+  <div class="divider-line"></div>
+  <div class="divider-bolt"><svg viewBox="0 0 24 24"><path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z"/></svg></div>
+  <div class="divider-line"></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     05 — WORK (HORIZONTAL SCROLL)
+════════════════════════════════════════════════════════ -->
+<section class="work-section section" id="work" aria-labelledby="work-heading">
+  <div class="work-pin-wrap">
+    <div class="work-sticky">
+      <div class="work-progress" aria-hidden="true"></div>
+      <div class="work-header-inner">
+        <div>
+          <div class="eyebrow reveal">What We've Done</div>
+          <h2 class="h-section reveal reveal-d1" id="work-heading">Some of what we've<br><em>been part of.</em></h2>
+        </div>
+        <a href="#contact" class="btn btn-outline reveal reveal-d2" style="align-self:flex-end;">
+          <span>Start your project</span>
+        </a>
+      </div>
+      <!--
+        WORK IMAGES: assets/images/work-1.jpg through work-6.jpg
+        Landscape 800×600px minimum. Your actual activation photos.
+      -->
+      <div class="work-track" role="list" aria-label="Campaign work">
+        <div class="work-card reveal" role="listitem" tabindex="0" aria-label="Orange Telecom: Retail Outreach Campaign">
+          <img src="assets/images/work-1.jpg" alt="Orange Telecom retail outreach activation" loading="lazy">
+          <div class="work-card-over" aria-hidden="true"><div class="work-client">Orange Telecom</div><div class="work-name">Retail Outreach Campaign</div></div>
+          <div class="work-cat" aria-hidden="true">Field Marketing</div>
+        </div>
+        <div class="work-card reveal reveal-d1" role="listitem" tabindex="0" aria-label="Gorillo's Snacks: Branded Vans and Cannons">
+          <img src="assets/images/work-2.jpg" alt="Gorillo's Snacks branded activation vans" loading="lazy">
+          <div class="work-card-over" aria-hidden="true"><div class="work-client">Gorillo's Snacks</div><div class="work-name">Branded Vans &amp; Cannons</div></div>
+          <div class="work-cat" aria-hidden="true">Promotions</div>
+        </div>
+        <div class="work-card reveal reveal-d2" role="listitem" tabindex="0" aria-label="TotalEnergies: Brand Experience Event">
+          <img src="assets/images/work-3.jpg" alt="TotalEnergies brand experience event" loading="lazy">
+          <div class="work-card-over" aria-hidden="true"><div class="work-client">TotalEnergies</div><div class="work-name">Brand Experience Event</div></div>
+          <div class="work-cat" aria-hidden="true">Brand Experience</div>
+        </div>
+        <div class="work-card reveal reveal-d1" role="listitem" tabindex="0" aria-label="Pay Campaign field activation">
+          <img src="assets/images/work-4.jpg" alt="Pay campaign field activation" loading="lazy">
+          <div class="work-card-over" aria-hidden="true"><div class="work-client">Field Activation</div><div class="work-name">Pay Campaign</div></div>
+          <div class="work-cat" aria-hidden="true">Sales &amp; Distribution</div>
+        </div>
+        <div class="work-card reveal reveal-d2" role="listitem" tabindex="0" aria-label="Orange Telecom: Internet Packages Campaign">
+          <img src="assets/images/work-5.jpg" alt="Orange internet packages awareness campaign" loading="lazy">
+          <div class="work-card-over" aria-hidden="true"><div class="work-client">Orange Telecom</div><div class="work-name">Internet Packages Campaign</div></div>
+          <div class="work-cat" aria-hidden="true">Communications</div>
+        </div>
+        <div class="work-card reveal reveal-d3" role="listitem" tabindex="0" aria-label="Smile Telecom: Rural Outreach Campaign">
+          <img src="assets/images/work-6.jpg" alt="Smile Telecom rural outreach campaign" loading="lazy">
+          <div class="work-card-over" aria-hidden="true"><div class="work-client">Smile Telecom</div><div class="work-name">Rural Outreach Campaign</div></div>
+          <div class="work-cat" aria-hidden="true">Field Marketing</div>
+        </div>
+      </div>
+
+      <!-- Mobile fallback grid -->
+      <div class="work-grid-mobile" role="list" aria-label="Campaign work">
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-1.jpg" alt="Orange Telecom retail outreach" loading="lazy"><div class="work-card-over"><div class="work-client">Orange Telecom</div><div class="work-name">Retail Outreach</div></div><div class="work-cat">Field Marketing</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-2.jpg" alt="Gorillo's branded vans" loading="lazy"><div class="work-card-over"><div class="work-client">Gorillo's Snacks</div><div class="work-name">Branded Vans</div></div><div class="work-cat">Promotions</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-3.jpg" alt="TotalEnergies experience" loading="lazy"><div class="work-card-over"><div class="work-client">TotalEnergies</div><div class="work-name">Brand Experience</div></div><div class="work-cat">Brand Experience</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-4.jpg" alt="Pay campaign" loading="lazy"><div class="work-card-over"><div class="work-client">Field Activation</div><div class="work-name">Pay Campaign</div></div><div class="work-cat">Sales</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-5.jpg" alt="Orange internet" loading="lazy"><div class="work-card-over"><div class="work-client">Orange Telecom</div><div class="work-name">Internet Campaign</div></div><div class="work-cat">Communications</div></div>
+        <div class="work-card" role="listitem" tabindex="0"><img src="assets/images/work-6.jpg" alt="Smile rural" loading="lazy"><div class="work-card-over"><div class="work-client">Smile Telecom</div><div class="work-name">Rural Outreach</div></div><div class="work-cat">Field Marketing</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section CTA -->
+  <div style="text-align:center; padding: 2rem 0 0;" class="reveal">
+    <a href="#contact" class="btn btn-primary">
+      <span>Want results like these? Let's talk</span>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     06 — ABOUT
+════════════════════════════════════════════════════════ -->
+<section class="section section-alt" aria-labelledby="about-heading">
+  <div class="reveal"><div class="eyebrow">Established 2008 · Kampala, Uganda</div></div>
+  <h2 class="h-section reveal reveal-d1" id="about-heading">
+    Built here.<br><em>Proven everywhere.</em>
+  </h2>
+
+  <div class="about-grid" style="margin-top: clamp(2rem,4vw,3.5rem);">
+    <div>
+      <p class="body-lg reveal">
+        Market Bolt was founded by a group of marketing professionals who believed that Ugandan brands deserved world-class activation — not a second-tier version of it. We started with conviction, a handful of clients, and fifteen years of industry experience between us.
+      </p>
+      <p class="body-lg reveal reveal-d1" style="margin-top:1.2rem;">
+        Today we are countrywide operators. We have put brands in people's hands, in their conversations, and in their memories. From field teams in Gulu to brand experiences in Kampala, from door-to-door distribution routes to mass communication campaigns that reached millions — we have been on the ground, in the market, doing the work.
+      </p>
+      <p class="body-lg reveal reveal-d2" style="margin-top:1.2rem;">
+        The brands that took a chance on us in 2008 are still calling. That is not luck. That is delivery.
+      </p>
+
+      <div class="values-grid" style="margin-top:2rem;">
+        <div class="value-card reveal reveal-d1"><div class="value-label">Execution</div><div class="value-desc">We show up. We deliver. Every time, everywhere.</div></div>
+        <div class="value-card reveal reveal-d2"><div class="value-label">Honesty</div><div class="value-desc">We tell clients what they need to hear, not what they want to hear.</div></div>
+        <div class="value-card reveal reveal-d3"><div class="value-label">Roots</div><div class="value-desc">Proudly Ugandan. Everything we do is grounded in a deep understanding of this market.</div></div>
+        <div class="value-card reveal reveal-d4"><div class="value-label">Ambition</div><div class="value-desc">We are not satisfied with good. We are building the leading experiential agency in East Africa.</div></div>
+      </div>
+    </div>
+
+    <div style="position:relative;">
+      <div class="about-number reveal" aria-hidden="true">15</div>
+      <div class="about-number-label reveal" aria-hidden="true">years of making brands impossible to ignore</div>
+      <div style="margin-top:2rem;" class="reveal reveal-d2">
+        <a href="careers.html" class="btn btn-outline">
+          <span>Join our team</span>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     07 — TEAM
+════════════════════════════════════════════════════════ -->
+<section class="section" id="team" aria-labelledby="team-heading">
+  <div class="section-header">
+    <div>
+      <div class="eyebrow reveal">The People</div>
+      <h2 class="h-section reveal reveal-d1" id="team-heading">
+        The humans behind<br><em>every activation.</em>
+      </h2>
+    </div>
+    <p class="body-md reveal reveal-d2" style="max-width:280px; text-align:right;">
+      When you work with MBolt, you deal with these people directly. No ticketing system. No account manager buffer.
+    </p>
+  </div>
+
+  <div class="team-grid" role="list">
+    <!--
+      TEAM PHOTOS: assets/images/team-1.jpg through team-6.jpg
+      Square crop, 500×500px minimum.
+      If photos not available, initials fallback shows automatically.
+    -->
+    <div class="team-card reveal" role="listitem">
+      <div class="team-photo"><img src="assets/images/team-1.jpg" alt="Jude S. Tayebwa, Managing Director" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Brings brands to life"</div></div><div class="team-initials" aria-hidden="true">JST</div></div>
+      <div class="team-info"><div class="team-role">Managing Director</div><h3 class="h-card">Jude S. Tayebwa</h3><p class="team-bio">Two decades in the industry. Worked with the largest agencies on the continent. Knows every angle of what it takes to bring a brand to life in the field.</p></div>
+    </div>
+    <div class="team-card reveal reveal-d1" role="listitem">
+      <div class="team-photo"><img src="assets/images/team-2.jpg" alt="Patrick Angulo, Director" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"We will get it done"</div></div><div class="team-initials" aria-hidden="true">PA</div></div>
+      <div class="team-info"><div class="team-role">Director, Head of Operations</div><h3 class="h-card">Patrick Angulo</h3><p class="team-bio">Founding partner. Business acumen sharpened in India. Fifteen years across hospitality, microfinance and cable television — he makes things happen.</p></div>
+    </div>
+    <div class="team-card reveal reveal-d2" role="listitem">
+      <div class="team-photo"><img src="assets/images/team-3.jpg" alt="Abbey Senoga Ntege, Finance Manager" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Value for money"</div></div><div class="team-initials" aria-hidden="true">ASN</div></div>
+      <div class="team-info"><div class="team-role">Finance Manager</div><h3 class="h-card">Abbey Senoga Ntege</h3><p class="team-bio">Certified accountant with 15 years navigating Ugandan business. Keeps the ship steady and makes sure every shilling is working hard.</p></div>
+    </div>
+    <div class="team-card reveal reveal-d1" role="listitem">
+      <div class="team-photo"><img src="assets/images/team-4.jpg" alt="Gerald Mukasa, Admin and Projects Manager" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"It has to be done"</div></div><div class="team-initials" aria-hidden="true">GM</div></div>
+      <div class="team-info"><div class="team-role">Admin &amp; Projects Manager</div><h3 class="h-card">Gerald Mukasa</h3><p class="team-bio">13 years across telecoms, fintech and health. Day to day management of the agency and every project we take on. Nothing falls through the cracks.</p></div>
+    </div>
+    <div class="team-card reveal reveal-d2" role="listitem">
+      <div class="team-photo"><img src="assets/images/team-5.jpg" alt="David Lubwama, Projects Coordinator" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Research, Create, Execute, Evaluate"</div></div><div class="team-initials" aria-hidden="true">DL</div></div>
+      <div class="team-info"><div class="team-role">Projects Coordinator</div><h3 class="h-card">David Lubwama</h3><p class="team-bio">The energy behind our field executions. He has worked with major brands in the service industry and drives every field layout we build.</p></div>
+    </div>
+    <div class="team-card reveal reveal-d3" role="listitem">
+      <div class="team-photo"><img src="assets/images/team-6.jpg" alt="Diana Kisakye, Logistics Executive" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Always a step ahead"</div></div><div class="team-initials" aria-hidden="true">DK</div></div>
+      <div class="team-info"><div class="team-role">Logistics Executive</div><h3 class="h-card">Diana Kisakye</h3><p class="team-bio">Entrepreneurial mindset, supply chain expertise. Brings innovation and precision to the logistical heartbeat of the agency's daily operations.</p></div>
+    </div>
+  </div>
+
+  <!-- Section CTA -->
+  <div style="margin-top:2.5rem; text-align:center;" class="reveal">
+    <a href="careers.html" class="btn btn-outline">
+      <span>Work with these people</span>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     08 — TESTIMONIAL
+════════════════════════════════════════════════════════ -->
+<section class="testi-section" aria-labelledby="testi-heading">
+  <div class="reveal">
+    <h2 class="sr-only" id="testi-heading">What clients say about MBolt</h2>
+    <blockquote>
+      <p class="testi-quote">
+        Association with MBolt has been great. They dive into the problem and
+        <em>do not hesitate in giving suggestions.</em>
+        They come up with fresh ideas and have always surpassed expectations.
+      </p>
+      <footer class="testi-author">
+        <div class="testi-avatar" aria-hidden="true">VM</div>
+        <div>
+          <div class="testi-name">Val Muleba</div>
+          <div class="testi-title">Product Manager, GlK Tampeco</div>
+        </div>
+      </footer>
+    </blockquote>
+  </div>
+  <div class="testi-stats" aria-label="Impact by numbers">
+    <div class="tstat reveal reveal-d1">
+      <div class="tstat-num">15+</div>
+      <div class="tstat-label">Years of consistent delivery</div>
+    </div>
+    <div class="tstat reveal reveal-d2">
+      <div class="tstat-num">100%</div>
+      <div class="tstat-label">Countrywide operational reach</div>
+    </div>
+    <div class="tstat red reveal reveal-d3">
+      <div class="tstat-num">1</div>
+      <div class="tstat-label">Conversation is all it takes to start</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     09 — CONTACT
+════════════════════════════════════════════════════════ -->
+<section class="contact-section" id="contact" aria-labelledby="contact-heading">
+  <div class="reveal">
+    <div class="eyebrow">Start the Conversation</div>
+    <h2 class="h-section" id="contact-heading" style="max-width:100%;">
+      Got a brand moment<br>coming up? <em>Tell us.</em>
+    </h2>
+    <p class="contact-promise">
+      Not a quote form. Not a ticketing system. A real conversation with people who have been doing this for fifteen years. Tell us what you're working on and we'll tell you how we can make it unforgettable.
+    </p>
+    <div class="channels" aria-label="Contact channels">
+      <div class="channel">
+        <div class="channel-icon"><img src="assets/icons/icon-phone.svg" alt="" width="18" height="18"></div>
+        <div><div class="channel-label">Call us</div><div class="channel-val">+256 752 625 755</div></div>
+      </div>
+      <div class="channel">
+        <div class="channel-icon"><img src="assets/icons/icon-email.svg" alt="" width="18" height="18"></div>
+        <div><div class="channel-label">Write to us</div><div class="channel-val">hello@market-bolt.com</div></div>
+      </div>
+      <div class="channel">
+        <div class="channel-icon"><img src="assets/icons/icon-location.svg" alt="" width="18" height="18"></div>
+        <div><div class="channel-label">Find us</div><div class="channel-val">Plot 1167, Kyebando Central, Kampala</div></div>
+      </div>
+    </div>
+    <div class="socials" aria-label="Social media">
+      <a href="#" class="social-btn" aria-label="LinkedIn — where decisions happen" rel="noopener noreferrer">in</a>
+      <a href="#" class="social-btn" aria-label="Instagram — see our work" rel="noopener noreferrer">ig</a>
+      <a href="#" class="social-btn" aria-label="Facebook" rel="noopener noreferrer">fb</a>
+    </div>
+  </div>
+
+  <div class="contact-form-card reveal reveal-d2" role="form" aria-label="Brand activation enquiry">
+    <div class="form-accent"></div>
+    <div class="form-inner" data-form>
+      <div class="form-title">Brief us.</div>
+      <div class="form-row">
+        <div class="field"><label for="f-name">Your name</label><input type="text" id="f-name" name="name" placeholder="First name" autocomplete="given-name" required></div>
+        <div class="field"><label for="f-company">Company / Brand</label><input type="text" id="f-company" name="company" placeholder="Your organisation" autocomplete="organization"></div>
+      </div>
+      <div class="field"><label for="f-email">Email address</label><input type="email" id="f-email" name="email" placeholder="you@company.com" autocomplete="email" required></div>
+      <div class="field"><label for="f-phone">Phone number</label><input type="tel" id="f-phone" name="phone" placeholder="+256 ..." autocomplete="tel"></div>
+      <div class="field">
+        <label for="f-type">Type of activation</label>
+        <select id="f-type" name="type" required>
+          <option value="" disabled selected>What do you need?</option>
+          <option value="btl">BTL / Experiential Marketing</option>
+          <option value="comms">Communications Campaign</option>
+          <option value="sales">Sales &amp; Distribution</option>
+          <option value="supplies">General Supplies</option>
+          <option value="other">Something else entirely</option>
+        </select>
+      </div>
+      <div class="field"><label for="f-msg">Tell us more</label><textarea id="f-msg" name="message" rows="4" placeholder="What are you trying to achieve? When? Budget range? Any context helps..."></textarea></div>
+      <p class="form-note">No cold pitches. No newsletters. Just a real conversation about your brand.</p>
+      <button class="btn btn-primary" data-submit data-label="Brief us" style="width:100%; justify-content:center; padding:1rem;">
+        <span>Brief us</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ════════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════ -->
+<footer role="contentinfo">
+  <svg class="footer-bolt-bg" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z" fill="white"/></svg>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">M<span class="v">Bolt</span></div>
+      <p class="footer-tagline">Making your brand impossible to ignore. That's what we do.</p>
+      <div class="footer-socials" aria-label="Social media">
+        <a href="#" class="footer-social" aria-label="LinkedIn">in</a>
+        <a href="#" class="footer-social" aria-label="Instagram">ig</a>
+        <a href="#" class="footer-social" aria-label="Facebook">fb</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Navigate</div>
+      <ul class="footer-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#work">Our Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#team">Team</a></li>
+        <li><a href="careers.html">Careers</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">What We Do</div>
+      <ul class="footer-links">
+        <li><a href="#services">BTL Marketing</a></li>
+        <li><a href="#services">Communications</a></li>
+        <li><a href="#services">Sales &amp; Distribution</a></li>
+        <li><a href="#services">General Supplies</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Get In Touch</div>
+      <ul class="footer-links">
+        <li><a href="tel:+256752625755">+256 752 625 755</a></li>
+        <li><a href="mailto:hello@market-bolt.com">hello@market-bolt.com</a></li>
+        <li><span style="color:rgba(255,255,255,.25); font-size:.82rem;">Plot 1167, Kyebando, Kampala</span></li>
+        <li><a href="http://www.market-bolt.com" target="_blank" rel="noopener">www.market-bolt.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2025 Market Bolt Uganda Ltd. All rights reserved.</p>
+    <div class="footer-legal">
+      <a href="legal.html">Privacy Policy</a>
+      <a href="legal.html#terms">Terms of Use</a>
+      <a href="legal.html#cookies">Cookies</a>
+    </div>
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<!-- Lenis smooth scroll -->
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<!-- GSAP + ScrollTrigger (free since Webflow acquisition 2024) -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<!-- Main -->
+<script src="js/main.js" defer></script>
+</body>
+</html>
