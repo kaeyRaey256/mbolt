@@ -10,7 +10,7 @@
 
 /* ── RESET ────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+html { scroll-behavior: auto; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
 button { cursor: pointer; font-family: inherit; border: none; background: none; }
@@ -58,6 +58,7 @@ input, textarea, select { font-family: inherit; }
   --r-sm:   4px;
   --r-md:   10px;
   --r-lg:   18px;
+  --r-xl:   28px;
   --r-pill: 999px;
 
   /* Shadows */
@@ -102,13 +103,50 @@ body {
   background: var(--bg);
   color: var(--ink);
   overflow-x: hidden;
-  cursor: none;
   transition: background var(--t-slow) var(--ease), color var(--t-slow) var(--ease);
 }
 
-body.lenis-smooth { overflow: hidden; }
+/* Lenis needs html to scroll, not body */
+html.lenis { height: auto; }
+html.lenis body { overflow: visible; }
 
-/* Screen reader only */
+/* Pointer cursor hide — only on devices that have a fine pointer (mouse) */
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: none; }
+}
+
+/* ── DARK MODE BUTTON FIXES ───────────────────────────────── */
+[data-theme="dark"] .btn-outline {
+  color: var(--ink);
+  border-color: var(--border-mid);
+}
+[data-theme="dark"] .btn-outline:hover {
+  color: var(--red);
+  border-color: var(--red);
+}
+[data-theme="dark"] .btn-white {
+  background: #fff;
+  color: #111;
+}
+/* Make sure btn-primary stays bright in dark mode */
+[data-theme="dark"] .btn-primary {
+  background: var(--red);
+  color: #fff;
+}
+/* Outline buttons on dark hero/dark sections */
+.hero .btn-outline,
+.testi-section .btn-outline,
+.careers-hero .btn-outline {
+  color: rgba(255,255,255,.85);
+  border-color: rgba(255,255,255,.3);
+  background: transparent;
+}
+.hero .btn-outline:hover,
+.testi-section .btn-outline:hover {
+  color: #fff;
+  border-color: rgba(255,255,255,.7);
+  background: rgba(255,255,255,.08);
+}
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 
 /* Reduce motion */
@@ -148,9 +186,9 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 }
 .cursor-dot.on-light  { background: var(--ink); }
 .cursor-dot.on-volt   { background: var(--volt); }
-.cursor-dot.on-btn    { width: 0; height: 0; opacity: 0; }
+.cursor-dot.on-btn    { width: 6px; height: 6px; background: #fff; }
 .cursor-ring.expanded { width: 48px; height: 48px; border-color: rgba(106,184,37,.4); }
-.cursor-ring.on-btn   { border-color: var(--red); border-width: 2px; }
+.cursor-ring.on-btn   { width: 44px; height: 44px; border-color: var(--red); border-width: 2px; }
 .cursor-ripple {
   position: fixed;
   width: 8px; height: 8px;
@@ -260,6 +298,26 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 }
 .nav-logo svg { width: 20px; height: 20px; flex-shrink: 0; }
 .nav-logo .v { color: var(--volt); }
+/* SVG image logo in nav — sized by height, auto width */
+.nav-logo img {
+  height: 32px;
+  width: auto;
+  display: block;
+  flex-shrink: 0;
+  transition: filter var(--t-fast);
+}
+/* Colour logo on light bg — invert to white on dark */
+[data-theme="dark"] .nav-logo img.logo-auto-invert {
+  filter: brightness(0) invert(1);
+}
+/* On transparent (hero) nav — logo should also be white */
+.nav:not(.scrolled) .nav-logo img.logo-auto-invert {
+  filter: brightness(0) invert(1);
+}
+/* Once scrolled in light mode — restore natural colour */
+[data-theme="light"] .nav.scrolled .nav-logo img.logo-auto-invert {
+  filter: none;
+}
 
 .nav-links {
   display: flex;
@@ -595,7 +653,7 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 .hero-content {
   position: relative;
   z-index: 3;
-  padding: 0 var(--page-pad) clamp(3rem, 7vh, 5rem);
+  padding: clamp(7rem, 14vh, 10rem) var(--page-pad) clamp(3rem, 7vh, 5rem);
   width: 100%;
   max-width: 900px;
 }
@@ -1202,9 +1260,10 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 .team-photo img {
   width: 100%; height: 100%;
   object-fit: cover;
+  object-position: center 15%;
   transition: transform .5s var(--ease);
 }
-.team-card:hover .team-photo img { transform: scale(1.04); }
+.team-card:hover .team-photo img { transform: scale(1.04); transform-origin: center 15%; }
 .team-photo-overlay {
   position: absolute;
   inset: 0;
@@ -1233,8 +1292,14 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  opacity: .25;
+  opacity: .5;
+  /* Hidden when a real photo is loaded — JS adds .has-photo to .team-photo */
+  z-index: 0;
 }
+/* When image loads successfully, hide the initials */
+.team-photo.has-photo .team-initials { display: none; }
+/* The img sits above the initials */
+.team-photo img { position: relative; z-index: 1; }
 .team-info { padding: 1.4rem; }
 .team-role {
   font-size: .65rem;
@@ -1491,6 +1556,13 @@ footer::before {
   margin-bottom: .5rem;
 }
 .footer-brand-name .v { color: var(--volt); }
+/* White SVG logo in footer */
+.footer-logo-img {
+  height: 40px;
+  width: auto;
+  display: block;
+  margin-bottom: .8rem;
+}
 .footer-tagline { font-size: .82rem; color: rgba(255,255,255,.3); line-height: 1.65; max-width: 220px; margin-top: .5rem; }
 .footer-socials { display: flex; gap: .6rem; margin-top: 1.2rem; }
 .footer-social {
