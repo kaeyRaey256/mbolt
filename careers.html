@@ -7,6 +7,13 @@
   <title>Careers — MBolt</title>
   <link rel="icon" type="image/svg+xml" href="assets/icons/icon-bolt.svg">
   <link rel="stylesheet" href="css/style.css">
+  <script>
+    (function(){
+      var saved = localStorage.getItem('mbolt-theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+    })();
+  </script>
 </head>
 <body>
 
@@ -40,8 +47,7 @@
 <header>
   <nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
     <a href="index.html" class="nav-logo" aria-label="MBolt — home">
-      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z" fill="currentColor"/></svg>
-      M<span class="v">Bolt</span>
+      <img src="assets/icons/logo.svg" alt="MBolt" class="logo-auto-invert">
     </a>
     <ul class="nav-links" role="list">
       <li><a href="index.html#work">Work</a></li>
@@ -221,7 +227,7 @@
   <svg class="footer-bolt-bg" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z" fill="white"/></svg>
   <div class="footer-grid">
     <div>
-      <div class="footer-brand-name">M<span class="v">Bolt</span></div>
+      <img src="assets/icons/logo-white.svg" alt="MBolt" class="footer-logo-img">
       <p class="footer-tagline">Making your brand impossible to ignore. That's what we do.</p>
       <div class="footer-socials">
         <a href="#" class="footer-social" aria-label="LinkedIn">in</a>
