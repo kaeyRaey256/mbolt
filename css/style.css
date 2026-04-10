@@ -436,7 +436,8 @@ body { animation: pageIn .4s var(--ease-out) both; }
 
 .hero-content {
   position: relative; z-index: 4;
-  padding: 0 var(--page-pad) clamp(3.5rem, 7vh, 5rem);
+  /* Top padding ensures eyebrow never collides with fixed nav (80px) on any viewport */
+  padding: clamp(5.5rem, 11vh, 8rem) var(--page-pad) clamp(3.5rem, 7vh, 5rem);
   width: 100%; max-width: 920px;
 }
 
@@ -1025,24 +1026,38 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
   transition: transform .6s var(--ease-out);
 }
 .work-modal.open .work-modal-img { transform: scale(1); }
-/* Content slides up */
+/* Content slides up on open */
 .work-modal-body {
   padding: 2.2rem 2.5rem 2.5rem; position: relative;
-  transform: translateY(16px); opacity: 0;
-  transition: transform .5s var(--ease-out) .15s, opacity .5s var(--ease-out) .15s;
+  transition: transform .5s var(--ease-out) .12s, opacity .5s var(--ease-out) .12s;
 }
-.work-modal.open .work-modal-body { transform: translateY(0); opacity: 1; }
+.work-modal-body.entering {
+  transform: translateY(20px); opacity: 0;
+}
+.work-modal-body.entered {
+  transform: translateY(0); opacity: 1;
+}
 /* Mobile: bottom sheet */
 @media (max-width: 600px) {
   .work-modal {
-    top: auto; bottom: 0; left: 0; right: 0;
-    transform: translateY(40px) scale(0.99);
-    width: 100%; max-width: 100%;
-    border-radius: var(--r-xl) var(--r-xl) 0 0;
-    max-height: 92vh;
+    /* Bottom sheet: slides up from bottom */
+    position: fixed;
+    top: auto !important; bottom: 0 !important;
+    left: 0 !important; right: 0 !important;
+    /* Override desktop centering completely */
+    transform: translateY(100%) !important;
+    width: 100% !important; max-width: 100% !important;
+    border-radius: var(--r-xl) var(--r-xl) 0 0 !important;
+    max-height: 92vh !important;
+    /* Override desktop open transform */
   }
-  .work-modal.open { transform: translateY(0) scale(1); }
+  .work-modal.open {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+  }
   .work-modal-img { height: 220px; border-radius: var(--r-xl) var(--r-xl) 0 0; }
+  /* Overlay for bottom sheet — less blur */
+  .work-modal-overlay { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 }
 .work-modal-accent { height: 3px; background: var(--gradient-h); }
 .work-modal-cat {
