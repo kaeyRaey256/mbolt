@@ -238,17 +238,33 @@
   function initServiceEntrance() {
     const cards = document.querySelectorAll('.service-card');
     if (!cards.length) return;
-    new IntersectionObserver((ents, obs) => {
+
+    // If already in view on load (e.g. deep link), show immediately
+    const grid = cards[0].closest('.services-grid');
+    if (grid) {
+      const rect = grid.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        // Already visible — apply all with stagger delays baked in
+        cards.forEach((card, i) => {
+          setTimeout(() => card.classList.add('visible'), i * 100);
+        });
+        return;
+      }
+    }
+
+    // Otherwise observe the grid and stagger when it enters
+    const obs = new IntersectionObserver((ents, observer) => {
       ents.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        if (!e.isIntersecting) return;
+        const allCards = e.target.querySelectorAll('.service-card');
+        allCards.forEach((card, i) => {
+          setTimeout(() => card.classList.add('visible'), i * 100);
+        });
+        observer.disconnect();
       });
-    }, { threshold: 0.15 }).observe(cards[0].closest('.services-grid') || cards[0]);
-    // Observe each card individually for the stagger
-    cards.forEach(card => {
-      new IntersectionObserver((ents, obs) => {
-        ents.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-      }, { threshold: 0.1 }).observe(card);
-    });
+    }, { threshold: 0.1 });
+    if (grid) obs.observe(grid);
+    else cards.forEach(c => obs.observe(c));
   }
 
   /* ── FOOTER ENTRANCE ────────────────────────────────────── */
@@ -366,58 +382,31 @@
     });
   }
 
-  /* ── CLIENTS TICKER — velocity-aware scroll response ───── */
+  /* ── CLIENTS TICKER — hover gradual slow, touch friendly ── */
   function initTicker() {
     const ticker = document.querySelector('.ticker');
     if (!ticker) return;
 
-    // Base duration in seconds
-    const BASE_DUR = 36;
-    let currentDur = BASE_DUR;
-    let lastScrollY = window.scrollY;
-    let lastScrollTime = Date.now();
-    let rafId;
-    let targetDur = BASE_DUR;
-
-    function setDuration(dur) {
-      ticker.style.animationDuration = Math.max(4, Math.min(200, dur)) + 's';
-    }
-
-    function velocityLoop() {
-      const now  = Date.now();
-      const dy   = Math.abs(window.scrollY - lastScrollY);
-      const dt   = now - lastScrollTime;
-      const velo = dt > 0 ? dy / dt * 1000 : 0; // px/s
-
-      lastScrollY   = window.scrollY;
-      lastScrollTime = now;
-
-      // Map velocity to duration: fast scroll = shorter duration (faster marquee)
-      // 0 px/s → BASE_DUR, 2000 px/s → 6s
-      if (velo > 10) {
-        targetDur = BASE_DUR * Math.max(0.16, 1 - (velo / 2400));
-      } else {
-        targetDur = BASE_DUR;
-      }
-
-      // Ease currentDur toward targetDur (lerp)
-      currentDur += (targetDur - currentDur) * 0.06;
-      setDuration(currentDur);
-      rafId = requestAnimationFrame(velocityLoop);
-    }
-
-    velocityLoop();
-
-    // Hover: pause
+    // Hover: gradually slow then pause
+    let pauseTimer;
     ticker.addEventListener('mouseenter', () => {
-      ticker.classList.add('paused');
-      cancelAnimationFrame(rafId);
+      ticker.classList.remove('paused');
+      ticker.classList.add('slowing');
+      clearTimeout(pauseTimer);
+      // After CSS transition reaches slow speed, fully pause
+      pauseTimer = setTimeout(() => ticker.classList.add('paused'), 1200);
     });
     ticker.addEventListener('mouseleave', () => {
-      ticker.classList.remove('paused');
-      lastScrollTime = Date.now();
-      velocityLoop();
+      clearTimeout(pauseTimer);
+      ticker.classList.remove('paused', 'slowing');
     });
+
+    // Touch: tap to pause/resume (mobile clients section)
+    let touchPaused = false;
+    ticker.addEventListener('touchstart', () => {
+      touchPaused = !touchPaused;
+      ticker.classList.toggle('paused', touchPaused);
+    }, { passive: true });
   }
 
 
@@ -599,28 +588,40 @@
 
   /* ── FOOTER SERVICE LINKS → modals ─────────────────────── */
   function initFooterServiceLinks() {
+    // Use data-service-open attribute OR text-based fallback map
     const map = {
-      'BTL Marketing':          'btl',
-      'Communications':         'comms',
-      'Sales & Distribution':   'sales',
-      'General Supplies':       'supplies',
+      'BTL Marketing':        'btl',
+      'Communications':       'comms',
+      'Sales & Distribution': 'sales',
+      'General Supplies':     'supplies',
     };
     document.querySelectorAll('.footer-links a').forEach(a => {
-      const label = a.textContent.trim();
-      const svcId = map[label];
+      const svcId = a.dataset.serviceOpen || map[a.textContent.trim()];
       if (!svcId) return;
       a.addEventListener('click', e => {
         e.preventDefault();
-        // Find and click the corresponding service card to reuse existing logic
+        e.stopPropagation();
+        // Scroll to services section first if needed, then open modal
         const card = document.querySelector(`.service-card[data-service-id="${svcId}"]`);
-        if (card) {
+        if (!card) return;
+        const servicesSection = document.getElementById('services');
+        const cardRect = card.getBoundingClientRect();
+        const alreadyVisible = cardRect.top >= 0 && cardRect.top < window.innerHeight;
+        if (alreadyVisible) {
           card.click();
         } else {
-          // Fallback: scroll to services
-          const target = document.getElementById('services');
-          if (target) {
-            try { if (lenis) lenis.scrollTo(target, { offset: -70 }); }
-            catch(err) { window.scrollTo({ top: target.offsetTop - 70, behavior: 'smooth' }); }
+          // Scroll to services then open modal after scroll settles
+          try {
+            if (lenis) {
+              lenis.scrollTo(servicesSection || card, { offset: -100,
+                onComplete: () => setTimeout(() => card.click(), 200)
+              });
+            } else {
+              window.scrollTo({ top: (servicesSection || card).offsetTop - 100, behavior: 'smooth' });
+              setTimeout(() => card.click(), 800);
+            }
+          } catch(err) {
+            card.click();
           }
         }
       });
@@ -885,14 +886,28 @@
       showTesti(next);
     }
 
-    timer = setInterval(autoRotate, 6000);
+    function startTimer() { timer = setInterval(autoRotate, 6000); }
+    function stopTimer()  { clearInterval(timer); }
+
+    startTimer();
+
     // Pause on hover
-    section.addEventListener('mouseenter', () => clearInterval(timer));
-    section.addEventListener('mouseleave', () => { timer = setInterval(autoRotate, 6000); });
+    section.addEventListener('mouseenter', stopTimer);
+    section.addEventListener('mouseleave', startTimer);
+
+    // Pause when tab is hidden — prevents batched rapid-fire rotations
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopTimer(); else startTimer();
+    });
   }
 
   /* ── INIT ───────────────────────────────────────────────── */
+  // Page load fade — add class before DOMContentLoaded fires
+  document.body.classList.add('page-loading');
+
   document.addEventListener('DOMContentLoaded', async () => {
+    // Remove page-loading after fade completes so theme toggle doesn't retrigger it
+    setTimeout(() => document.body.classList.remove('page-loading'), 450);
     initTheme();
     initCookies();
     initNav();
