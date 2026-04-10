@@ -111,8 +111,8 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
 }
 
 
-/* ── PAGE LOAD ─────────────────────────────────────────────── */
-body { animation: pageIn .4s var(--ease-out) both; }
+/* ── PAGE LOAD — only on first paint, not on theme toggle ─────── */
+body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* ── CURSOR ───────────────────────────────────────────────── */
@@ -436,9 +436,18 @@ body { animation: pageIn .4s var(--ease-out) both; }
 
 .hero-content {
   position: relative; z-index: 4;
-  /* Top padding ensures eyebrow never collides with fixed nav (80px) on any viewport */
-  padding: clamp(5.5rem, 11vh, 8rem) var(--page-pad) clamp(3.5rem, 7vh, 5rem);
+  padding: 0 var(--page-pad) clamp(3.5rem, 7vh, 5rem);
   width: 100%; max-width: 920px;
+}
+/* Desktop/tablet: eyebrow floats at top of hero, independent of bottom content */
+@media (min-width: 601px) {
+  .hero-eyebrow {
+    position: absolute;
+    top: clamp(5.5rem, 11vh, 7.5rem);
+    left: var(--page-pad);
+    margin-bottom: 0;
+    z-index: 5;
+  }
 }
 
 .hero-eyebrow {
@@ -503,94 +512,35 @@ body { animation: pageIn .4s var(--ease-out) both; }
 }
 
 
-/* ── GREEN SWEEP: impossible → to ignore ──────────────────── */
-/* Base state: red via gradient that starts fully red */
-.hero-headline .size-xl,
-.hero-headline .size-md {
-  background: linear-gradient(90deg,
-    var(--red)  0%,
-    var(--red)  100%
-  );
-  background-size: 300% 100%;
-  background-position: 0% 50%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-/* Sweep animation: volt-green band travels left→right */
+
+
+/* ── OPTION B: "impossible" breathes — scale + letter-spacing ─ */
+/* impossible: red, breathes */
 .hero-headline .size-xl {
-  animation: sweepImpossible 5.5s ease-in-out 1.5s infinite;
+  color: var(--red);
+  display: inline-block;
+  animation: breatheImpossible 4s ease-in-out 2s infinite;
+  transform-origin: left center;
 }
+/* to ignore.: white, same breath slightly offset */
 .hero-headline .size-md {
-  animation: sweepIgnore 5.5s ease-in-out 1.5s infinite;
+  color: #fff;
+  display: inline-block;
+  animation: breatheIgnore 4s ease-in-out 2.4s infinite;
+  transform-origin: left center;
 }
-@keyframes sweepImpossible {
-  0%   { background: linear-gradient(90deg, var(--red) 0%, var(--red) 100%);
-         -webkit-background-clip: text; background-clip: text;
-         -webkit-text-fill-color: transparent; }
-  /* Sweep enters from left */
-  18%  { background: linear-gradient(90deg,
-           var(--red) 0%, var(--red) 15%,
-           var(--volt) 35%, var(--volt) 50%,
-           var(--red) 70%, var(--red) 100%);
-         background-size: 300% 100%; background-position: 100% 50%;
-         -webkit-background-clip: text; background-clip: text;
-         -webkit-text-fill-color: transparent; }
-  /* Sweep centre */
-  30%  { background: linear-gradient(90deg,
-           var(--red) 0%, var(--red) 30%,
-           var(--volt) 50%, var(--volt) 65%,
-           var(--red) 85%, var(--red) 100%);
-         background-size: 300% 100%; background-position: 50% 50%;
-         -webkit-background-clip: text; background-clip: text;
-         -webkit-text-fill-color: transparent; }
-  /* Sweep exits right — hand off to size-md */
-  42%  { background: linear-gradient(90deg,
-           var(--red) 0%, var(--red) 60%,
-           var(--volt) 80%, var(--volt) 95%,
-           var(--red) 100%);
-         background-size: 300% 100%; background-position: 0% 50%;
-         -webkit-background-clip: text; background-clip: text;
-         -webkit-text-fill-color: transparent; }
-  /* Hold red for remainder of loop */
-  50%, 100% { background: linear-gradient(90deg, var(--red) 0%, var(--red) 100%);
-              -webkit-background-clip: text; background-clip: text;
-              -webkit-text-fill-color: transparent; }
+@keyframes breatheImpossible {
+  0%, 100% { transform: scale(1);      letter-spacing: -.04em; }
+  50%       { transform: scale(1.012); letter-spacing: -.025em; }
 }
-@keyframes sweepIgnore {
-  /* Silent until impossible sweep exits */
-  0%, 36%  { background: linear-gradient(90deg, #fff 0%, #fff 100%);
-              -webkit-background-clip: text; background-clip: text;
-              -webkit-text-fill-color: transparent; }
-  /* Sweep enters — picks up from impossible */
-  42%  { background: linear-gradient(90deg,
-           var(--volt) 0%, var(--volt) 20%,
-           #fff 40%, #fff 100%);
-         -webkit-background-clip: text; background-clip: text;
-         -webkit-text-fill-color: transparent; }
-  /* Sweep travels right */
-  52%  { background: linear-gradient(90deg,
-           #fff 0%, #fff 20%,
-           var(--volt) 40%, var(--volt) 60%,
-           #fff 80%, #fff 100%);
-         -webkit-background-clip: text; background-clip: text;
-         -webkit-text-fill-color: transparent; }
-  /* Sweep exits */
-  62%  { background: linear-gradient(90deg,
-           #fff 0%, #fff 60%,
-           var(--volt) 80%, var(--volt) 95%,
-           #fff 100%);
-         -webkit-background-clip: text; background-clip: text;
-         -webkit-text-fill-color: transparent; }
-  /* Hold white */
-  70%, 100% { background: linear-gradient(90deg, #fff 0%, #fff 100%);
-              -webkit-background-clip: text; background-clip: text;
-              -webkit-text-fill-color: transparent; }
+@keyframes breatheIgnore {
+  0%, 100% { transform: scale(1);      letter-spacing: -.04em; }
+  50%       { transform: scale(1.009); letter-spacing: -.028em; }
 }
-/* Reduce motion: no sweep */
+/* Reduce motion: static */
 @media (prefers-reduced-motion: reduce) {
-  .hero-headline .size-xl { animation: none; background: none; -webkit-text-fill-color: var(--red); color: var(--red); }
-  .hero-headline .size-md { animation: none; background: none; -webkit-text-fill-color: #fff; color: #fff; }
+  .hero-headline .size-xl,
+  .hero-headline .size-md { animation: none; }
 }
 body.reduce-motion .hero-headline .size-xl,
 body.reduce-motion .hero-headline .size-md { animation: none !important; }
@@ -742,7 +692,7 @@ body.reduce-motion .hero-headline .size-md { animation: none !important; }
 .modal.open { opacity: 1; pointer-events: all; transform: translate(-50%, -50%) scale(1); }
 [data-theme="dark"] .modal { background: var(--bg-card); }
 .modal-accent { height: 3px; background: var(--gradient-h); border-radius: var(--r-xl) var(--r-xl) 0 0; }
-.modal-body { padding: 2.5rem; }
+.modal-body { padding: 2.5rem; overflow: hidden; position: relative; }
 .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
 .modal-num { font-family: var(--font-display); font-size: 5rem; font-weight: 800; color: var(--bg-surface); line-height: 1; letter-spacing: -.05em; user-select: none; position: absolute; bottom: 1.5rem; right: 2rem; pointer-events: none; }
 [data-theme="dark"] .modal-num { color: rgba(255,255,255,.04); }
@@ -760,10 +710,9 @@ body.reduce-motion .hero-headline .size-md { animation: none !important; }
 .ticker {
   display: flex; gap: 1.2rem; width: max-content;
   animation: tickerScroll 36s linear infinite;
-  /* Gradual slowdown on hover via JS — CSS transition on animation-duration */
-  transition: animation-duration 1.2s ease;
+  transition: animation-duration 1.4s cubic-bezier(0.4,0,0.2,1);
 }
-.ticker.slowing { animation-duration: 120s; }
+.ticker.slowing { animation-duration: 90s; }
 .ticker.paused  { animation-play-state: paused; }
 @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .client-pill {
@@ -810,6 +759,16 @@ body.reduce-motion .hero-headline .size-md { animation: none !important; }
   display: flex; flex-direction: column; justify-content: flex-end; padding: 1.5rem;
   opacity: 0; transition: opacity var(--t-mid);
 }
+/* Subtle red brand tint on hover */
+.work-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(204,43,43,.07);
+  opacity: 0;
+  transition: opacity var(--t-mid);
+  pointer-events: none; z-index: 1;
+}
+.work-card:hover::after { opacity: 1; }
 .work-card:hover .work-card-over { opacity: 1; }
 .work-client { font-size: .62rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--volt); margin-bottom: .3rem; }
 .work-name { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: #fff; }
@@ -966,6 +925,16 @@ body.reduce-motion .hero-headline .size-md { animation: none !important; }
 
 
 
+/* ── NAV CTA SUBTLE PULSE ──────────────────────────────────── */
+/* Very slow background pulse — synced with headline breath */
+.nav.scrolled .nav-cta {
+  animation: navCtaPulse 4s ease-in-out 2s infinite;
+}
+@keyframes navCtaPulse {
+  0%, 100% { background: var(--red); box-shadow: 0 2px 12px rgba(204,43,43,.2); }
+  50%       { background: #D93030;   box-shadow: 0 4px 20px rgba(204,43,43,.38); }
+}
+
 /* ── NAV CTA SHIMMER ───────────────────────────────────────── */
 .nav.scrolled .nav-cta {
   background: var(--red);
@@ -1120,7 +1089,7 @@ footer::after {
 input[type=range] { width: 100%; accent-color: var(--volt); }
 
 /* ── CAREERS ──────────────────────────────────────────────── */
-.careers-hero { min-height: 75vh; display: flex; align-items: flex-end; padding: clamp(7rem,14vh,10rem) var(--page-pad) clamp(3rem, 7vh, 5rem); position: relative; background: var(--ink); overflow: hidden; }
+.careers-hero { min-height: 75vh; display: flex; align-items: flex-end; padding: clamp(5rem,10vh,7rem) var(--page-pad) clamp(3rem, 7vh, 5rem); position: relative; background: var(--ink); overflow: hidden; }
 [data-theme="dark"] .careers-hero { background: #0A0A0A; }
 .careers-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 80% 40%, rgba(106,184,37,.07) 0%, transparent 60%), radial-gradient(ellipse 40% 60% at 20% 70%, rgba(204,43,43,.05) 0%, transparent 60%); }
 .careers-hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--gradient-h); }
@@ -1331,6 +1300,7 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 }
 @media (max-width: 600px) {
   .nav-links, .nav-cta { display: none; }
+  .work-grid-mobile .work-card-cta { display: none; }
   .nav-burger { display: flex; }
   .hero-scroll { display: none; }
   .hero-ctas { flex-direction: column; align-items: stretch; }
@@ -1345,6 +1315,21 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
   .floating-cta { display: none; }
   .scroll-top-btn { display: flex; }
   .work-grid-mobile { grid-template-columns: 1fr; }
+}
+
+
+/* ── RESPONSIVE BR TAGS ────────────────────────────────────── */
+@media (max-width: 600px) {
+  .br-desk { display: none; }
+}
+
+
+/* ── WIDE SCREEN HERO ──────────────────────────────────────── */
+@media (min-width: 1600px) {
+  .hero-content { max-width: 1200px; }
+  .hero-headline .size-lg { font-size: 7.5rem; }
+  .hero-headline .size-xl { font-size: 10rem; }
+  .hero-headline .size-md { font-size: 6rem; }
 }
 
 /* ── HIGH CONTRAST ────────────────────────────────────────── */
