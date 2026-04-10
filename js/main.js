@@ -588,7 +588,6 @@
 
   /* ── FOOTER SERVICE LINKS → modals ─────────────────────── */
   function initFooterServiceLinks() {
-    // Use data-service-open attribute OR text-based fallback map
     const map = {
       'BTL Marketing':        'btl',
       'Communications':       'comms',
@@ -601,29 +600,9 @@
       a.addEventListener('click', e => {
         e.preventDefault();
         e.stopPropagation();
-        // Scroll to services section first if needed, then open modal
+        // Open modal immediately — no scrolling, no navigation
         const card = document.querySelector(`.service-card[data-service-id="${svcId}"]`);
-        if (!card) return;
-        const servicesSection = document.getElementById('services');
-        const cardRect = card.getBoundingClientRect();
-        const alreadyVisible = cardRect.top >= 0 && cardRect.top < window.innerHeight;
-        if (alreadyVisible) {
-          card.click();
-        } else {
-          // Scroll to services then open modal after scroll settles
-          try {
-            if (lenis) {
-              lenis.scrollTo(servicesSection || card, { offset: -100,
-                onComplete: () => setTimeout(() => card.click(), 200)
-              });
-            } else {
-              window.scrollTo({ top: (servicesSection || card).offsetTop - 100, behavior: 'smooth' });
-              setTimeout(() => card.click(), 800);
-            }
-          } catch(err) {
-            card.click();
-          }
-        }
+        if (card) card.click();
       });
     });
   }
