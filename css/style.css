@@ -455,7 +455,7 @@ body { animation: pageIn .4s var(--ease-out) both; }
 }
 .hero-headline .line { display: block; overflow: hidden; }
 .hero-headline .size-lg { font-size: clamp(3.2rem, 7vw, 6.5rem); }
-.hero-headline .size-xl { font-size: clamp(4rem, 9vw, 8.5rem); color: var(--red); }
+.hero-headline .size-xl { font-size: clamp(4rem, 9vw, 8.5rem); }
 .hero-headline .size-md { font-size: clamp(2.6rem, 5.5vw, 5rem); }
 
 .hero-sub {
@@ -480,7 +480,9 @@ body { animation: pageIn .4s var(--ease-out) both; }
 .hero-scroll {
   position: absolute; right: var(--page-pad); bottom: clamp(2rem, 5vh, 3.5rem);
   z-index: 5; display: flex; flex-direction: column; align-items: center; gap: .6rem;
+  transition: opacity .6s var(--ease-out);
 }
+.hero-scroll.hidden { opacity: 0; pointer-events: none; }
 .scroll-track { width: 1px; height: 60px; background: rgba(255,255,255,.15); position: relative; overflow: hidden; border-radius: 1px; }
 .scroll-thumb {
   position: absolute; top: 0; left: 0; width: 100%; height: 40%;
@@ -499,6 +501,99 @@ body { animation: pageIn .4s var(--ease-out) both; }
   background-size: 200px 200px;
   mix-blend-mode: overlay;
 }
+
+
+/* ── GREEN SWEEP: impossible → to ignore ──────────────────── */
+/* Base state: red via gradient that starts fully red */
+.hero-headline .size-xl,
+.hero-headline .size-md {
+  background: linear-gradient(90deg,
+    var(--red)  0%,
+    var(--red)  100%
+  );
+  background-size: 300% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+/* Sweep animation: volt-green band travels left→right */
+.hero-headline .size-xl {
+  animation: sweepImpossible 5.5s ease-in-out 1.5s infinite;
+}
+.hero-headline .size-md {
+  animation: sweepIgnore 5.5s ease-in-out 1.5s infinite;
+}
+@keyframes sweepImpossible {
+  0%   { background: linear-gradient(90deg, var(--red) 0%, var(--red) 100%);
+         -webkit-background-clip: text; background-clip: text;
+         -webkit-text-fill-color: transparent; }
+  /* Sweep enters from left */
+  18%  { background: linear-gradient(90deg,
+           var(--red) 0%, var(--red) 15%,
+           var(--volt) 35%, var(--volt) 50%,
+           var(--red) 70%, var(--red) 100%);
+         background-size: 300% 100%; background-position: 100% 50%;
+         -webkit-background-clip: text; background-clip: text;
+         -webkit-text-fill-color: transparent; }
+  /* Sweep centre */
+  30%  { background: linear-gradient(90deg,
+           var(--red) 0%, var(--red) 30%,
+           var(--volt) 50%, var(--volt) 65%,
+           var(--red) 85%, var(--red) 100%);
+         background-size: 300% 100%; background-position: 50% 50%;
+         -webkit-background-clip: text; background-clip: text;
+         -webkit-text-fill-color: transparent; }
+  /* Sweep exits right — hand off to size-md */
+  42%  { background: linear-gradient(90deg,
+           var(--red) 0%, var(--red) 60%,
+           var(--volt) 80%, var(--volt) 95%,
+           var(--red) 100%);
+         background-size: 300% 100%; background-position: 0% 50%;
+         -webkit-background-clip: text; background-clip: text;
+         -webkit-text-fill-color: transparent; }
+  /* Hold red for remainder of loop */
+  50%, 100% { background: linear-gradient(90deg, var(--red) 0%, var(--red) 100%);
+              -webkit-background-clip: text; background-clip: text;
+              -webkit-text-fill-color: transparent; }
+}
+@keyframes sweepIgnore {
+  /* Silent until impossible sweep exits */
+  0%, 36%  { background: linear-gradient(90deg, #fff 0%, #fff 100%);
+              -webkit-background-clip: text; background-clip: text;
+              -webkit-text-fill-color: transparent; }
+  /* Sweep enters — picks up from impossible */
+  42%  { background: linear-gradient(90deg,
+           var(--volt) 0%, var(--volt) 20%,
+           #fff 40%, #fff 100%);
+         -webkit-background-clip: text; background-clip: text;
+         -webkit-text-fill-color: transparent; }
+  /* Sweep travels right */
+  52%  { background: linear-gradient(90deg,
+           #fff 0%, #fff 20%,
+           var(--volt) 40%, var(--volt) 60%,
+           #fff 80%, #fff 100%);
+         -webkit-background-clip: text; background-clip: text;
+         -webkit-text-fill-color: transparent; }
+  /* Sweep exits */
+  62%  { background: linear-gradient(90deg,
+           #fff 0%, #fff 60%,
+           var(--volt) 80%, var(--volt) 95%,
+           #fff 100%);
+         -webkit-background-clip: text; background-clip: text;
+         -webkit-text-fill-color: transparent; }
+  /* Hold white */
+  70%, 100% { background: linear-gradient(90deg, #fff 0%, #fff 100%);
+              -webkit-background-clip: text; background-clip: text;
+              -webkit-text-fill-color: transparent; }
+}
+/* Reduce motion: no sweep */
+@media (prefers-reduced-motion: reduce) {
+  .hero-headline .size-xl { animation: none; background: none; -webkit-text-fill-color: var(--red); color: var(--red); }
+  .hero-headline .size-md { animation: none; background: none; -webkit-text-fill-color: #fff; color: #fff; }
+}
+body.reduce-motion .hero-headline .size-xl,
+body.reduce-motion .hero-headline .size-md { animation: none !important; }
 
 /* ── PROOF STRIP ──────────────────────────────────────────── */
 .proof {
@@ -522,6 +617,7 @@ body { animation: pageIn .4s var(--ease-out) both; }
   font-weight: 800; color: #fff; line-height: 1; letter-spacing: -.04em;
   display: flex; align-items: baseline; justify-content: center; gap: .1rem;
   transition: color .8s var(--ease-out);
+  font-variant-numeric: tabular-nums;
 }
 .proof-number.counting { color: var(--volt); }
 .proof-number.done { color: #fff; }
@@ -566,6 +662,8 @@ body { animation: pageIn .4s var(--ease-out) both; }
   margin-bottom: 1.6rem; transition: background var(--t-mid);
 }
 .service-card:hover .service-icon { background: rgba(106,184,37,.18); }
+.service-icon .icon-mask { transition: background-color var(--t-fast), transform .4s var(--ease-bounce); }
+.service-card:hover .service-icon .icon-mask { transform: rotate(12deg); }
 
 /* SVG icons via CSS mask — colour is always --volt */
 .icon-mask {
@@ -636,7 +734,7 @@ body { animation: pageIn .4s var(--ease-out) both; }
   position: fixed; top: 50%; left: 50%;
   transform: translate(-50%, -48%) scale(0.97);
   z-index: 801; width: min(620px, calc(100vw - 2.4rem));
-  max-height: 88vh; overflow-y: auto;
+  max-height: 88vh; overflow-y: scroll; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
   background: var(--bg-white); border-radius: var(--r-xl);
   box-shadow: var(--shadow-xl); opacity: 0; pointer-events: none;
   transition: opacity var(--t-mid) var(--ease-out), transform var(--t-mid) var(--ease-out);
@@ -675,7 +773,7 @@ body { animation: pageIn .4s var(--ease-out) both; }
   transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
 .client-pill:hover { border-color: var(--volt); box-shadow: var(--shadow-sm); }
-.client-pill img { height: 52px; width: auto; max-width: 140px; object-fit: contain; filter: grayscale(1); opacity: .55; transition: filter var(--t-mid), opacity var(--t-mid); }
+.client-pill img { height: 52px; width: auto; max-width: 140px; object-fit: contain; flex-shrink: 0; filter: grayscale(1); opacity: .55; transition: filter var(--t-mid), opacity var(--t-mid); }
 .client-pill:hover img { filter: grayscale(0); opacity: 1; }
 .client-pill span { font-family: var(--font-display); font-size: .8rem; font-weight: 700; color: var(--ink-4); transition: color var(--t-fast); }
 .client-pill:hover span { color: var(--ink); }
@@ -726,8 +824,8 @@ body { animation: pageIn .4s var(--ease-out) both; }
 
 /* ── ABOUT ────────────────────────────────────────────────── */
 .about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(3rem, 6vw, 6rem); align-items: start; margin-top: clamp(2rem, 4vw, 3.5rem); }
-.about-number { font-family: var(--font-display); font-size: clamp(7rem, 14vw, 12rem); font-weight: 800; color: var(--bg-surface); line-height: 1; letter-spacing: -.06em; user-select: none; margin-bottom: .5rem; }
-[data-theme="dark"] .about-number { color: rgba(255,255,255,.04); }
+.about-number { font-family: var(--font-display); font-size: clamp(7rem, 14vw, 12rem); font-weight: 800; color: rgba(0,0,0,.07); line-height: 1; letter-spacing: -.06em; user-select: none; margin-bottom: .5rem; }
+[data-theme="dark"] .about-number { color: rgba(255,255,255,.06); }
 .about-number-label { font-family: var(--font-display); font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-4); margin-left: .3rem; }
 .values-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 2rem; }
 .value-card { padding: 1.4rem; background: var(--bg-surface); border: 1.5px solid var(--border); border-radius: var(--r-lg); border-left: 3px solid transparent; transition: border-left-color var(--t-mid), box-shadow var(--t-mid); }
@@ -819,6 +917,20 @@ body { animation: pageIn .4s var(--ease-out) both; }
 .tstat-num { font-family: var(--font-display); font-size: 2.2rem; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -.04em; margin-bottom: .3rem; }
 .tstat-label { font-size: .7rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.35); }
 
+
+/* ── TESTIMONIAL ROTATION ──────────────────────────────────── */
+.testi-quote-wrap { position: relative; }
+.testi-item { opacity: 0; position: absolute; top: 0; left: 0; transition: opacity .8s var(--ease-out); pointer-events: none; }
+.testi-item.active { opacity: 1; position: relative; pointer-events: all; }
+.testi-dots { display: flex; gap: .5rem; margin-top: 1.5rem; }
+.testi-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,.2); border: none; cursor: pointer;
+  transition: background .3s, transform .3s;
+  padding: 0;
+}
+.testi-dot.active { background: var(--volt); transform: scale(1.3); }
+
 /* ── CONTACT ──────────────────────────────────────────────── */
 .contact-section { background: var(--bg-surface); padding: var(--section-pad) var(--page-pad); display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(3rem, 6vw, 6rem); align-items: start; }
 .contact-promise { font-size: .92rem; line-height: 1.85; color: var(--ink-3); margin-top: 1.4rem; max-width: 400px; }
@@ -853,6 +965,27 @@ body { animation: pageIn .4s var(--ease-out) both; }
 .form-note { font-size: .75rem; color: var(--ink-4); line-height: 1.6; margin: 1rem 0; }
 
 
+
+/* ── NAV CTA SHIMMER ───────────────────────────────────────── */
+.nav.scrolled .nav-cta {
+  background: var(--red);
+  overflow: hidden;
+}
+.nav.scrolled .nav-cta::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.18) 50%, transparent 100%);
+  transform: skewX(-15deg);
+  animation: ctaShimmer 7s ease-in-out 4s infinite;
+}
+@keyframes ctaShimmer {
+  0%, 100% { left: -100%; }
+  40%       { left: 150%; }
+  41%, 99%  { left: -100%; }
+}
+
 /* ── MARQUEE OF TRUTH ──────────────────────────────────────── */
 .marquee-wrap {
   overflow: hidden; padding: 1.4rem 0;
@@ -886,6 +1019,30 @@ body { animation: pageIn .4s var(--ease-out) both; }
 }
 .marquee-item .m-accent { color: rgba(255,255,255,.5); }
 
+
+/* ── FORM SUCCESS STATE ────────────────────────────────────── */
+.form-success {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  gap: 1rem;
+  animation: successIn .5s var(--ease-out) both;
+}
+.form-success.visible { display: flex; }
+@keyframes successIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.form-success-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--volt-alpha); border: 2px solid var(--volt);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: .5rem;
+}
+.form-success-icon svg { width: 24px; height: 24px; stroke: var(--volt); stroke-width: 2.5; fill: none; }
+.form-success-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: var(--ink); letter-spacing: -.02em; }
+.form-success-sub { font-size: .9rem; color: var(--ink-4); line-height: 1.7; max-width: 280px; }
+
 /* ── DIVIDER ──────────────────────────────────────────────── */
 .divider { display: flex; align-items: center; gap: 1rem; padding: 0 var(--page-pad); }
 .divider-line { flex: 1; height: 1px; background: var(--border); }
@@ -895,7 +1052,21 @@ body { animation: pageIn .4s var(--ease-out) both; }
 /* ── FOOTER ───────────────────────────────────────────────── */
 footer { background: #111; padding: clamp(3rem, 6vw, 5rem) var(--page-pad) 2rem; position: relative; overflow: hidden; }
 [data-theme="dark"] footer { background: #0A0A0A; }
-footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #CC2B2B 0%, #6AB825 100%); z-index: 1; }
+footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #CC2B2B 0%, #6AB825 100%); z-index: 1; overflow: hidden; }
+footer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%; right: auto;
+  width: 40%; height: 3px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.5) 50%, transparent 100%);
+  z-index: 2;
+  animation: footerShimmer 10s ease-in-out 3s infinite;
+}
+@keyframes footerShimmer {
+  0%   { left: -60%; }
+  35%  { left: 120%; }
+  36%, 100% { left: -60%; }
+}
 .footer-bolt-bg { position: absolute; bottom: -2rem; right: -2rem; width: 280px; opacity: .03; pointer-events: none; user-select: none; }
 .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,.07); }
 
@@ -1009,7 +1180,10 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
   position: fixed; top: 50%; left: 50%;
   transform: translate(-50%, -46%) scale(0.96);
   z-index: 801; width: min(780px, calc(100vw - 2.4rem));
-  max-height: 90vh; overflow-y: auto;
+  max-height: 90vh;
+  overflow-y: scroll; /* scroll not auto — required for iOS touch scroll */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   background: var(--bg-white); border-radius: var(--r-xl);
   box-shadow: 0 32px 100px rgba(0,0,0,.2), 0 8px 30px rgba(0,0,0,.1);
   opacity: 0; pointer-events: none;
