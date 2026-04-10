@@ -44,7 +44,9 @@
 
 <!-- ACCESSIBILITY WIDGET -->
 <div class="a11y-wrap" role="complementary" aria-label="Accessibility options">
-  <button class="a11y-toggle" id="a11y-toggle" aria-label="Accessibility settings" aria-expanded="false" aria-controls="a11y-panel">⊕</button>
+  <button class="a11y-toggle" id="a11y-toggle" aria-label="Accessibility settings" aria-expanded="false" aria-controls="a11y-panel">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    </button>
   <div class="a11y-panel" id="a11y-panel" role="dialog" aria-label="Accessibility settings">
     <div class="a11y-title">Accessibility</div>
     <label class="a11y-opt"><input type="checkbox" id="a11y-hc"> High contrast</label>
@@ -170,6 +172,7 @@
   <div class="hero-bg" aria-hidden="true" role="img" aria-label="Brand activation photography"></div>
   <div class="hero-overlay" aria-hidden="true"></div>
   <div class="hero-green-overlay" aria-hidden="true"></div>
+  <div class="hero-grain" aria-hidden="true"></div>
   <div class="hero-mesh"   aria-hidden="true"></div>
 
   <div class="hero-content">
@@ -419,37 +422,37 @@
       -->
       <div class="work-track" role="list" aria-label="Campaign work">
         <div class="work-card reveal" role="listitem" tabindex="0" aria-label="Orange Telecom: Retail Outreach Campaign">
-          <img src="assets/images/work-1.jpg" alt="Orange Telecom retail outreach activation" loading="lazy">
+          <img src="assets/images/work-1.jpg" alt="Orange Telecom retail outreach activation" data-work-id="w1" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">Orange Telecom</div><div class="work-name">Retail Outreach Campaign</div></div>
           <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Field Marketing</div>
         </div>
         <div class="work-card reveal reveal-d1" role="listitem" tabindex="0" aria-label="Gorillo's Snacks: Branded Vans and Cannons">
-          <img src="assets/images/work-2.jpg" alt="Gorillo's Snacks branded activation vans" loading="lazy">
+          <img src="assets/images/work-2.jpg" alt="Gorillo's Snacks branded activation vans" data-work-id="w2" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">Gorillo's Snacks</div><div class="work-name">Branded Vans &amp; Cannons</div></div>
           <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Promotions</div>
         </div>
         <div class="work-card reveal reveal-d2" role="listitem" tabindex="0" aria-label="TotalEnergies: Brand Experience Event">
-          <img src="assets/images/work-3.jpg" alt="TotalEnergies brand experience event" loading="lazy">
+          <img src="assets/images/work-3.jpg" alt="TotalEnergies brand experience event" data-work-id="w3" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">TotalEnergies</div><div class="work-name">Brand Experience Event</div></div>
           <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Brand Experience</div>
         </div>
         <div class="work-card reveal reveal-d1" role="listitem" tabindex="0" aria-label="Pay Campaign field activation">
-          <img src="assets/images/work-4.jpg" alt="Pay campaign field activation" loading="lazy">
+          <img src="assets/images/work-4.jpg" alt="Pay campaign field activation" data-work-id="w4" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">Field Activation</div><div class="work-name">Pay Campaign</div></div>
           <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Sales &amp; Distribution</div>
         </div>
         <div class="work-card reveal reveal-d2" role="listitem" tabindex="0" aria-label="Orange Telecom: Internet Packages Campaign">
-          <img src="assets/images/work-5.jpg" alt="Orange internet packages awareness campaign" loading="lazy">
+          <img src="assets/images/work-5.jpg" alt="Orange internet packages awareness campaign" data-work-id="w5" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">Orange Telecom</div><div class="work-name">Internet Packages Campaign</div></div>
           <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Communications</div>
         </div>
         <div class="work-card reveal reveal-d3" role="listitem" tabindex="0" aria-label="Smile Telecom: Rural Outreach Campaign">
-          <img src="assets/images/work-6.jpg" alt="Smile Telecom rural outreach campaign" loading="lazy">
+          <img src="assets/images/work-6.jpg" alt="Smile Telecom rural outreach campaign" data-work-id="w6" loading="lazy">
           <div class="work-card-over" aria-hidden="true"><div class="work-client">Smile Telecom</div><div class="work-name">Rural Outreach Campaign</div></div>
           <div class="work-card-cta" aria-hidden="true">View activation</div>
           <div class="work-cat" aria-hidden="true">Field Marketing</div>
@@ -525,6 +528,34 @@
   </div>
 </section>
 
+
+<!-- MARQUEE OF TRUTH -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-item"><span class="m-dot"></span><span>15 Years</span></span>
+    <span class="marquee-item"><span class="m-dot"></span><span class="m-accent">Countrywide</span></span>
+    <span class="marquee-item"><span class="m-dot"></span><span>Kampala</span></span>
+    <span class="marquee-item"><span class="m-dot"></span><span class="m-accent">Field Teams</span></span>
+    <span class="marquee-item"><span class="m-dot"></span><span>Brand Activation</span></span>
+    <span class="marquee-item"><span class="m-dot"></span><span class="m-accent">Trusted Partners</span></span>
+    <span class="marquee-item"><span class="m-dot"></span><span>BTL Excellence</span></span>
+    <span class="marquee-item"><span class="m-dot"></span><span class="m-accent">Real Results</span></span>
+    <span class="marquee-item"><span class="m-dot"></span><span>Est. 2008</span></span>
+    <span class="marquee-item"><span class="m-dot"></span><span class="m-accent">Market Bolt</span></span>
+    <!-- Duplicate for seamless loop -->
+    <span class="marquee-item" aria-hidden="true"><span class="m-dot"></span><span>15 Years</span></span>
+    <span class="marquee-item" aria-hidden="true"><span class="m-dot"></span><span class="m-accent">Countrywide</span></span>
+    <span class="marquee-item" aria-hidden="true"><span class="m-dot"></span><span>Kampala</span></span>
+    <span class="marquee-item" aria-hidden="true"><span class="m-dot"></span><span class="m-accent">Field Teams</span></span>
+    <span class="marquee-item" aria-hidden="true"><span class="m-dot"></span><span>Brand Activation</span></span>
+    <span class="marquee-item" aria-hidden="true"><span class="m-dot"></span><span class="m-accent">Trusted Partners</span></span>
+    <span class="marquee-item" aria-hidden="true"><span class="m-dot"></span><span>BTL Excellence</span></span>
+    <span class="marquee-item" aria-hidden="true"><span class="m-dot"></span><span class="m-accent">Real Results</span></span>
+    <span class="marquee-item" aria-hidden="true"><span class="m-dot"></span><span>Est. 2008</span></span>
+    <span class="marquee-item" aria-hidden="true"><span class="m-dot"></span><span class="m-accent">Market Bolt</span></span>
+  </div>
+</div>
+
 <!-- ════════════════════════════════════════════════════════
      07 — TEAM
 ════════════════════════════════════════════════════════ -->
@@ -548,27 +579,33 @@
       If photos not available, initials fallback shows automatically.
     -->
     <div class="team-card reveal" role="listitem" data-member="jude">
-      <div class="team-photo"><img src="assets/images/team-1.jpg" alt="Jude S. Tayebwa, Managing Director" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Brings brands to life"</div></div><div class="team-initials" aria-hidden="true">JST</div></div>
+      <div class="team-photo"><img src="assets/images/team-1.jpg" alt="Jude S. Tayebwa, Managing Director" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Brings brands to life"</div></div><div class="team-initials" aria-hidden="true">JST</div>
+          <div class="team-photo-ghost" aria-hidden="true">Jude</div></div>
       <div class="team-info"><div class="team-role">Managing Director</div><h3 class="h-card">Jude S. Tayebwa</h3><p class="team-bio">Two decades in the industry. Worked with the largest agencies on the continent. Knows every angle of what it takes to bring a brand to life in the field.</p></div>
     </div>
     <div class="team-card reveal reveal-d1" role="listitem">
-      <div class="team-photo"><img src="assets/images/team-2.jpg" alt="Patrick Angulo, Director" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"We will get it done"</div></div><div class="team-initials" aria-hidden="true">PA</div></div>
+      <div class="team-photo"><img src="assets/images/team-2.jpg" alt="Patrick Angulo, Director" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"We will get it done"</div></div><div class="team-initials" aria-hidden="true">PA</div>
+          <div class="team-photo-ghost" aria-hidden="true">Patrick</div></div>
       <div class="team-info"><div class="team-role">Director, Head of Operations</div><h3 class="h-card">Patrick Angulo</h3><p class="team-bio">Founding partner. Business acumen sharpened in India. Fifteen years across hospitality, microfinance and cable television — he makes things happen.</p></div>
     </div>
     <div class="team-card reveal reveal-d2" role="listitem">
-      <div class="team-photo"><img src="assets/images/team-3.jpg" alt="Abbey Senoga Ntege, Finance Manager" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Value for money"</div></div><div class="team-initials" aria-hidden="true">ASN</div></div>
+      <div class="team-photo"><img src="assets/images/team-3.jpg" alt="Abbey Senoga Ntege, Finance Manager" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Value for money"</div></div><div class="team-initials" aria-hidden="true">ASN</div>
+          <div class="team-photo-ghost" aria-hidden="true">Abbey</div></div>
       <div class="team-info"><div class="team-role">Finance Manager</div><h3 class="h-card">Abbey Senoga Ntege</h3><p class="team-bio">Certified accountant with 15 years navigating Ugandan business. Keeps the ship steady and makes sure every shilling is working hard.</p></div>
     </div>
     <div class="team-card reveal reveal-d1" role="listitem">
-      <div class="team-photo"><img src="assets/images/team-4.jpg" alt="Gerald Mukasa, Admin and Projects Manager" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"It has to be done"</div></div><div class="team-initials" aria-hidden="true">GM</div></div>
+      <div class="team-photo"><img src="assets/images/team-4.jpg" alt="Gerald Mukasa, Admin and Projects Manager" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"It has to be done"</div></div><div class="team-initials" aria-hidden="true">GM</div>
+          <div class="team-photo-ghost" aria-hidden="true">Gerald</div></div>
       <div class="team-info"><div class="team-role">Admin &amp; Projects Manager</div><h3 class="h-card">Gerald Mukasa</h3><p class="team-bio">13 years across telecoms, fintech and health. Day to day management of the agency and every project we take on. Nothing falls through the cracks.</p></div>
     </div>
     <div class="team-card reveal reveal-d2" role="listitem" data-member="david">
-      <div class="team-photo"><img src="assets/images/team-5.jpg" alt="David Lubwama, Projects Coordinator" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Research, Create, Execute, Evaluate"</div></div><div class="team-initials" aria-hidden="true">DL</div></div>
+      <div class="team-photo"><img src="assets/images/team-5.jpg" alt="David Lubwama, Projects Coordinator" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Research, Create, Execute, Evaluate"</div></div><div class="team-initials" aria-hidden="true">DL</div>
+          <div class="team-photo-ghost" aria-hidden="true">David</div></div>
       <div class="team-info"><div class="team-role">Projects Coordinator</div><h3 class="h-card">David Lubwama</h3><p class="team-bio">The energy behind our field executions. He has worked with major brands in the service industry and drives every field layout we build.</p></div>
     </div>
     <div class="team-card reveal reveal-d3" role="listitem">
-      <div class="team-photo"><img src="assets/images/team-6.jpg" alt="Diana Kisakye, Logistics Executive" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Always a step ahead"</div></div><div class="team-initials" aria-hidden="true">DK</div></div>
+      <div class="team-photo"><img src="assets/images/team-6.jpg" alt="Diana Kisakye, Logistics Executive" loading="lazy"><div class="team-photo-overlay"><div class="team-photo-quote">"Always a step ahead"</div></div><div class="team-initials" aria-hidden="true">DK</div>
+          <div class="team-photo-ghost" aria-hidden="true">Diana</div></div>
       <div class="team-info"><div class="team-role">Logistics Executive</div><h3 class="h-card">Diana Kisakye</h3><p class="team-bio">Entrepreneurial mindset, supply chain expertise. Brings innovation and precision to the logistical heartbeat of the agency's daily operations.</p></div>
     </div>
   </div>
