@@ -147,7 +147,25 @@
         if (lenis) { try { open ? lenis.stop() : lenis.start(); } catch(e){} }
       };
       burger.addEventListener('click', () => toggle(!drawer.classList.contains('open')));
-      drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggle(false)));
+      drawer.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', e => {
+          const href = a.getAttribute('href');
+          const isAnchor = href && href.startsWith('#');
+          if (isAnchor) {
+            e.preventDefault();
+            toggle(false);
+            // Wait for drawer close animation before scrolling
+            setTimeout(() => {
+              const target = document.querySelector(href);
+              if (!target) return;
+              try { if (lenis) { lenis.scrollTo(target, { offset: -70 }); return; } } catch(err) {}
+              window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' });
+            }, 380); // matches drawer transition .45s
+          } else {
+            toggle(false);
+          }
+        });
+      });
     }
 
     // Active section highlight — observe ALL sections
@@ -348,17 +366,57 @@
     });
   }
 
-  /* ── CLIENTS TICKER — gradual slowdown ──────────────────── */
+  /* ── CLIENTS TICKER — velocity-aware scroll response ───── */
   function initTicker() {
     const ticker = document.querySelector('.ticker');
     if (!ticker) return;
-    let slowTimer;
+
+    // Base duration in seconds
+    const BASE_DUR = 36;
+    let currentDur = BASE_DUR;
+    let lastScrollY = window.scrollY;
+    let lastScrollTime = Date.now();
+    let rafId;
+    let targetDur = BASE_DUR;
+
+    function setDuration(dur) {
+      ticker.style.animationDuration = Math.max(4, Math.min(200, dur)) + 's';
+    }
+
+    function velocityLoop() {
+      const now  = Date.now();
+      const dy   = Math.abs(window.scrollY - lastScrollY);
+      const dt   = now - lastScrollTime;
+      const velo = dt > 0 ? dy / dt * 1000 : 0; // px/s
+
+      lastScrollY   = window.scrollY;
+      lastScrollTime = now;
+
+      // Map velocity to duration: fast scroll = shorter duration (faster marquee)
+      // 0 px/s → BASE_DUR, 2000 px/s → 6s
+      if (velo > 10) {
+        targetDur = BASE_DUR * Math.max(0.16, 1 - (velo / 2400));
+      } else {
+        targetDur = BASE_DUR;
+      }
+
+      // Ease currentDur toward targetDur (lerp)
+      currentDur += (targetDur - currentDur) * 0.06;
+      setDuration(currentDur);
+      rafId = requestAnimationFrame(velocityLoop);
+    }
+
+    velocityLoop();
+
+    // Hover: pause
     ticker.addEventListener('mouseenter', () => {
-      clearTimeout(slowTimer);
-      ticker.classList.add('slowing');
+      ticker.classList.add('paused');
+      cancelAnimationFrame(rafId);
     });
     ticker.addEventListener('mouseleave', () => {
-      ticker.classList.remove('slowing');
+      ticker.classList.remove('paused');
+      lastScrollTime = Date.now();
+      velocityLoop();
     });
   }
 
@@ -538,23 +596,57 @@
     });
   }
 
+
+  /* ── FOOTER SERVICE LINKS → modals ─────────────────────── */
+  function initFooterServiceLinks() {
+    const map = {
+      'BTL Marketing':          'btl',
+      'Communications':         'comms',
+      'Sales & Distribution':   'sales',
+      'General Supplies':       'supplies',
+    };
+    document.querySelectorAll('.footer-links a').forEach(a => {
+      const label = a.textContent.trim();
+      const svcId = map[label];
+      if (!svcId) return;
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        // Find and click the corresponding service card to reuse existing logic
+        const card = document.querySelector(`.service-card[data-service-id="${svcId}"]`);
+        if (card) {
+          card.click();
+        } else {
+          // Fallback: scroll to services
+          const target = document.getElementById('services');
+          if (target) {
+            try { if (lenis) lenis.scrollTo(target, { offset: -70 }); }
+            catch(err) { window.scrollTo({ top: target.offsetTop - 70, behavior: 'smooth' }); }
+          }
+        }
+      });
+    });
+  }
+
   /* ── FLOATING CTA ───────────────────────────────────────── */
   function initFloatingCta() {
-    const cta       = document.getElementById('floating-cta');
-    const scrollTop = document.getElementById('scroll-top-btn');
+    const cta        = document.getElementById('floating-cta');
+    const scrollTop  = document.getElementById('scroll-top-btn');
+    const heroScroll = document.querySelector('.hero-scroll');
 
     if (cta) {
       let ctaPulsed = false;
       window.addEventListener('scroll', () => {
-        const past      = window.scrollY > window.innerHeight * 0.8;
-        const nearEnd   = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300;
-        const show      = past && !nearEnd;
+        const past    = window.scrollY > window.innerHeight * 0.8;
+        const nearEnd = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300;
+        const show    = past && !nearEnd;
         cta.classList.toggle('visible', show);
         if (show && !ctaPulsed) {
           ctaPulsed = true;
           cta.classList.add('pulse');
           setTimeout(() => cta.classList.remove('pulse'), 700);
         }
+        // Hide hero scroll indicator once user has scrolled
+        if (heroScroll && window.scrollY > 80) heroScroll.classList.add('hidden');
       }, { passive: true });
     }
     if (scrollTop) {
@@ -608,8 +700,33 @@
           setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2600);
           return;
         }
-        btn.innerHTML = '<span>Message sent</span>';
-        btn.style.background = 'var(--volt)';
+        // Animate form out, show success state
+        const formInner = btn.closest('[data-form]');
+        const card = formInner?.closest('.contact-form-card, .pipeline-box');
+        if (formInner) {
+          formInner.style.transition = 'opacity .4s, transform .4s';
+          formInner.style.opacity = '0';
+          formInner.style.transform = 'translateY(-8px)';
+          setTimeout(() => {
+            formInner.style.display = 'none';
+            // Insert success message
+            const success = document.createElement('div');
+            success.className = 'form-success';
+            success.innerHTML = `
+              <div class="form-success-icon">
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="form-success-title">We've got your brief.</div>
+              <p class="form-success-sub">We'll be in touch within one working day. In the meantime, have a look at our work.</p>
+              <a href="#work" class="btn btn-primary" style="margin-top:.5rem;">
+                <span>See our work</span>
+              </a>
+            `;
+            (card || formInner.parentNode).appendChild(success);
+            // Trigger animation
+            requestAnimationFrame(() => success.classList.add('visible'));
+          }, 420);
+        }
         btn.disabled = true;
         // TODO: replace with fetch POST to Formspree/backend
       });
@@ -697,6 +814,83 @@
     });
   }
 
+
+  /* ── TESTIMONIAL ROTATION ───────────────────────────────── */
+  function initTestiRotation() {
+    const section = document.querySelector('.testi-section');
+    if (!section) return;
+    const quote = section.querySelector('.testi-quote');
+    const author = section.querySelector('.testi-author');
+    if (!quote) return;
+
+    const testimonials = [
+      {
+        text: `Association with MBolt has been great. They dive into the problem and <em>do not hesitate in giving suggestions.</em> They come up with fresh ideas and have always surpassed expectations.`,
+        name: 'Val Muleba',
+        title: 'Product Manager, GlK Tampeco',
+        initials: 'VM'
+      },
+      {
+        text: `Working with Market Bolt changed how we approach field marketing entirely. <em>Their teams don't just execute — they understand the brand.</em> The results spoke for themselves.`,
+        name: 'Brand Partner',
+        title: 'Senior Manager, Nile Breweries',
+        initials: 'NB'
+      },
+      {
+        text: `We've worked with agencies across East Africa. <em>MBolt stands out for one reason: they deliver exactly what they promise.</em> No surprises. No excuses. Just results.`,
+        name: 'Campaign Director',
+        title: 'TotalEnergies Uganda',
+        initials: 'TE'
+      }
+    ];
+
+    // Build dot navigation
+    const dotsWrap = document.createElement('div');
+    dotsWrap.className = 'testi-dots';
+    testimonials.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'testi-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Testimonial ${i + 1}`);
+      dot.addEventListener('click', () => showTesti(i));
+      dotsWrap.appendChild(dot);
+    });
+    author?.after(dotsWrap);
+
+    let current = 0;
+    let timer;
+
+    function showTesti(idx) {
+      const dots = dotsWrap.querySelectorAll('.testi-dot');
+      // Fade out
+      quote.style.transition = 'opacity .4s';
+      quote.style.opacity = '0';
+      if (author) { author.style.transition = 'opacity .4s'; author.style.opacity = '0'; }
+      setTimeout(() => {
+        const t = testimonials[idx];
+        quote.innerHTML = t.text;
+        if (author) {
+          author.querySelector('.testi-avatar').textContent = t.initials;
+          author.querySelector('.testi-name').textContent   = t.name;
+          author.querySelector('.testi-title').textContent  = t.title;
+        }
+        quote.style.opacity = '1';
+        if (author) author.style.opacity = '1';
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        current = idx;
+      }, 420);
+    }
+
+    function autoRotate() {
+      const next = (current + 1) % testimonials.length;
+      showTesti(next);
+    }
+
+    timer = setInterval(autoRotate, 6000);
+    // Pause on hover
+    section.addEventListener('mouseenter', () => clearInterval(timer));
+    section.addEventListener('mouseleave', () => { timer = setInterval(autoRotate, 6000); });
+  }
+
   /* ── INIT ───────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
@@ -721,6 +915,8 @@
     initLegalTabs();
     initFooterEntrance();
     initProofMagnetic();
+    initFooterServiceLinks();
+    initTestiRotation();
 
     document.fonts?.ready.then(() => {
       if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
