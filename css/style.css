@@ -436,14 +436,15 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 
 .hero-content {
   position: relative; z-index: 4;
-  padding: 0 var(--page-pad) clamp(3.5rem, 7vh, 5rem);
+  /* Reasonable breathing room between headline top and nav */
+  padding: clamp(6rem, 12vh, 9rem) var(--page-pad) clamp(3.5rem, 7vh, 5rem);
   width: 100%; max-width: 920px;
 }
-/* Desktop/tablet: eyebrow floats at top of hero, independent of bottom content */
+/* Desktop/tablet: eyebrow pinned just below nav — fixed, not clamped into middle */
 @media (min-width: 601px) {
   .hero-eyebrow {
     position: absolute;
-    top: clamp(5.5rem, 11vh, 7.5rem);
+    top: 5rem;
     left: var(--page-pad);
     margin-bottom: 0;
     z-index: 5;
@@ -463,7 +464,8 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
   letter-spacing: -.04em; line-height: 1.0; color: #fff;
 }
 .hero-headline .line { display: block; overflow: hidden; }
-.hero-headline .size-lg { font-size: clamp(3.2rem, 7vw, 6.5rem); }
+/* size-lg capped so it never bleeds off-screen on any desktop/laptop */
+.hero-headline .size-lg { font-size: clamp(2.8rem, 5.8vw, 5.8rem); }
 .hero-headline .size-xl { font-size: clamp(4rem, 9vw, 8.5rem); }
 .hero-headline .size-md { font-size: clamp(2.6rem, 5.5vw, 5rem); }
 
@@ -514,36 +516,26 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 
 
 
-/* ── OPTION B: "impossible" breathes — scale + letter-spacing ─ */
-/* impossible: red, breathes */
+/* ── "impossible" cycles red → green → red, smooth and slow ── */
 .hero-headline .size-xl {
   color: var(--red);
   display: inline-block;
-  animation: breatheImpossible 4s ease-in-out 2s infinite;
-  transform-origin: left center;
+  animation: impossibleColour 6s ease-in-out 2s infinite;
 }
-/* to ignore.: white, same breath slightly offset */
+/* to ignore.: stays white, no animation */
 .hero-headline .size-md {
   color: #fff;
-  display: inline-block;
-  animation: breatheIgnore 4s ease-in-out 2.4s infinite;
-  transform-origin: left center;
 }
-@keyframes breatheImpossible {
-  0%, 100% { transform: scale(1);      letter-spacing: -.04em; }
-  50%       { transform: scale(1.012); letter-spacing: -.025em; }
+@keyframes impossibleColour {
+  0%,  38% { color: var(--red);  }
+  50%       { color: var(--volt); }
+  62%, 100% { color: var(--red);  }
 }
-@keyframes breatheIgnore {
-  0%, 100% { transform: scale(1);      letter-spacing: -.04em; }
-  50%       { transform: scale(1.009); letter-spacing: -.028em; }
-}
-/* Reduce motion: static */
+/* Reduce motion: static red */
 @media (prefers-reduced-motion: reduce) {
-  .hero-headline .size-xl,
-  .hero-headline .size-md { animation: none; }
+  .hero-headline .size-xl { animation: none; color: var(--red); }
 }
-body.reduce-motion .hero-headline .size-xl,
-body.reduce-motion .hero-headline .size-md { animation: none !important; }
+body.reduce-motion .hero-headline .size-xl { animation: none !important; color: var(--red); }
 
 /* ── PROOF STRIP ──────────────────────────────────────────── */
 .proof {
