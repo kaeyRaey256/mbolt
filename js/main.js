@@ -131,6 +131,9 @@
     const drawer = document.getElementById('nav-drawer');
     if (!nav) return;
 
+    // Initial state check
+    if (window.scrollY > 60) nav.classList.add('scrolled');
+
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 60);
     }, { passive: true });
@@ -240,18 +243,22 @@
     if (!proof) return;
 
     function animCount(span, target, dur = 1400) {
+      const numEl = span.closest('.proof-number');
+      if (numEl) numEl.classList.add('counting');
       let start = null;
       const step = ts => {
         if (!start) start = ts;
         const p    = Math.min((ts - start) / dur, 1);
         const ease = 1 - Math.pow(1 - p, 3);
-        const val  = Math.round(ease * target);
-        span.textContent = val;
-        // Tick pulse on the parent number element
+        span.textContent = Math.round(ease * target);
         if (p < 1) {
           requestAnimationFrame(step);
         } else {
           span.textContent = target;
+          if (numEl) {
+            numEl.classList.remove('counting');
+            numEl.classList.add('done');
+          }
         }
       };
       requestAnimationFrame(step);
@@ -269,39 +276,70 @@
 
   /* ── WORK HORIZONTAL SCROLL ─────────────────────────────── */
   function initWorkScroll() {
-    // Guard: only on viewport > 768px AND gsap available
     if (window.innerWidth <= 768) return;
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
 
-    const wrap    = document.querySelector('.work-pin-wrap');
-    const sticky  = document.querySelector('.work-sticky');
-    const track   = document.querySelector('.work-track');
+    const wrap     = document.querySelector('.work-pin-wrap');
+    const sticky   = document.querySelector('.work-sticky');
+    const track    = document.querySelector('.work-track');
     const progress = document.querySelector('.work-progress');
     if (!wrap || !sticky || !track) return;
 
     const cards = track.querySelectorAll('.work-card');
     if (!cards.length) return;
 
-    // Calculate exact scroll distance
-    let trackW = 0;
-    cards.forEach(c => { trackW += c.offsetWidth + 24; });
-    const scrollDist = trackW - window.innerWidth + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-pad') || '80');
+    // Must run after all images loaded so offsetWidth is real
+    function build() {
+      ScrollTrigger.getAll().forEach(st => {
+        if (st.vars.trigger === wrap) st.kill();
+      });
 
-    // Set wrap height so normal page flow accounts for the scroll distance
-    wrap.style.height = (window.innerHeight + scrollDist) + 'px';
+      // Force layout recalc
+      track.style.transform = 'none';
+      const pagePad = parseFloat(getComputedStyle(document.documentElement)
+        .getPropertyValue('--page-pad')) || 80;
 
-    ScrollTrigger.create({
-      trigger: wrap,
-      start: 'top top',
-      end: () => '+=' + scrollDist,
-      pin: sticky,
-      anticipatePin: 1,
-      scrub: 1.2,
-      invalidateOnRefresh: true,
-      onUpdate: self => {
-        gsap.set(track, { x: -(self.progress * scrollDist) });
-        if (progress) progress.style.width = (self.progress * 100) + '%';
-      }
+      let trackW = pagePad; // left padding
+      cards.forEach(c => { trackW += c.offsetWidth + 24; });
+      // scrollDist = how far we need to pull the track left
+      const scrollDist = Math.max(0, trackW - window.innerWidth + pagePad);
+
+      if (scrollDist < 10) return; // nothing to scroll
+
+      // Give the wrap enough height so the page flow reserves scroll space
+      wrap.style.height = (window.innerHeight + scrollDist) + 'px';
+
+      ScrollTrigger.create({
+        trigger: wrap,
+        start: 'top top',
+        end: () => '+=' + scrollDist,
+        pin: sticky,
+        anticipatePin: 1,
+        scrub: 1,
+        invalidateOnRefresh: true,
+        onUpdate: self => {
+          gsap.set(track, { x: -(self.progress * scrollDist), force3D: true });
+          if (progress) progress.style.width = (self.progress * 100) + '%';
+        }
+      });
+    }
+
+    // Run after full page load (images painted, dimensions real)
+    if (document.readyState === 'complete') {
+      build();
+    } else {
+      window.addEventListener('load', build, { once: true });
+    }
+
+    // Rebuild on resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        wrap.style.height = '';
+        build();
+        ScrollTrigger.refresh();
+      }, 250);
     });
   }
 
@@ -379,13 +417,26 @@
     const copyEl   = document.getElementById('work-modal-copy');
 
     function openWork(data) {
+      // Reset animation state
+      const body = modal.querySelector('.work-modal-body');
+      if (body) { body.style.transition = 'none'; body.style.transform = 'translateY(16px)'; body.style.opacity = '0'; }
+
       if (imgEl) { imgEl.src = data.img || ''; imgEl.alt = data.name || ''; imgEl.style.display = data.img ? 'block' : 'none'; }
       if (catEl)    catEl.textContent    = data.category || '';
       if (titleEl)  titleEl.textContent  = data.name     || '';
       if (clientEl) clientEl.textContent = data.client   || '';
       if (copyEl)   copyEl.innerHTML     = data.copy     || '';
+
       overlay.classList.add('open'); modal.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
+
+      // Re-enable transitions after paint
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (body) { body.style.transition = ''; }
+        });
+      });
+
       try { if (lenis) lenis.stop(); } catch(e) {}
       document.body.style.overflow = 'hidden';
     }
@@ -466,10 +517,17 @@
     const scrollTop = document.getElementById('scroll-top-btn');
 
     if (cta) {
+      let ctaPulsed = false;
       window.addEventListener('scroll', () => {
         const past      = window.scrollY > window.innerHeight * 0.8;
         const nearEnd   = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300;
-        cta.classList.toggle('visible', past && !nearEnd);
+        const show      = past && !nearEnd;
+        cta.classList.toggle('visible', show);
+        if (show && !ctaPulsed) {
+          ctaPulsed = true;
+          cta.classList.add('pulse');
+          setTimeout(() => cta.classList.remove('pulse'), 700);
+        }
       }, { passive: true });
     }
     if (scrollTop) {
