@@ -150,19 +150,23 @@
       drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => toggle(false)));
     }
 
-    // Active section highlight
+    // Active section highlight — observe ALL sections
     const sections = document.querySelectorAll('section[id]');
     const links    = document.querySelectorAll('.nav-links a');
     if (sections.length && links.length) {
-      new IntersectionObserver(entries => {
+      const sectionObs = new IntersectionObserver(entries => {
         entries.forEach(e => {
-          if (e.isIntersecting) links.forEach(a => {
-            a.classList.toggle('active',
-              a.getAttribute('href') === '#' + e.target.id ||
-              a.getAttribute('href') === 'index.html#' + e.target.id);
-          });
+          if (e.isIntersecting) {
+            links.forEach(a => {
+              a.classList.toggle('active',
+                a.getAttribute('href') === '#' + e.target.id ||
+                a.getAttribute('href') === 'index.html#' + e.target.id
+              );
+            });
+          }
         });
-      }, { threshold: 0.4 }).observe(document.querySelector('section[id]') || document.body);
+      }, { threshold: 0.35, rootMargin: '-70px 0px 0px 0px' });
+      sections.forEach(s => sectionObs.observe(s));
     }
   }
 
@@ -202,12 +206,13 @@
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
       els.forEach(el => ScrollTrigger.create({ trigger: el, start: 'top 88%', onEnter: () => el.classList.add('visible'), once: true }));
     } else {
-      new IntersectionObserver((ents, obs) => {
-        ents.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-      }, { threshold: 0.12 }).observe(els[0]);
-      els.forEach(el => {
-        new IntersectionObserver((ents, obs) => { ents.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }); }, { threshold: 0.12 }).observe(el);
-      });
+      // Single observer for all elements (efficient)
+      const revealObs = new IntersectionObserver((ents, obs) => {
+        ents.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(el => revealObs.observe(el));
     }
   }
 
@@ -417,32 +422,48 @@
     const copyEl   = document.getElementById('work-modal-copy');
 
     function openWork(data) {
-      // Reset animation state
       const body = modal.querySelector('.work-modal-body');
-      if (body) { body.style.transition = 'none'; body.style.transform = 'translateY(16px)'; body.style.opacity = '0'; }
 
-      if (imgEl) { imgEl.src = data.img || ''; imgEl.alt = data.name || ''; imgEl.style.display = data.img ? 'block' : 'none'; }
-      if (catEl)    catEl.textContent    = data.category || '';
-      if (titleEl)  titleEl.textContent  = data.name     || '';
-      if (clientEl) clientEl.textContent = data.client   || '';
-      if (copyEl)   copyEl.innerHTML     = data.copy     || '';
+      // Set content before opening
+      if (imgEl) {
+        imgEl.src = data.img || '';
+        imgEl.alt = data.name || '';
+        imgEl.style.display = data.img ? 'block' : 'none';
+      }
+      if (catEl)    catEl.textContent  = data.category || '';
+      if (titleEl)  titleEl.textContent = data.name    || '';
+      if (clientEl) clientEl.textContent = data.client || '';
+      if (copyEl)   copyEl.innerHTML   = data.copy     || '';
 
-      overlay.classList.add('open'); modal.classList.add('open');
+      // Stage body for entrance animation using classes only (no inline styles)
+      if (body) {
+        body.classList.remove('entered');
+        body.classList.add('entering');
+      }
+
+      // Open modal
+      overlay.classList.add('open');
+      modal.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
 
-      // Re-enable transitions after paint
+      // Trigger entrance animation on next frame
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (body) { body.style.transition = ''; }
-        });
+        if (body) {
+          body.classList.remove('entering');
+          body.classList.add('entered');
+        }
       });
 
       try { if (lenis) lenis.stop(); } catch(e) {}
       document.body.style.overflow = 'hidden';
     }
     function closeWork() {
-      overlay.classList.remove('open'); modal.classList.remove('open');
+      overlay.classList.remove('open');
+      modal.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
+      // Reset body classes for next open
+      const body = modal.querySelector('.work-modal-body');
+      if (body) { body.classList.remove('entered', 'entering'); }
       try { if (lenis) lenis.start(); } catch(e) {}
       document.body.style.overflow = '';
     }
@@ -451,21 +472,27 @@
     document.getElementById('work-modal-close')?.addEventListener('click', closeWork);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closeWork(); });
 
-    // Wire up every work card
+    // Wire up ALL work cards (both horizontal track and mobile grid)
     document.querySelectorAll('.work-card').forEach((card, i) => {
       const keys = ['w1','w2','w3','w4','w5','w6'];
-      const id = card.dataset.workId || keys[i] || null;
+      // Use data-work-id if set, otherwise wrap index with modulo (handles duplicate mobile grid)
+      const id = card.dataset.workId || keys[i % 6] || null;
       card.style.cursor = 'pointer';
-      card.addEventListener('click', () => {
+      card.setAttribute('tabindex', '0');
+      // Click handler
+      const handleOpen = () => {
         const data = (id && WORK_COPY[id]) || {
-          client: card.querySelector('.work-client')?.textContent || '',
-          name:   card.querySelector('.work-name')?.textContent  || '',
-          category: card.querySelector('.work-cat')?.textContent || '',
-          img:    card.querySelector('img')?.src || '',
-          copy:   '<p>Campaign details coming soon.</p>'
+          client:   card.querySelector('.work-client')?.textContent || '',
+          name:     card.querySelector('.work-name')?.textContent   || '',
+          category: card.querySelector('.work-cat')?.textContent    || '',
+          img:      card.querySelector('img')?.getAttribute('src')  || '',
+          copy:     '<p>Campaign details coming soon.</p>'
         };
         openWork(data);
-      });
+      };
+      card.addEventListener('click', handleOpen);
+      // Keyboard accessibility
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleOpen(); } });
     });
   }
 
