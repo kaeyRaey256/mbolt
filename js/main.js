@@ -594,15 +594,42 @@
       'Sales & Distribution': 'sales',
       'General Supplies':     'supplies',
     };
+
+    // Handle query param on load — opens modal if ?service=xxx in URL
+    // (used when navigating from careers.html footer)
+    const params = new URLSearchParams(window.location.search);
+    const autoOpen = params.get('service');
+    if (autoOpen) {
+      // Wait for DOMContentLoaded + a tick for modals to init
+      const tryOpen = () => {
+        const card = document.querySelector(`.service-card[data-service-id="${autoOpen}"]`);
+        if (card) {
+          card.click();
+          // Clean URL without reload
+          history.replaceState({}, '', window.location.pathname);
+        }
+      };
+      // Retry a few times in case modal init hasn't run yet
+      setTimeout(tryOpen, 400);
+    }
+
     document.querySelectorAll('.footer-links a').forEach(a => {
       const svcId = a.dataset.serviceOpen || map[a.textContent.trim()];
       if (!svcId) return;
+
+      const card = document.querySelector(`.service-card[data-service-id="${svcId}"]`);
+
       a.addEventListener('click', e => {
         e.preventDefault();
         e.stopPropagation();
-        // Open modal immediately — no scrolling, no navigation
-        const card = document.querySelector(`.service-card[data-service-id="${svcId}"]`);
-        if (card) card.click();
+
+        if (card) {
+          // Same page (index.html) — open modal immediately
+          card.click();
+        } else {
+          // Different page (careers, legal) — navigate with query param
+          window.location.href = `index.html?service=${svcId}`;
+        }
       });
     });
   }
@@ -880,6 +907,96 @@
     });
   }
 
+
+  /* ── CLIENT LOGO MIDSCREEN COLOUR CELEBRATION ──────────── */
+  function initClientCelebration() {
+    const ticker = document.querySelector('.ticker');
+    if (!ticker) return;
+
+    const MID_ZONE = 140; // px either side of viewport centre counts as "centre"
+    let rafId;
+    let active = false;
+
+    function checkMidscreen() {
+      const vpCx = window.innerWidth / 2;
+      ticker.querySelectorAll('.client-pill').forEach(pill => {
+        const rect = pill.getBoundingClientRect();
+        const pillCx = rect.left + rect.width / 2;
+        const dist = Math.abs(pillCx - vpCx);
+        const inZone = dist < MID_ZONE;
+
+        if (inZone && !pill.dataset.celebrating) {
+          pill.dataset.celebrating = '1';
+          // Colour in
+          const img = pill.querySelector('img');
+          const span = pill.querySelector('span');
+          if (img) { img.style.filter = 'grayscale(0)'; img.style.opacity = '1'; img.style.transform = 'scale(1.04)'; }
+          if (span) span.style.color = 'var(--ink)';
+          pill.style.borderColor = 'var(--volt)';
+          pill.style.boxShadow = '0 4px 20px rgba(106,184,37,.15)';
+        } else if (!inZone && pill.dataset.celebrating) {
+          delete pill.dataset.celebrating;
+          // Revert
+          const img = pill.querySelector('img');
+          const span = pill.querySelector('span');
+          if (img) { img.style.filter = ''; img.style.opacity = ''; img.style.transform = ''; }
+          if (span) span.style.color = '';
+          pill.style.borderColor = '';
+          pill.style.boxShadow = '';
+        }
+      });
+      rafId = requestAnimationFrame(checkMidscreen);
+    }
+
+    // Only run when ticker is visible
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { active = true; checkMidscreen(); }
+        else { active = false; cancelAnimationFrame(rafId); }
+      });
+    }, { threshold: 0.1 });
+    obs.observe(ticker);
+  }
+
+
+  /* ── SECTION NUMBER INDICATOR ──────────────────────────── */
+  function initSectionNumber() {
+    if (window.innerWidth < 1024) return;
+
+    const sections = [
+      { id: 'services', label: '01 · Services' },
+      { id: 'work',     label: '02 · Work'     },
+      { id: 'about',    label: '03 · About'    },
+      { id: 'team',     label: '04 · Team'     },
+      { id: 'contact',  label: '05 · Contact'  },
+    ];
+
+    // Build indicator
+    const wrap = document.createElement('div');
+    wrap.className = 'section-num-indicator';
+    wrap.innerHTML = '<div class="section-num-line"></div><div class="section-num-text"></div><div class="section-num-line"></div>';
+    document.body.appendChild(wrap);
+    const text = wrap.querySelector('.section-num-text');
+
+    // Observe sections
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const match = sections.find(s => s.id === e.target.id);
+        if (match) {
+          text.textContent = match.label;
+          text.classList.add('active');
+          setTimeout(() => text.classList.remove('active'), 1200);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    sections.forEach(s => {
+      const el = document.getElementById(s.id);
+      if (el) obs.observe(el);
+    });
+  }
+
   /* ── INIT ───────────────────────────────────────────────── */
   // Page load fade — add class before DOMContentLoaded fires
   document.body.classList.add('page-loading');
@@ -909,6 +1026,8 @@
     initLegalTabs();
     initFooterEntrance();
     initProofMagnetic();
+    initClientCelebration();
+    initSectionNumber();
     initFooterServiceLinks();
     initTestiRotation();
 
