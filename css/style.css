@@ -229,6 +229,7 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 }
 .nav.scrolled .nav-cta {
   background: var(--red); border-color: var(--red); color: #fff;
+  position: relative; overflow: hidden;
 }
 .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(204,43,43,.3); }
 .nav.scrolled .nav-cta:hover { background: var(--red-dark); border-color: var(--red-dark); }
@@ -516,22 +517,20 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 
 
 
-/* ── "impossible" cycles red → green → red, smooth and slow ── */
+/* ── "impossible" cycles red → white → green → white → red ── */
 .hero-headline .size-xl {
   color: var(--red);
   display: inline-block;
-  animation: impossibleColour 6s ease-in-out 2s infinite;
+  animation: impossibleColour 8s ease-in-out 2s infinite;
 }
-/* to ignore.: stays white, no animation */
-.hero-headline .size-md {
-  color: #fff;
-}
+.hero-headline .size-md { color: #fff; }
 @keyframes impossibleColour {
-  0%,  38% { color: var(--red);  }
-  50%       { color: var(--volt); }
-  62%, 100% { color: var(--red);  }
+  0%,  25% { color: var(--red);  }   /* hold red */
+  35%       { color: #fff;        }   /* pass through white */
+  45%, 62% { color: var(--volt); }   /* hold green — wider window */
+  72%       { color: #fff;        }   /* pass through white */
+  82%, 100% { color: var(--red);  }   /* return to red */
 }
-/* Reduce motion: static red */
 @media (prefers-reduced-motion: reduce) {
   .hero-headline .size-xl { animation: none; color: var(--red); }
 }
@@ -558,7 +557,7 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
   font-family: var(--font-display); font-size: clamp(2.4rem, 5vw, 3.5rem);
   font-weight: 800; color: #fff; line-height: 1; letter-spacing: -.04em;
   display: flex; align-items: baseline; justify-content: center; gap: .1rem;
-  transition: color .8s var(--ease-out);
+  transition: color .8s var(--ease-out), transform .35s var(--ease-out);
   font-variant-numeric: tabular-nums;
 }
 .proof-number.counting { color: var(--volt); }
@@ -650,12 +649,12 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 .service-cta-hint {
   display: flex; align-items: center; gap: .4rem; margin-top: 1.5rem;
   font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--ink-5); transition: color var(--t-fast);
+  color: var(--ink-5); transition: color var(--t-fast), letter-spacing .35s var(--ease-out);
 }
 .service-cta-hint svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; transition: transform .35s var(--ease-out); }
 .service-card:hover .service-cta-hint { color: var(--red); letter-spacing: .14em; }
 .service-card:hover .service-cta-hint svg { transform: translateX(6px); }
-.service-cta-hint { transition: color var(--t-fast), letter-spacing .35s var(--ease-out); }
+/* service-cta-hint transition consolidated into main rule above */
 
 /* Service card staggered entrance */
 .service-card { opacity: 0; transform: translateY(20px) scale(0.97); }
@@ -695,14 +694,14 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 .modal-cta { margin-top: 2rem; }
 
 /* ── CLIENTS TICKER ───────────────────────────────────────── */
-.ticker-wrap { position: relative; overflow: hidden; margin-top: clamp(2rem, 4vw, 3rem); }
+.ticker-wrap { position: relative; overflow: hidden; margin-top: clamp(2rem, 4vw, 3rem); padding-top: 8px; padding-bottom: 4px; margin-top: calc(clamp(2rem, 4vw, 3rem) - 8px); }
 .ticker-wrap::before, .ticker-wrap::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 2; pointer-events: none; }
 .ticker-wrap::before { left: 0;  background: linear-gradient(to right, var(--bg-surface), transparent); }
 .ticker-wrap::after  { right: 0; background: linear-gradient(to left,  var(--bg-surface), transparent); }
 .ticker {
   display: flex; gap: 1.2rem; width: max-content;
   animation: tickerScroll 36s linear infinite;
-  transition: animation-duration 1.4s cubic-bezier(0.4,0,0.2,1);
+  /* animation-duration is not CSS-transitionable — removed */
 }
 .ticker.slowing { animation-duration: 90s; }
 .ticker.paused  { animation-play-state: paused; }
@@ -711,9 +710,11 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
   display: flex; align-items: center; gap: .75rem;
   padding: 1.1rem 2rem; background: var(--bg-white); border: 1.5px solid var(--border);
   border-radius: var(--r-pill); white-space: nowrap;
-  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+  will-change: transform;
+  /* Single consolidated transition — no translateY to avoid clip */
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), transform .3s var(--ease-out), filter .4s, opacity .4s;
 }
-.client-pill:hover { border-color: var(--volt); box-shadow: var(--shadow-sm); }
+.client-pill:hover { border-color: var(--volt); box-shadow: var(--shadow-md); transform: scale(1.03); }
 .client-pill img { height: 52px; width: auto; max-width: 140px; object-fit: contain; flex-shrink: 0; filter: grayscale(1); opacity: .55; transition: filter var(--t-mid), opacity var(--t-mid); }
 .client-pill:hover img { filter: grayscale(0); opacity: 1; }
 .client-pill span { font-family: var(--font-display); font-size: .8rem; font-weight: 700; color: var(--ink-4); transition: color var(--t-fast); }
@@ -727,8 +728,8 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 .work-sticky {
   position: sticky; top: 0; height: 100vh;
   display: flex; flex-direction: column; justify-content: center;
-  overflow: hidden; background: var(--bg);
-  will-change: transform;
+  /* overflow:visible so last card isnt clipped — bg covers any bleed */
+  overflow: visible; background: var(--bg);
 }
 .work-header-inner {
   padding: 0 var(--page-pad);
@@ -736,7 +737,7 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
   margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
 }
 .work-progress { position: absolute; top: 0; left: 0; height: 3px; width: 0; background: var(--gradient-h); z-index: 2; box-shadow: 0 0 10px rgba(106,184,37,.5), 0 0 20px rgba(106,184,37,.2); }
-.work-track { display: flex; gap: 1.5rem; padding: 0 var(--page-pad); will-change: transform; }
+.work-track { display: flex; gap: 1.5rem; padding: 0 var(--page-pad) 0 var(--page-pad); padding-right: calc(var(--page-pad) + 2rem); will-change: transform; }
 .work-card {
   flex: 0 0 380px; position: relative; border-radius: var(--r-lg); overflow: hidden;
   height: min(60vh, 420px); background: var(--bg-surface); box-shadow: var(--shadow-sm);
@@ -917,34 +918,27 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 
 
 
-/* ── NAV CTA SUBTLE PULSE ──────────────────────────────────── */
-/* Very slow background pulse — synced with headline breath */
+/* ── NAV CTA PULSE + SHIMMER — consolidated ────────────────── */
+/* Pulse: gentle background breathe */
+@keyframes navCtaPulse {
+  0%, 100% { box-shadow: 0 2px 12px rgba(204,43,43,.2); }
+  50%       { box-shadow: 0 4px 20px rgba(204,43,43,.38); background: #D93030; }
+}
+/* Shimmer: light sweep every 7s */
+@keyframes ctaShimmer {
+  0%, 60%, 100% { left: -100%; }
+  80%            { left: 150%; }
+}
 .nav.scrolled .nav-cta {
   animation: navCtaPulse 4s ease-in-out 2s infinite;
-}
-@keyframes navCtaPulse {
-  0%, 100% { background: var(--red); box-shadow: 0 2px 12px rgba(204,43,43,.2); }
-  50%       { background: #D93030;   box-shadow: 0 4px 20px rgba(204,43,43,.38); }
-}
-
-/* ── NAV CTA SHIMMER ───────────────────────────────────────── */
-.nav.scrolled .nav-cta {
-  background: var(--red);
   overflow: hidden;
 }
 .nav.scrolled .nav-cta::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.18) 50%, transparent 100%);
+  content: ''; position: absolute;
+  top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
   transform: skewX(-15deg);
   animation: ctaShimmer 7s ease-in-out 4s infinite;
-}
-@keyframes ctaShimmer {
-  0%, 100% { left: -100%; }
-  40%       { left: 150%; }
-  41%, 99%  { left: -100%; }
 }
 
 /* ── MARQUEE OF TRUTH ──────────────────────────────────────── */
@@ -1013,7 +1007,7 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 /* ── FOOTER ───────────────────────────────────────────────── */
 footer { background: #111; padding: clamp(3rem, 6vw, 5rem) var(--page-pad) 2rem; position: relative; overflow: hidden; }
 [data-theme="dark"] footer { background: #0A0A0A; }
-footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #CC2B2B 0%, #6AB825 100%); z-index: 1; overflow: hidden; }
+footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #CC2B2B 0%, #6AB825 100%); z-index: 1; }
 footer::after {
   content: '';
   position: absolute;
@@ -1230,16 +1224,26 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 }
 .work-card:hover .work-card-cta { color: #fff; background: rgba(106,184,37,.5); }
 
+
+/* ── WORK CARD POSITION BADGE ──────────────────────────────── */
+.work-card-num {
+  position: absolute; top: 1rem; right: 1rem;
+  font-family: var(--font-display); font-size: .58rem; font-weight: 800;
+  letter-spacing: .15em; color: rgba(255,255,255,.5);
+  background: rgba(0,0,0,.35); backdrop-filter: blur(8px);
+  padding: .2rem .6rem; border-radius: var(--r-pill);
+  transition: opacity var(--t-mid);
+  z-index: 2;
+}
+.work-card:hover .work-card-num { opacity: 0; }
+
 /* ── MICRO ANIMATIONS ──────────────────────────────────────── */
 /* Proof numbers — lazy magnetic hover */
 .proof-item {
   cursor: default;
   transition: transform .4s var(--ease-out);
 }
-.proof-number {
-  transition: transform .35s var(--ease-out), color .2s;
-  display: flex; align-items: baseline; justify-content: center; gap: .1rem;
-}
+/* proof-number — fully defined above, transition merged here */
 /* Nav link hover — slight lift */
 .nav-links a { transition: color var(--t-fast), transform var(--t-fast); }
 .nav-links a:hover { transform: translateY(-1px); }
@@ -1250,9 +1254,7 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 }
 .value-card { position: relative; }
 .value-card:hover::after { opacity: 1; }
-/* Client pill — float on hover */
-.client-pill { transition: border-color var(--t-fast), box-shadow var(--t-fast), transform .3s var(--ease-out); }
-.client-pill:hover { transform: translateY(-3px); }
+/* Client pill — consolidated above in main .client-pill rule */
 /* Work card — category badge animates in */
 .work-cat { transition: opacity var(--t-mid), transform var(--t-mid) var(--ease-out); }
 /* Channel rows — slide right on hover */
@@ -1315,6 +1317,32 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
   .br-desk { display: none; }
 }
 
+
+
+/* ── SECTION NUMBER INDICATOR — desktop only ───────────────── */
+.section-num-indicator {
+  position: fixed;
+  right: 2rem; top: 50%; transform: translateY(-50%);
+  z-index: 300;
+  display: none; /* shown via JS on desktop */
+  flex-direction: column; align-items: center; gap: .6rem;
+}
+.section-num-line {
+  width: 1px; height: 32px; background: rgba(0,0,0,.12);
+}
+[data-theme="dark"] .section-num-line { background: rgba(255,255,255,.1); }
+.section-num-text {
+  font-family: var(--font-display); font-size: .6rem; font-weight: 800;
+  letter-spacing: .16em; color: rgba(0,0,0,.2);
+  writing-mode: vertical-rl; text-transform: uppercase;
+  transition: color .4s var(--ease-out);
+}
+[data-theme="dark"] .section-num-text { color: rgba(255,255,255,.15); }
+.section-num-text.active { color: var(--volt); }
+[data-theme="dark"] .section-num-text.active { color: var(--volt); }
+@media (min-width: 1024px) {
+  .section-num-indicator { display: flex; }
+}
 
 /* ── WIDE SCREEN HERO ──────────────────────────────────────── */
 @media (min-width: 1600px) {
