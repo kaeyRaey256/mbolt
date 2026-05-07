@@ -95,9 +95,11 @@ body {
   overflow-x: hidden;
   transition: background var(--t-slow) var(--ease), color var(--t-slow) var(--ease);
 }
-/* Lenis scroll fix — html scrolls, body visible */
-html.lenis { height: auto; }
-html.lenis body { overflow: visible; }
+/* Lenis scroll fix — html scrolls, body scrolls vertically only */
+html.lenis { height: auto; overflow-x: hidden; }
+html.lenis body { overflow-y: visible; overflow-x: hidden; }
+/* Belt and suspenders: html always clips horizontal */
+html { overflow-x: hidden; }
 /* Custom cursor only on proper pointer devices */
 @media (hover: hover) and (pointer: fine) { body { cursor: none; } }
 /* Screen reader */
@@ -110,6 +112,43 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
   animation-duration: .001ms !important; transition-duration: .001ms !important;
 }
 
+
+/* ── HTML MODAL LOCK ──────────────────────────────────────── */
+html.modal-open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* ── PAGE TRANSITIONS ──────────────────────────────────────── */
+@supports (view-transition-name: root) {
+  ::view-transition-old(root) {
+    animation: vtPageOut 250ms cubic-bezier(0.4,0,1,1) both;
+  }
+  ::view-transition-new(root) {
+    animation: vtPageIn 300ms cubic-bezier(0,0,0.2,1) both;
+  }
+  @keyframes vtPageOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-8px); }
+  }
+  @keyframes vtPageIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+body.page-leaving {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 220ms ease-in, transform 220ms ease-in;
+  pointer-events: none;
+}
+body.page-entering {
+  animation: pageEnterFade 300ms cubic-bezier(0,0,0.2,1) both;
+}
+@keyframes pageEnterFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* ── PAGE LOAD — only on first paint, not on theme toggle ─────── */
 body.page-loading { animation: pageIn .4s var(--ease-out) both; }
@@ -568,6 +607,7 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
   animation: taglineIn .6s var(--ease-out) 3.2s forwards;
 }
 @keyframes taglineIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .hero-tagline { animation: none; opacity: 1; transform: none; } }
 
 /* ── PROOF STRIP ──────────────────────────────────────────── */
 .proof {
@@ -725,7 +765,9 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 .modal.open { opacity: 1; pointer-events: all; transform: translate(-50%, -50%) scale(1); }
 [data-theme="dark"] .modal { background: var(--bg-card); }
 .modal-accent { height: 3px; background: var(--gradient-h); border-radius: var(--r-xl) var(--r-xl) 0 0; }
-.modal-body { padding: 2.5rem; overflow: hidden; position: relative; }
+.modal-body { padding: 2.5rem; overflow: visible; position: relative; }
+/* Ghost number contained to its own bounds, not the whole body */
+.modal-num { overflow: hidden; }
 .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }
 .modal-num { font-family: var(--font-display); font-size: 5rem; font-weight: 800; color: var(--bg-surface); line-height: 1; letter-spacing: -.05em; user-select: none; position: absolute; bottom: 1.5rem; right: 2rem; pointer-events: none; }
 [data-theme="dark"] .modal-num { color: rgba(255,255,255,.04); }
