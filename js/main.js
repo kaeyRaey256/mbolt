@@ -485,18 +485,13 @@
   /* ── BODY SCROLL LOCK UTILITY ───────────────────────────── */
   /* Locks page scroll while keeping modal content scrollable  */
   /* Works on desktop, iOS Safari, Android Chrome              */
-  let _scrollY = 0;
   function lockBody() {
-    _scrollY = window.scrollY;
-    document.body.style.top    = `-${_scrollY}px`;
-    document.body.classList.add('scroll-locked');
-    // Tell Lenis to stop (but don't let it fight the lock)
+    // Lock on html only — body stays in flow, modal scroll works everywhere
+    document.documentElement.classList.add('modal-open');
     try { if (lenis) lenis.stop(); } catch(e) {}
   }
   function unlockBody() {
-    document.body.classList.remove('scroll-locked');
-    document.body.style.top = '';
-    window.scrollTo({ top: _scrollY, behavior: 'instant' });
+    document.documentElement.classList.remove('modal-open');
     try { if (lenis) lenis.start(); } catch(e) {}
   }
 
@@ -607,6 +602,19 @@
     document.getElementById('work-modal-close')?.addEventListener('click', closeWork);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closeWork(); });
 
+    // Desktop: stop wheel events escaping modal so Lenis doesn't intercept them
+    modal.addEventListener('wheel', e => {
+      if (!modal.classList.contains('open')) return;
+      const atTop    = modal.scrollTop === 0;
+      const atBottom = modal.scrollTop + modal.clientHeight >= modal.scrollHeight - 1;
+      // Only stop propagation if there is content to scroll
+      if (modal.scrollHeight > modal.clientHeight) {
+        if (!(atTop && e.deltaY < 0) && !(atBottom && e.deltaY > 0)) {
+          e.stopPropagation();
+        }
+      }
+    }, { passive: false });
+
     // Wire up ALL work cards (both horizontal track and mobile grid)
     document.querySelectorAll('.work-card').forEach((card, i) => {
       const keys = ['w1','w2','w3','w4','w5','w6'];
@@ -653,8 +661,19 @@
     overlay.addEventListener('click', close);
     document.getElementById('modal-close')?.addEventListener('click', close);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
-    // Close CTA inside modal also triggers close + scroll
     document.getElementById('modal-cta-btn')?.addEventListener('click', close);
+
+    // Desktop: stop wheel events escaping service modal
+    modal.addEventListener('wheel', e => {
+      if (!modal.classList.contains('open')) return;
+      const atTop    = modal.scrollTop === 0;
+      const atBottom = modal.scrollTop + modal.clientHeight >= modal.scrollHeight - 1;
+      if (modal.scrollHeight > modal.clientHeight) {
+        if (!(atTop && e.deltaY < 0) && !(atBottom && e.deltaY > 0)) {
+          e.stopPropagation();
+        }
+      }
+    }, { passive: false });
 
     document.querySelectorAll('.service-card[data-service-id]').forEach(card => {
       card.addEventListener('click', () => {
@@ -1266,6 +1285,54 @@
     }
   }
 
+
+  /* ── PAGE TRANSITIONS ───────────────────────────────────── */
+  function initPageTransitions() {
+    // Skip if View Transitions API is available (CSS handles it natively)
+    const hasVT = !!document.startViewTransition;
+
+    function navigateTo(href) {
+      if (hasVT) {
+        document.startViewTransition(() => {
+          window.location.href = href;
+        });
+      } else {
+        // JS fallback: fade out, then navigate
+        document.body.classList.add('page-leaving');
+        setTimeout(() => { window.location.href = href; }, 230);
+      }
+    }
+
+    // Intercept all internal page-to-page links (not anchors, not same page)
+    document.querySelectorAll('a[href]').forEach(a => {
+      const href = a.getAttribute('href');
+      // Only intercept: relative html links between pages (not anchors, not external)
+      if (!href) return;
+      if (href.startsWith('#')) return;           // same-page anchor
+      if (href.startsWith('http')) return;        // external
+      if (href.startsWith('tel:')) return;        // phone
+      if (href.startsWith('mailto:')) return;     // email
+      if (href.includes('.html') && !href.includes('#')) {
+        // Pure page navigation — intercept
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          navigateTo(href);
+        });
+      } else if (href.includes('.html') && href.includes('#')) {
+        // Page + anchor — navigate with hash, browser handles scroll
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          navigateTo(href);
+        });
+      }
+    });
+
+    // Fade in on arrival
+    if (!hasVT) {
+      document.body.classList.add('page-entering');
+    }
+  }
+
   /* ── INIT ───────────────────────────────────────────────── */
   // Page load fade — add class before DOMContentLoaded fires
   document.body.classList.add('page-loading');
@@ -1300,6 +1367,7 @@
     initSectionNumber();
     initFooterServiceLinks();
     initTestiRotation();
+    initPageTransitions();
     initGalleryStrip();
     initGallery();
 
