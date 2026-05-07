@@ -189,71 +189,76 @@
   }
 
   /* ── HERO ───────────────────────────────────────────────── */
-  function initHero() {
-    if (typeof gsap === 'undefined') return;
-
-    // ── Hero image rotation — Ken Burns crossfade ───────────
+  /* ── HERO IMAGE ROTATION — independent of GSAP ────────── */
+  /* Runs on DOMContentLoaded, no GSAP dependency */
+  function initHeroRotation() {
     const heroImages = [
       'assets/images/hero-1.jpg',
       'assets/images/hero-2.jpg',
       'assets/images/hero-3.jpg'
     ];
 
-    // Build layered bg divs — one per image, stacked absolutely
     const heroBg = document.querySelector('.hero-bg');
-    if (heroBg) {
-      // Create layers
-      const layers = heroImages.map((src, i) => {
-        const div = document.createElement('div');
-        div.className = 'hero-bg-layer';
-        div.style.cssText = `
-          position:absolute; inset:0;
-          background-image:url('${src}');
-          background-size:cover; background-position:center;
-          opacity:${i === 0 ? '1' : '0'};
-          transform:scale(1.04);
-          transition:opacity 1.6s cubic-bezier(0.4,0,0.2,1), transform 8s ease-out;
-        `;
-        heroBg.appendChild(div);
-        return div;
+    if (!heroBg) return;
+
+    // Build layered divs
+    const layers = heroImages.map((src, i) => {
+      const div = document.createElement('div');
+      div.className = 'hero-bg-layer';
+      // Inline transition — no GSAP needed
+      div.style.cssText = [
+        'position:absolute', 'inset:0',
+        `background-image:url('${src}')`,
+        'background-size:cover',
+        `opacity:${i === 0 ? '1' : '0'}`,
+        'transform:scale(1.04)',
+        'transition:opacity 1.6s cubic-bezier(0.4,0,0.2,1), transform 8s ease-out'
+      ].join(';');
+      heroBg.appendChild(div);
+      return div;
+    });
+
+    // Preload all images immediately
+    heroImages.forEach(src => { const img = new Image(); img.src = src; });
+
+    let current = 0;
+
+    function showLayer(idx) {
+      layers.forEach((layer, i) => {
+        if (i === idx) {
+          layer.style.transform = 'scale(1.04)';
+          layer.style.opacity   = '1';
+          // Double-rAF to allow layout to paint before breath animation
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            layer.style.transform = 'scale(1)';
+          }));
+        } else {
+          layer.style.opacity = '0';
+        }
       });
-
-      // Preload images silently
-      heroImages.forEach(src => { const img = new Image(); img.src = src; });
-
-      let current = 0;
-
-      function showLayer(idx) {
-        layers.forEach((layer, i) => {
-          if (i === idx) {
-            // Entering layer: reset scale then let it breathe
-            layer.style.transform = 'scale(1.04)';
-            layer.style.opacity = '1';
-            // Trigger scale breath on next frame
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                layer.style.transform = 'scale(1)';
-              });
-            });
-          } else {
-            layer.style.opacity = '0';
-          }
-        });
-      }
-
-      // Start first image breathing immediately
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          layers[0].style.transform = 'scale(1)';
-        });
-      });
-
-      // Cycle every 8 seconds
-      setInterval(() => {
-        current = (current + 1) % layers.length;
-        showLayer(current);
-      }, 8000);
     }
+
+    // Breathe first image in immediately
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      layers[0].style.transform = 'scale(1)';
+    }));
+
+    // Cycle every 8 seconds — pause when tab is hidden
+    let timer = setInterval(advance, 8000);
+    function advance() {
+      current = (current + 1) % layers.length;
+      showLayer(current);
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { clearInterval(timer); }
+      else { timer = setInterval(advance, 8000); }
+    });
+  }
+
+  function initHero() {
+    if (typeof gsap === 'undefined') return;
+
+    const heroBg = document.querySelector('.hero-bg');
 
     // ── Parallax on the whole hero bg container ─────────────
     if (heroBg && ScrollTrigger) {
@@ -476,6 +481,25 @@
   }
 
 
+
+  /* ── BODY SCROLL LOCK UTILITY ───────────────────────────── */
+  /* Locks page scroll while keeping modal content scrollable  */
+  /* Works on desktop, iOS Safari, Android Chrome              */
+  let _scrollY = 0;
+  function lockBody() {
+    _scrollY = window.scrollY;
+    document.body.style.top    = `-${_scrollY}px`;
+    document.body.classList.add('scroll-locked');
+    // Tell Lenis to stop (but don't let it fight the lock)
+    try { if (lenis) lenis.stop(); } catch(e) {}
+  }
+  function unlockBody() {
+    document.body.classList.remove('scroll-locked');
+    document.body.style.top = '';
+    window.scrollTo({ top: _scrollY, behavior: 'instant' });
+    try { if (lenis) lenis.start(); } catch(e) {}
+  }
+
   /* ── WORK MODAL DATA ────────────────────────────────────── */
   const WORK_COPY = {
     w1: {
@@ -567,8 +591,7 @@
         }
       });
 
-      try { if (lenis) lenis.stop(); } catch(e) {}
-      document.body.style.overflow = 'hidden';
+      lockBody();
     }
     function closeWork() {
       overlay.classList.remove('open');
@@ -577,8 +600,7 @@
       // Reset body classes for next open
       const body = modal.querySelector('.work-modal-body');
       if (body) { body.classList.remove('entered', 'entering'); }
-      try { if (lenis) lenis.start(); } catch(e) {}
-      document.body.style.overflow = '';
+      unlockBody();
     }
 
     overlay.addEventListener('click', closeWork);
@@ -621,13 +643,11 @@
       document.getElementById('modal-desc').textContent = data.fullDesc || data.shortDesc || '';
       document.getElementById('modal-tags').innerHTML   = (data.tags || []).map(t => `<span class="stag">${t}</span>`).join('');
       overlay.classList.add('open'); modal.classList.add('open');
-      try { if (lenis) lenis.stop(); } catch(e) {}
-      document.body.style.overflow = 'hidden';
+      lockBody();
     }
     function close() {
       overlay.classList.remove('open'); modal.classList.remove('open');
-      try { if (lenis) lenis.start(); } catch(e) {}
-      document.body.style.overflow = '';
+      unlockBody();
     }
 
     overlay.addEventListener('click', close);
@@ -1188,14 +1208,12 @@
       lbCounter.textContent = `${idx + 1} / ${imageItems.length}`;
       overlay.classList.add('open');
       lb.classList.add('open');
-      try { if (lenis) lenis.stop(); } catch(e) {}
-      document.body.style.overflow = 'hidden';
+      lockBody();
     }
     function closeLb() {
       overlay.classList.remove('open');
       lb.classList.remove('open');
-      try { if (lenis) lenis.start(); } catch(e) {}
-      document.body.style.overflow = '';
+      unlockBody();
     }
     function prevLb() { openLb((lbCurrent - 1 + imageItems.length) % imageItems.length); }
     function nextLb() { openLb((lbCurrent + 1) % imageItems.length); }
@@ -1257,6 +1275,7 @@
     setTimeout(() => document.body.classList.remove('page-loading'), 450);
     initTheme();
     initCookies();
+    initHeroRotation(); // runs immediately, no GSAP needed
     initNav();
     initTeamPhotos();
     await loadContent();
