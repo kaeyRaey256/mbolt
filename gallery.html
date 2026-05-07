@@ -38,9 +38,9 @@
   </div>
 </div>
 
-<!-- NAVBAR -->
+<!-- NAVBAR — no scrolled class, gallery-page CSS handles it -->
 <header>
-  <nav class="nav scrolled" id="main-nav" role="navigation">
+  <nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
     <a href="index.html" class="nav-logo">
       <img src="assets/icons/logo.svg" alt="MBolt" class="logo-colour">
       <img src="assets/icons/logo-white.svg" alt="MBolt" class="logo-white">
@@ -82,20 +82,20 @@
 
 <main>
 
-<!-- GALLERY HERO — opening cinematic image -->
-<div class="gallery-hero" id="gallery-hero" aria-label="Gallery hero">
-  <div class="gallery-hero-img" style="background-image:url('assets/images/work-1.jpg')"></div>
+<!-- GALLERY HERO — cinematic opening -->
+<div class="gallery-hero" id="gallery-hero" aria-label="Gallery">
+  <div class="gallery-hero-img" style="background-image:url('assets/images/gallery/gallery-1.png')"></div>
   <div class="gallery-hero-overlay"></div>
   <div class="gallery-hero-content">
-    <div class="eyebrow" style="color:rgba(255,255,255,.5);">In the Field</div>
+    <div class="eyebrow" style="color:rgba(255,255,255,.55);">In the Field</div>
     <h1 style="font-family:var(--font-display);font-size:clamp(2.8rem,6vw,5.5rem);font-weight:800;letter-spacing:-.04em;color:#fff;line-height:1;margin-top:.5rem;">
       Fifteen years of<br><span style="color:var(--volt);">activation.</span>
     </h1>
-    <p style="font-family:var(--font-display);font-size:clamp(1rem,1.8vw,1.3rem);font-weight:300;color:rgba(255,255,255,.5);margin-top:1rem;max-width:480px;">
+    <p style="font-family:var(--font-display);font-size:clamp(.95rem,1.8vw,1.2rem);font-weight:300;color:rgba(255,255,255,.5);margin-top:1rem;max-width:460px;line-height:1.7;">
       Real campaigns. Real markets. Real results. This is the work that makes brands impossible to ignore.
     </p>
   </div>
-  <div class="gallery-hero-scroll">
+  <div class="gallery-hero-scroll" aria-hidden="true">
     <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
   </div>
 </div>
@@ -110,44 +110,86 @@
     <button class="gallery-filter-btn" data-filter="video">Video</button>
   </div>
 
-  <!-- Masonry grid -->
   <!--
-    Add your gallery images here.
-    For photos: <div class="gallery-item" data-type="photo">
-    For videos: <div class="gallery-item" data-type="video">
-    Images go in assets/images/gallery/ folder.
-    Currently using work images as stand-ins.
+    BENTO EDITORIAL GRID
+    First 2 items: gallery-1 and gallery-2 (your new images) — lead the gallery
+    Followed by activation photography in a considered 3-column arrangement
+    All images displayed at natural 16:9 ratio — no stretching, no cropping
   -->
-  <div class="gallery-grid" role="list" aria-label="Gallery">
+  <div class="gallery-grid" role="list" aria-label="Activation gallery">
 
+    <!-- ── FEATURED: gallery-1 and gallery-2 lead ── -->
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
-      <img src="assets/images/work-1.jpg" alt="Orange Telecom retail outreach" loading="lazy">
-      <div class="gallery-item-over"><div class="gallery-item-label">Orange Telecom · Retail Outreach</div></div>
+      <img src="assets/images/gallery/gallery-1.png"
+           alt="Homely Energy — Direct sales activation"
+           loading="eager">
+      <div class="gallery-item-over">
+        <div class="gallery-item-label">Homely Energy · Direct Sales Activation</div>
+      </div>
     </div>
 
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
-      <img src="assets/images/work-3.jpg" alt="TotalEnergies brand experience" loading="lazy">
-      <div class="gallery-item-over"><div class="gallery-item-label">TotalEnergies · Brand Experience</div></div>
+      <img src="assets/images/gallery/gallery-2.png"
+           alt="Raeys Gold Fry — Brand experience activation"
+           loading="eager">
+      <div class="gallery-item-over">
+        <div class="gallery-item-label">Raeys Gold Fry · Brand Experience</div>
+      </div>
+    </div>
+
+    <!-- ── ACTIVATION PHOTOGRAPHY ── -->
+    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
+      <img src="assets/images/work-3.jpg"
+           alt="TotalEnergies brand experience event"
+           loading="lazy">
+      <div class="gallery-item-over">
+        <div class="gallery-item-label">TotalEnergies · Brand Experience</div>
+      </div>
     </div>
 
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
-      <img src="assets/images/work-2.jpg" alt="Gorillo's branded vans" loading="lazy">
-      <div class="gallery-item-over"><div class="gallery-item-label">Gorillo's Snacks · Branded Vans</div></div>
+      <img src="assets/images/work-1.jpg"
+           alt="Orange Telecom retail outreach"
+           loading="lazy">
+      <div class="gallery-item-over">
+        <div class="gallery-item-label">Orange Telecom · Retail Outreach</div>
+      </div>
     </div>
 
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
-      <img src="assets/images/work-5.jpg" alt="Orange internet campaign" loading="lazy">
-      <div class="gallery-item-over"><div class="gallery-item-label">Orange Telecom · Internet Campaign</div></div>
+      <img src="assets/images/work-4.jpg"
+           alt="Field activation — Pay campaign"
+           loading="lazy">
+      <div class="gallery-item-over">
+        <div class="gallery-item-label">Field Activation · Pay Campaign</div>
+      </div>
     </div>
 
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
-      <img src="assets/images/work-4.jpg" alt="Pay campaign field activation" loading="lazy">
-      <div class="gallery-item-over"><div class="gallery-item-label">Field Activation · Pay Campaign</div></div>
+      <img src="assets/images/work-2.jpg"
+           alt="Gorillo's Snacks branded vans activation"
+           loading="lazy">
+      <div class="gallery-item-over">
+        <div class="gallery-item-label">Gorillo's Snacks · Branded Vans</div>
+      </div>
     </div>
 
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
-      <img src="assets/images/work-6.jpg" alt="Smile Telecom rural outreach" loading="lazy">
-      <div class="gallery-item-over"><div class="gallery-item-label">Smile Telecom · Rural Outreach</div></div>
+      <img src="assets/images/work-5.jpg"
+           alt="Orange Telecom internet packages campaign"
+           loading="lazy">
+      <div class="gallery-item-over">
+        <div class="gallery-item-label">Orange Telecom · Internet Campaign</div>
+      </div>
+    </div>
+
+    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
+      <img src="assets/images/work-6.jpg"
+           alt="Smile Telecom rural outreach"
+           loading="lazy">
+      <div class="gallery-item-over">
+        <div class="gallery-item-label">Smile Telecom · Rural Outreach</div>
+      </div>
     </div>
 
   </div>
@@ -178,12 +220,12 @@
     <div>
       <div class="footer-col-title">Capabilities</div>
       <ul class="footer-links">
-        <li><a href="index.html?service=btl" >BTL Marketing</a></li>
-        <li><a href="index.html?service=digital" >Digital Solutions</a></li>
-        <li><a href="index.html?service=strategy" >Activation Strategy</a></li>
-        <li><a href="index.html?service=comms" >Communications</a></li>
-        <li><a href="index.html?service=sales" >Sales &amp; Distribution</a></li>
-        <li><a href="index.html?service=supplies" >General Supplies</a></li>
+        <li><a href="index.html?service=btl">BTL Marketing</a></li>
+        <li><a href="index.html?service=digital">Digital Solutions</a></li>
+        <li><a href="index.html?service=strategy">Activation Strategy</a></li>
+        <li><a href="index.html?service=comms">Communications</a></li>
+        <li><a href="index.html?service=sales">Sales &amp; Distribution</a></li>
+        <li><a href="index.html?service=supplies">General Supplies</a></li>
       </ul>
     </div>
     <div>
