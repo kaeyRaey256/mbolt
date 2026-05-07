@@ -607,13 +607,23 @@
       if (!modal.classList.contains('open')) return;
       const atTop    = modal.scrollTop === 0;
       const atBottom = modal.scrollTop + modal.clientHeight >= modal.scrollHeight - 1;
-      // Only stop propagation if there is content to scroll
       if (modal.scrollHeight > modal.clientHeight) {
         if (!(atTop && e.deltaY < 0) && !(atBottom && e.deltaY > 0)) {
           e.stopPropagation();
         }
       }
     }, { passive: false });
+
+    // Mobile/touch: stop Lenis consuming touch events inside the modal
+    // This is the definitive fix for iOS scroll inside fixed modals
+    modal.addEventListener('touchmove', e => {
+      if (!modal.classList.contains('open')) return;
+      // Allow scroll only if modal has scrollable content
+      if (modal.scrollHeight > modal.clientHeight) {
+        e.stopPropagation(); // stop Lenis from eating this touch
+        // Do NOT call e.preventDefault() — that would stop scroll entirely
+      }
+    }, { passive: true });
 
     // Wire up ALL work cards (both horizontal track and mobile grid)
     document.querySelectorAll('.work-card').forEach((card, i) => {
@@ -674,6 +684,14 @@
         }
       }
     }, { passive: false });
+
+    // Mobile: stop Lenis consuming touch events inside service modal
+    modal.addEventListener('touchmove', e => {
+      if (!modal.classList.contains('open')) return;
+      if (modal.scrollHeight > modal.clientHeight) {
+        e.stopPropagation();
+      }
+    }, { passive: true });
 
     document.querySelectorAll('.service-card[data-service-id]').forEach(card => {
       card.addEventListener('click', () => {
@@ -1185,16 +1203,16 @@
     }, { threshold: 0.1 });
     items.forEach(item => obsGallery.observe(item));
 
-    // Build lightbox
+    // Build lightbox — arrows appended to BODY directly
+    // This is critical: fixed children of pointer-events:none parents
+    // don't receive events on iOS Safari. Body-level elements are safe.
     const overlay = document.createElement('div');
     overlay.className = 'lightbox-overlay';
+
     const lb = document.createElement('div');
     lb.className = 'lightbox';
     lb.innerHTML = `
-      <button class="lightbox-close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <div class="lightbox-counter"></div>
-      <button class="lightbox-prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button class="lightbox-next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lightbox-counter" id="lb-counter"></div>
       <div class="lightbox-img-wrap">
         <img src="" alt="" id="lb-img">
         <div class="lightbox-caption-wrap" id="lb-caption-wrap">
@@ -1203,13 +1221,42 @@
         </div>
       </div>
     `;
+
+    // Arrows and close button appended directly to body — never inside lb
+    const lbClose = document.createElement('button');
+    lbClose.className = 'lightbox-close';
+    lbClose.setAttribute('aria-label', 'Close');
+    lbClose.innerHTML = `<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+    const lbPrev = document.createElement('button');
+    lbPrev.className = 'lightbox-prev';
+    lbPrev.setAttribute('aria-label', 'Previous');
+    lbPrev.innerHTML = `<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+    const lbNext = document.createElement('button');
+    lbNext.className = 'lightbox-next';
+    lbNext.setAttribute('aria-label', 'Next');
+    lbNext.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
     document.body.appendChild(overlay);
     document.body.appendChild(lb);
+    document.body.appendChild(lbClose);
+    document.body.appendChild(lbPrev);
+    document.body.appendChild(lbNext);
 
-    const lbImg     = lb.querySelector('#lb-img');
+    // Show/hide all lightbox UI together
+    function setLbUiVisible(v) {
+      [lbClose, lbCounter, lbPrev, lbNext].forEach(el => {
+        el.style.opacity = v ? '1' : '0';
+        el.style.pointerEvents = v ? 'all' : 'none';
+      });
+    }
+    setLbUiVisible(false); // hidden until lightbox opens
+
+    const lbImg        = lb.querySelector('#lb-img');
     const lbCaption    = lb.querySelector('#lb-caption');
     const lbCaptionWrap = lb.querySelector('#lb-caption-wrap');
-    const lbCounter = lb.querySelector('.lightbox-counter');
+    const lbCounter    = lb.querySelector('#lb-counter');
     let lbCurrent = 0;
 
     // Get only image items (not video)
@@ -1227,11 +1274,15 @@
       lbCounter.textContent = `${idx + 1} / ${imageItems.length}`;
       overlay.classList.add('open');
       lb.classList.add('open');
+      setLbUiVisible(true);
       lockBody();
     }
     function closeLb() {
       overlay.classList.remove('open');
       lb.classList.remove('open');
+      lbClose.classList.remove('lb-visible');
+      lbPrev.classList.remove('lb-visible');
+      lbNext.classList.remove('lb-visible');
       unlockBody();
     }
     function prevLb() { openLb((lbCurrent - 1 + imageItems.length) % imageItems.length); }
@@ -1241,9 +1292,9 @@
     overlay.addEventListener('click', e => {
       if (e.target === overlay) closeLb();
     });
-    lb.querySelector('.lightbox-close').addEventListener('click', closeLb);
-    lb.querySelector('.lightbox-prev').addEventListener('click', e => { e.stopPropagation(); prevLb(); });
-    lb.querySelector('.lightbox-next').addEventListener('click', e => { e.stopPropagation(); nextLb(); });
+    lbClose.addEventListener('click', e => { e.stopPropagation(); closeLb(); });
+    lbPrev.addEventListener('click',  e => { e.stopPropagation(); prevLb(); });
+    lbNext.addEventListener('click',  e => { e.stopPropagation(); nextLb(); });
 
     document.addEventListener('keydown', e => {
       if (!lb.classList.contains('open')) return;
