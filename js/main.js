@@ -1237,7 +1237,10 @@
     function prevLb() { openLb((lbCurrent - 1 + imageItems.length) % imageItems.length); }
     function nextLb() { openLb((lbCurrent + 1) % imageItems.length); }
 
-    overlay.addEventListener('click', closeLb);
+    // Only close when clicking directly on overlay — not on children
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) closeLb();
+    });
     lb.querySelector('.lightbox-close').addEventListener('click', closeLb);
     lb.querySelector('.lightbox-prev').addEventListener('click', e => { e.stopPropagation(); prevLb(); });
     lb.querySelector('.lightbox-next').addEventListener('click', e => { e.stopPropagation(); nextLb(); });
