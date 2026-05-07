@@ -415,9 +415,23 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 /* Hero image layers — built by JS for rotation */
 .hero-bg-layer {
   position: absolute; inset: 0;
-  background-size: cover; background-position: center;
+  background-size: cover;
+  background-position: center; /* default — overridden per layer below */
   will-change: transform, opacity;
 }
+/* Per-image background positions — phone only */
+@media (max-width: 600px) {
+  .hero-bg-layer:nth-child(2) {
+    /* hero-2.jpg (m-pesa) — shift up to show the people in red */
+    background-position: center 30%;
+  }
+  .hero-bg-layer:nth-child(3) {
+    /* hero-3.jpg (Gulf) — shift left to show the oil+bike interaction */
+    background-position: 40% center;
+  }
+}
+
+
 
 /* Base dark-to-top overlay */
 .hero-overlay {
@@ -448,8 +462,9 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 
 .hero-content {
   position: relative; z-index: 4;
-  /* Breathing room: nav clearance top, generous bottom anchor */
-  padding: clamp(5rem, 10vh, 7rem) var(--page-pad) clamp(3.5rem, 7vh, 5rem);
+  /* Desktop: nav is ~72px, eyebrow needs visible breathing room above headline */
+  /* clamp ensures eyebrow never collides with nav or headline on any viewport */
+  padding: clamp(6.5rem, 14vh, 10rem) var(--page-pad) clamp(3.5rem, 7vh, 5rem);
   width: 100%; max-width: 920px;
 }
 /* Eyebrow: normal flow, sits above headline with margin */
@@ -459,7 +474,7 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
   display: flex; align-items: center; gap: .6rem;
   font-family: var(--font-display); font-size: .68rem; font-weight: 800;
   letter-spacing: .22em; text-transform: uppercase;
-  color: rgba(255,255,255,.5); margin-bottom: 1.5rem;
+  color: rgba(255,255,255,.5); margin-bottom: 2rem;
 }
 .hero-eyebrow .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--volt); flex-shrink: 0; }
 
