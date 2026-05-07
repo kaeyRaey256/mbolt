@@ -192,29 +192,95 @@
   function initHero() {
     if (typeof gsap === 'undefined') return;
 
-    // Parallax
-    const bg = document.querySelector('.hero-bg');
-    if (bg && ScrollTrigger) {
-      gsap.to(bg, { yPercent: 25, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+    // ── Hero image rotation — Ken Burns crossfade ───────────
+    const heroImages = [
+      'assets/images/hero-1.jpg',
+      'assets/images/hero-2.jpg',
+      'assets/images/hero-3.jpg'
+    ];
+
+    // Build layered bg divs — one per image, stacked absolutely
+    const heroBg = document.querySelector('.hero-bg');
+    if (heroBg) {
+      // Create layers
+      const layers = heroImages.map((src, i) => {
+        const div = document.createElement('div');
+        div.className = 'hero-bg-layer';
+        div.style.cssText = `
+          position:absolute; inset:0;
+          background-image:url('${src}');
+          background-size:cover; background-position:center;
+          opacity:${i === 0 ? '1' : '0'};
+          transform:scale(1.04);
+          transition:opacity 1.6s cubic-bezier(0.4,0,0.2,1), transform 8s ease-out;
+        `;
+        heroBg.appendChild(div);
+        return div;
+      });
+
+      // Preload images silently
+      heroImages.forEach(src => { const img = new Image(); img.src = src; });
+
+      let current = 0;
+
+      function showLayer(idx) {
+        layers.forEach((layer, i) => {
+          if (i === idx) {
+            // Entering layer: reset scale then let it breathe
+            layer.style.transform = 'scale(1.04)';
+            layer.style.opacity = '1';
+            // Trigger scale breath on next frame
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                layer.style.transform = 'scale(1)';
+              });
+            });
+          } else {
+            layer.style.opacity = '0';
+          }
+        });
+      }
+
+      // Start first image breathing immediately
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          layers[0].style.transform = 'scale(1)';
+        });
+      });
+
+      // Cycle every 8 seconds
+      setInterval(() => {
+        current = (current + 1) % layers.length;
+        showLayer(current);
+      }, 8000);
     }
 
-    // Strike line
+    // ── Parallax on the whole hero bg container ─────────────
+    if (heroBg && ScrollTrigger) {
+      gsap.to(heroBg, { yPercent: 20, ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }
+      });
+    }
+
+    // ── Strike line ─────────────────────────────────────────
     const strike = document.querySelector('.hero-strike');
     if (strike) gsap.to(strike, { width: '100%', duration: 1.2, delay: 2.8, ease: 'power3.out' });
 
-    // Entrance
-    const tl = gsap.timeline({ delay: .25 });
+    // ── Content entrance ────────────────────────────────────
+    const tl = gsap.timeline({ delay: .3 });
     const ey = document.querySelector('.hero-eyebrow');
     const ln = document.querySelectorAll('.hero-headline .line');
     const sb = document.querySelector('.hero-sub');
+    const tg = document.querySelector('.hero-tagline');
     const sg = document.querySelector('.hero-signoff');
     const ct = document.querySelector('.hero-ctas');
 
-    if (ey) tl.from(ey, { y: 20, opacity: 0, duration: .6, ease: 'power3.out' });
-    ln.forEach((l, i) => tl.from(l, { y: 55, opacity: 0, duration: .75, ease: 'power3.out' }, i === 0 ? '-=.2' : '-=.5'));
-    if (sb) tl.from(sb, { y: 18, opacity: 0, duration: .6, ease: 'power3.out' }, '-=.4');
-    if (sg) tl.from(sg, { y: 14, opacity: 0, duration: .55, ease: 'power3.out' }, '-=.3');
-    if (ct) tl.from(ct, { y: 18, opacity: 0, duration: .6, ease: 'power3.out' }, '-=.3');
+    if (ey) tl.from(ey, { y: 16, opacity: 0, duration: .55, ease: 'power3.out' });
+    ln.forEach((l, i) => tl.from(l, { y: 55, opacity: 0, duration: .75, ease: 'power3.out' }, i === 0 ? '-=.15' : '-=.5'));
+    if (sb) tl.from(sb, { y: 16, opacity: 0, duration: .55, ease: 'power3.out' }, '-=.35');
+    if (tg) tl.from(tg, { y: 12, opacity: 0, duration: .5,  ease: 'power3.out' }, '-=.3');
+    if (sg) tl.from(sg, { y: 12, opacity: 0, duration: .5,  ease: 'power3.out' }, '-=.25');
+    if (ct) tl.from(ct, { y: 16, opacity: 0, duration: .55, ease: 'power3.out' }, '-=.25');
   }
 
   /* ── SCROLL REVEAL ──────────────────────────────────────── */
@@ -969,7 +1035,7 @@
     if (window.innerWidth < 1024) return;
 
     const sections = [
-      { id: 'services', label: '01 · Services' },
+      { id: 'capabilities', label: '01 · Capabilities' },
       { id: 'work',     label: '02 · Work'     },
       { id: 'about',    label: '03 · About'    },
       { id: 'team',     label: '04 · Team'     },
@@ -1092,14 +1158,18 @@
       <button class="lightbox-next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="lightbox-img-wrap">
         <img src="" alt="" id="lb-img">
-        <div class="lightbox-caption" id="lb-caption"></div>
+        <div class="lightbox-caption-wrap" id="lb-caption-wrap">
+          <div class="lightbox-caption-line"></div>
+          <div class="lightbox-caption" id="lb-caption"></div>
+        </div>
       </div>
     `;
     document.body.appendChild(overlay);
     document.body.appendChild(lb);
 
     const lbImg     = lb.querySelector('#lb-img');
-    const lbCaption = lb.querySelector('#lb-caption');
+    const lbCaption    = lb.querySelector('#lb-caption');
+    const lbCaptionWrap = lb.querySelector('#lb-caption-wrap');
     const lbCounter = lb.querySelector('.lightbox-counter');
     let lbCurrent = 0;
 
@@ -1114,6 +1184,7 @@
       lbImg.src = img.src;
       lbImg.alt = img.alt || '';
       lbCaption.textContent = cap ? cap.textContent : '';
+      if (lbCaptionWrap) lbCaptionWrap.style.display = cap ? '' : 'none';
       lbCounter.textContent = `${idx + 1} / ${imageItems.length}`;
       overlay.classList.add('open');
       lb.classList.add('open');
