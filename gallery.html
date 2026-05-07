@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MBolt Gallery — Fifteen years of brand activation across Uganda.">
+  <title>Gallery — MBolt</title>
+  <meta name="theme-color" content="#CC2B2B">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    (function(){
+      var s=localStorage.getItem('mbolt-theme');
+      var d=window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme',s||(d?'dark':'light'));
+    })();
+  </script>
+</head>
+<body class="gallery-page">
+
+<div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
+<button class="scroll-top-btn" id="scroll-top-btn" aria-label="Scroll to top">
+  <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<div class="a11y-wrap">
+  <button class="a11y-toggle" id="a11y-toggle" aria-label="Accessibility" aria-expanded="false">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+  </button>
+  <div class="a11y-panel" id="a11y-panel" role="dialog">
+    <div class="a11y-title">Accessibility</div>
+    <label class="a11y-opt"><input type="checkbox" id="a11y-hc"> High contrast</label>
+    <label class="a11y-opt"><input type="checkbox" id="a11y-motion"> Reduce motion</label>
+    <span class="a11y-slider-lbl" id="fs-lbl">Font size</span>
+    <input type="range" id="a11y-font" min="14" max="21" value="16" step="1" aria-labelledby="fs-lbl">
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<header>
+  <nav class="nav scrolled" id="main-nav" role="navigation">
+    <a href="index.html" class="nav-logo">
+      <img src="assets/icons/logo.svg" alt="MBolt" class="logo-colour">
+      <img src="assets/icons/logo-white.svg" alt="MBolt" class="logo-white">
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="index.html#capabilities">Capabilities</a></li>
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="gallery.html" class="active">Gallery</a></li>
+      <li><a href="careers.html">Careers</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <a href="index.html#contact" class="nav-cta">Brief us <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg></a>
+      <button class="nav-burger" id="nav-burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="nav-drawer" id="nav-drawer">
+    <svg class="drawer-watermark" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z" fill="currentColor"/></svg>
+    <nav>
+      <a href="index.html#capabilities">Capabilities</a>
+      <a href="index.html#work">Work</a>
+      <a href="index.html#about">About</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="careers.html">Careers</a>
+    </nav>
+    <div class="drawer-bottom">
+      <a href="index.html#contact" class="drawer-cta">Brief us</a>
+      <button class="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- GALLERY HERO — opening cinematic image -->
+<div class="gallery-hero" id="gallery-hero" aria-label="Gallery hero">
+  <div class="gallery-hero-img" style="background-image:url('assets/images/work-1.jpg')"></div>
+  <div class="gallery-hero-overlay"></div>
+  <div class="gallery-hero-content">
+    <div class="eyebrow" style="color:rgba(255,255,255,.5);">In the Field</div>
+    <h1 style="font-family:var(--font-display);font-size:clamp(2.8rem,6vw,5.5rem);font-weight:800;letter-spacing:-.04em;color:#fff;line-height:1;margin-top:.5rem;">
+      Fifteen years of<br><span style="color:var(--volt);">activation.</span>
+    </h1>
+    <p style="font-family:var(--font-display);font-size:clamp(1rem,1.8vw,1.3rem);font-weight:300;color:rgba(255,255,255,.5);margin-top:1rem;max-width:480px;">
+      Real campaigns. Real markets. Real results. This is the work that makes brands impossible to ignore.
+    </p>
+  </div>
+  <div class="gallery-hero-scroll">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</div>
+
+<!-- GALLERY CONTENT -->
+<div class="gallery-page-content">
+
+  <!-- Filter -->
+  <div class="gallery-filter" role="toolbar" aria-label="Filter gallery">
+    <button class="gallery-filter-btn active" data-filter="all">All</button>
+    <button class="gallery-filter-btn" data-filter="photo">Photos</button>
+    <button class="gallery-filter-btn" data-filter="video">Video</button>
+  </div>
+
+  <!-- Masonry grid -->
+  <!--
+    Add your gallery images here.
+    For photos: <div class="gallery-item" data-type="photo">
+    For videos: <div class="gallery-item" data-type="video">
+    Images go in assets/images/gallery/ folder.
+    Currently using work images as stand-ins.
+  -->
+  <div class="gallery-grid" role="list" aria-label="Gallery">
+
+    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
+      <img src="assets/images/work-1.jpg" alt="Orange Telecom retail outreach" loading="lazy">
+      <div class="gallery-item-over"><div class="gallery-item-label">Orange Telecom · Retail Outreach</div></div>
+    </div>
+
+    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
+      <img src="assets/images/work-3.jpg" alt="TotalEnergies brand experience" loading="lazy">
+      <div class="gallery-item-over"><div class="gallery-item-label">TotalEnergies · Brand Experience</div></div>
+    </div>
+
+    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
+      <img src="assets/images/work-2.jpg" alt="Gorillo's branded vans" loading="lazy">
+      <div class="gallery-item-over"><div class="gallery-item-label">Gorillo's Snacks · Branded Vans</div></div>
+    </div>
+
+    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
+      <img src="assets/images/work-5.jpg" alt="Orange internet campaign" loading="lazy">
+      <div class="gallery-item-over"><div class="gallery-item-label">Orange Telecom · Internet Campaign</div></div>
+    </div>
+
+    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
+      <img src="assets/images/work-4.jpg" alt="Pay campaign field activation" loading="lazy">
+      <div class="gallery-item-over"><div class="gallery-item-label">Field Activation · Pay Campaign</div></div>
+    </div>
+
+    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
+      <img src="assets/images/work-6.jpg" alt="Smile Telecom rural outreach" loading="lazy">
+      <div class="gallery-item-over"><div class="gallery-item-label">Smile Telecom · Rural Outreach</div></div>
+    </div>
+
+  </div>
+
+  <!-- CTA at bottom -->
+  <div style="text-align:center;padding:4rem 0 0;">
+    <p style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--ink-3);margin-bottom:1.5rem;letter-spacing:-.01em;">Seen enough? Let's create something together.</p>
+    <a href="index.html#contact" class="btn btn-primary">
+      <span>Brief us</span>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+    </a>
+  </div>
+
+</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer role="contentinfo">
+  <svg class="footer-bolt-bg" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4.5 13.5H11L9 22L19.5 9.5H13L13 2Z" fill="white"/></svg>
+  <div class="footer-grid">
+    <div>
+      <img src="assets/icons/logo-white.svg" alt="MBolt" class="footer-logo-img">
+      <p class="footer-tagline">Own your market.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Navigate</div>
+      <ul class="footer-links">
+        <li><a href="index.html#capabilities">Capabilities</a></li>
+        <li><a href="index.html#work">Our Work</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="careers.html">Careers</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Capabilities</div>
+      <ul class="footer-links">
+        <li><a href="index.html?service=btl">BTL Marketing</a></li>
+        <li><a href="index.html?service=digital">Digital Solutions</a></li>
+        <li><a href="index.html?service=strategy">Activation Strategy</a></li>
+        <li><a href="index.html?service=comms">Communications</a></li>
+        <li><a href="index.html?service=sales">Sales &amp; Distribution</a></li>
+        <li><a href="index.html?service=supplies">General Supplies</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Get In Touch</div>
+      <ul class="footer-links">
+        <li><a href="tel:+256752625755">+256 752 625 755</a></li>
+        <li><a href="tel:+256758532555">+256 758 532 555</a></li>
+        <li><a href="mailto:jtayebwa@market-bolt.com">jtayebwa@market-bolt.com</a></li>
+        <li><a href="mailto:pangulo@market-bolt.com">pangulo@market-bolt.com</a></li>
+        <li><span style="color:rgba(255,255,255,.25);font-size:.78rem;">Kiira, Kampala, Uganda</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2025–2026 Market Bolt Uganda Ltd. All rights reserved.</p>
+    <div class="footer-legal">
+      <a href="legal.html">Privacy Policy</a>
+      <a href="legal.html#terms">Terms of Use</a>
+      <a href="legal.html#cookies">Cookies</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="js/main.js" defer></script>
+</body>
+</html>
