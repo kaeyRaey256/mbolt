@@ -589,10 +589,12 @@
   /* ── FOOTER SERVICE LINKS → modals ─────────────────────── */
   function initFooterServiceLinks() {
     const map = {
-      'BTL Marketing':        'btl',
-      'Communications':       'comms',
-      'Sales & Distribution': 'sales',
-      'General Supplies':     'supplies',
+      'BTL Marketing':          'btl',
+      'Digital Solutions':      'digital',
+      'Activation Strategy':    'strategy',
+      'Communications':         'comms',
+      'Sales & Distribution':   'sales',
+      'General Supplies':       'supplies',
     };
 
     // Handle query param on load — opens modal if ?service=xxx in URL
@@ -628,7 +630,7 @@
           card.click();
         } else {
           // Different page (careers, legal) — navigate with query param
-          window.location.href = `index.html?service=${svcId}`;
+          window.location.href = `index.html?service=${encodeURIComponent(svcId)}`;
         }
       });
     });
@@ -917,7 +919,10 @@
     let rafId;
     let active = false;
 
+    let frameCount = 0;
     function checkMidscreen() {
+      frameCount++;
+      if (frameCount % 4 !== 0) { rafId = requestAnimationFrame(checkMidscreen); return; }
       const vpCx = window.innerWidth / 2;
       ticker.querySelectorAll('.client-pill').forEach(pill => {
         const rect = pill.getBoundingClientRect();
@@ -997,6 +1002,181 @@
     });
   }
 
+
+  /* ── GALLERY STRIP — homepage taster ───────────────────── */
+  function initGalleryStrip() {
+    const strip = document.querySelector('.gallery-strip');
+    if (!strip) return;
+
+    const items = strip.querySelectorAll('.gallery-strip-item');
+    const progress = strip.querySelector('.gallery-progress');
+    if (!items.length) return;
+
+    let current = 0;
+    let timer;
+    const DURATION = 5000;
+
+    function show(idx) {
+      items.forEach((item, i) => item.classList.toggle('active', i === idx));
+      // Progress bar
+      if (progress) {
+        progress.classList.remove('animating');
+        progress.style.width = '0';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            progress.classList.add('animating');
+          });
+        });
+      }
+    }
+
+    function next() {
+      current = (current + 1) % items.length;
+      show(current);
+    }
+
+    function startAuto() {
+      clearInterval(timer);
+      timer = setInterval(next, DURATION);
+    }
+
+    show(0);
+    startAuto();
+
+    // Click any strip item opens gallery page at that index
+    items.forEach((item, i) => {
+      item.addEventListener('click', () => {
+        window.location.href = `gallery.html?item=${i}`;
+      });
+      item.style.cursor = 'pointer';
+    });
+
+    // Pause on hover
+    strip.addEventListener('mouseenter', () => clearInterval(timer));
+    strip.addEventListener('mouseleave', startAuto);
+
+    // Pause when tab hidden
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) clearInterval(timer); else startAuto();
+    });
+  }
+
+  /* ── GALLERY LIGHTBOX ───────────────────────────────────── */
+  function initGallery() {
+    const grid = document.querySelector('.gallery-grid');
+    if (!grid) return;
+
+    const items = Array.from(grid.querySelectorAll('.gallery-item'));
+    if (!items.length) return;
+
+    // Observe items for entrance animation
+    const obsGallery = new IntersectionObserver((ents, obs) => {
+      ents.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), (items.indexOf(e.target) % 3) * 80);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    items.forEach(item => obsGallery.observe(item));
+
+    // Build lightbox
+    const overlay = document.createElement('div');
+    overlay.className = 'lightbox-overlay';
+    const lb = document.createElement('div');
+    lb.className = 'lightbox';
+    lb.innerHTML = `
+      <button class="lightbox-close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lightbox-counter"></div>
+      <button class="lightbox-prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="lightbox-next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="lightbox-img-wrap">
+        <img src="" alt="" id="lb-img">
+        <div class="lightbox-caption" id="lb-caption"></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    document.body.appendChild(lb);
+
+    const lbImg     = lb.querySelector('#lb-img');
+    const lbCaption = lb.querySelector('#lb-caption');
+    const lbCounter = lb.querySelector('.lightbox-counter');
+    let lbCurrent = 0;
+
+    // Get only image items (not video)
+    const imageItems = items.filter(item => item.querySelector('img'));
+
+    function openLb(idx) {
+      lbCurrent = idx;
+      const item = imageItems[idx];
+      const img  = item.querySelector('img');
+      const cap  = item.querySelector('.gallery-item-label');
+      lbImg.src = img.src;
+      lbImg.alt = img.alt || '';
+      lbCaption.textContent = cap ? cap.textContent : '';
+      lbCounter.textContent = `${idx + 1} / ${imageItems.length}`;
+      overlay.classList.add('open');
+      lb.classList.add('open');
+      try { if (lenis) lenis.stop(); } catch(e) {}
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLb() {
+      overlay.classList.remove('open');
+      lb.classList.remove('open');
+      try { if (lenis) lenis.start(); } catch(e) {}
+      document.body.style.overflow = '';
+    }
+    function prevLb() { openLb((lbCurrent - 1 + imageItems.length) % imageItems.length); }
+    function nextLb() { openLb((lbCurrent + 1) % imageItems.length); }
+
+    overlay.addEventListener('click', closeLb);
+    lb.querySelector('.lightbox-close').addEventListener('click', closeLb);
+    lb.querySelector('.lightbox-prev').addEventListener('click', e => { e.stopPropagation(); prevLb(); });
+    lb.querySelector('.lightbox-next').addEventListener('click', e => { e.stopPropagation(); nextLb(); });
+
+    document.addEventListener('keydown', e => {
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape')     closeLb();
+      if (e.key === 'ArrowLeft')  prevLb();
+      if (e.key === 'ArrowRight') nextLb();
+    });
+
+    // Touch swipe
+    let touchStartX = 0;
+    lb.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend',   e => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 50) { dx < 0 ? nextLb() : prevLb(); }
+    });
+
+    // Wire up image items
+    imageItems.forEach((item, i) => {
+      item.addEventListener('click', () => openLb(i));
+    });
+
+    // Filter buttons
+    const filterBtns = document.querySelectorAll('.gallery-filter-btn');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        items.forEach(item => {
+          const type = item.dataset.type || 'photo';
+          const show = filter === 'all' || type === filter;
+          item.style.display = show ? '' : 'none';
+        });
+      });
+    });
+
+    // Handle ?item= param from homepage strip
+    const params = new URLSearchParams(window.location.search);
+    const startItem = parseInt(params.get('item') || '0', 10);
+    if (startItem > 0 && startItem < imageItems.length) {
+      setTimeout(() => openLb(startItem), 600);
+    }
+  }
+
   /* ── INIT ───────────────────────────────────────────────── */
   // Page load fade — add class before DOMContentLoaded fires
   document.body.classList.add('page-loading');
@@ -1030,6 +1210,8 @@
     initSectionNumber();
     initFooterServiceLinks();
     initTestiRotation();
+    initGalleryStrip();
+    initGallery();
 
     document.fonts?.ready.then(() => {
       if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
