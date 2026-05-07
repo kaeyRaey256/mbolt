@@ -486,13 +486,17 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 }
 /* Per-image background positions — phone only */
 @media (max-width: 600px) {
+  .hero-bg-layer:nth-child(1) {
+    /* hero-1.jpg — slight left shift on phone */
+    background-position: 35% center;
+  }
   .hero-bg-layer:nth-child(2) {
-    /* hero-2.jpg (m-pesa) — shift up to show the people in red */
-    background-position: center 30%;
+    /* hero-2.jpg (m-pesa) — up to show crowd, slightly left */
+    background-position: 30% 30%;
   }
   .hero-bg-layer:nth-child(3) {
-    /* hero-3.jpg (Gulf) — shift left to show the oil+bike interaction */
-    background-position: 40% center;
+    /* hero-3.jpg (Gulf boda boda) — strong left shift, show both men */
+    background-position: 18% center;
   }
 }
 
@@ -642,7 +646,7 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
   position: relative; overflow: hidden;
 }
 [data-theme="dark"] .proof { background: #0A0A0A; }
-.proof::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--gradient-h); }
+.proof::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--volt); }
 /* proof scan animation removed — too busy */
 .proof-item { text-align: center; padding: 1rem 2rem; position: relative; transition: background .3s; }
 .proof-item:hover { background: rgba(255,255,255,.03); border-radius: var(--r-md); }
@@ -734,30 +738,35 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 .icon-impact       { -webkit-mask-image: url('../assets/icons/icon-careers-impact.svg');  mask-image: url('../assets/icons/icon-careers-impact.svg'); }
 
 .service-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1.4rem; }
+/* ── SERVICE PILLS — neutral, architectural ───────────────── */
+/* !important ensures these win every specificity battle        */
 .stag {
   font-size: .62rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
   padding: .28rem .7rem; border-radius: var(--r-pill);
-  /* Neutral — off-white/dark-blue-grey, not loud */
-  background: rgba(30, 35, 50, 0.07);
-  color: var(--ink-3);
-  border: 1px solid rgba(30, 35, 50, 0.12);
+  background: rgba(30,35,50,.06) !important;
+  color: var(--ink-3) !important;
+  border: 1px solid rgba(30,35,50,.1) !important;
   transition: background var(--t-fast), color var(--t-fast);
 }
 [data-theme="dark"] .stag {
-  background: rgba(255,255,255,.07);
-  color: var(--ink-3);
-  border-color: rgba(255,255,255,.1);
+  background: rgba(255,255,255,.07) !important;
+  color: rgba(255,255,255,.5) !important;
+  border-color: rgba(255,255,255,.1) !important;
 }
-/* Even cards — same neutral, no red or green */
+/* All card variants — same neutral regardless of odd/even */
+.service-card .stag,
+.service-card:nth-child(odd) .stag,
 .service-card:nth-child(even) .stag {
-  background: rgba(30, 35, 50, 0.07);
-  color: var(--ink-3);
-  border-color: rgba(30, 35, 50, 0.12);
+  background: rgba(30,35,50,.06) !important;
+  color: var(--ink-3) !important;
+  border-color: rgba(30,35,50,.1) !important;
 }
+[data-theme="dark"] .service-card .stag,
+[data-theme="dark"] .service-card:nth-child(odd) .stag,
 [data-theme="dark"] .service-card:nth-child(even) .stag {
-  background: rgba(255,255,255,.07);
-  color: var(--ink-3);
-  border-color: rgba(255,255,255,.1);
+  background: rgba(255,255,255,.07) !important;
+  color: rgba(255,255,255,.5) !important;
+  border-color: rgba(255,255,255,.1) !important;
 }
 
 /* Service modal tags — keep brand colour in focused context */
@@ -1128,7 +1137,7 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 }
 [data-theme="dark"] .testi-section { background: #0A0A0A; }
 .testi-section::before { content: '"'; position: absolute; top: -3rem; left: 2rem; font-family: var(--font-display); font-size: clamp(10rem, 20vw, 22rem); font-weight: 800; color: rgba(255,255,255,.025); line-height: 1; pointer-events: none; user-select: none; }
-.testi-section::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--gradient-h); }
+.testi-section::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--volt); }
 .testi-quote { font-family: var(--font-display); font-size: clamp(1.2rem, 2.2vw, 1.75rem); font-weight: 400; line-height: 1.55; color: #fff; letter-spacing: -.01em; }
 .testi-quote em { font-style: normal; color: var(--volt); }
 .testi-author { display: flex; align-items: center; gap: 1rem; margin-top: 2rem; }
@@ -1367,7 +1376,7 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 .careers-hero { min-height: 75vh; display: flex; align-items: flex-end; padding: clamp(5rem,10vh,7rem) var(--page-pad) clamp(3rem, 7vh, 5rem); position: relative; background: var(--ink); overflow: hidden; }
 [data-theme="dark"] .careers-hero { background: #0A0A0A; }
 .careers-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 50% at 80% 40%, rgba(106,184,37,.07) 0%, transparent 60%), radial-gradient(ellipse 40% 60% at 20% 70%, rgba(204,43,43,.05) 0%, transparent 60%); }
-.careers-hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--gradient-h); }
+.careers-hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--volt); }
 .careers-hero-content { position: relative; z-index: 1; max-width: 800px; }
 .culture-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: clamp(2rem, 4vw, 3.5rem); }
 .culture-card { padding: 2rem; background: var(--bg-white); border: 1.5px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); transition: border-color var(--t-mid), transform var(--t-mid), box-shadow var(--t-mid); }
@@ -1387,7 +1396,7 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 /* ── LEGAL ────────────────────────────────────────────────── */
 .legal-hero { background: var(--ink); padding: clamp(6rem, 12vh, 10rem) var(--page-pad) clamp(3rem, 6vh, 5rem); position: relative; overflow: hidden; }
 [data-theme="dark"] .legal-hero { background: #0A0A0A; }
-.legal-hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--gradient-h); }
+.legal-hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--volt); }
 .legal-nav { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 3rem; }
 .legal-tab { font-family: var(--font-display); font-size: .75rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; padding: .6rem 1.4rem; border-radius: var(--r-pill); border: 1.5px solid var(--border); color: var(--ink-3); cursor: pointer; transition: all var(--t-fast); background: var(--bg-white); }
 [data-theme="dark"] .legal-tab { background: var(--bg-card); }
@@ -1829,12 +1838,13 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 .lightbox {
   position: fixed; inset: 0; z-index: 901;
   display: flex; align-items: center; justify-content: center;
-  /* Generous padding — image never touches edges (Rolls-Royce principle) */
   padding: clamp(4rem, 7vh, 6rem) clamp(5rem, 10vw, 10rem);
-  pointer-events: none;
+  /* NEVER intercept pointer events — overlay and body-appended controls handle everything */
+  pointer-events: none !important;
 }
-.lightbox.open { pointer-events: all; }
-/* Arrows sit outside the img-wrap so they are always clickable */
+/* Only the image itself is clickable (to close on direct click if needed) */
+.lightbox.open .lightbox-img-wrap { pointer-events: all; }
+/* Arrows are body-appended at z-index 903 — always above everything */
 .lightbox-prev, .lightbox-next { z-index: 903; }
 .lightbox-img-wrap {
   position: relative;
@@ -1843,7 +1853,7 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
   opacity: 0; transform: scale(0.96);
   transition: opacity .45s var(--ease-out), transform .45s var(--ease-out);
 }
-.lightbox.open .lightbox-img-wrap { opacity: 1; transform: scale(1); }
+.lightbox.open .lightbox-img-wrap { opacity: 1; transform: scale(1); pointer-events: all; }
 
 .lightbox img {
   max-width: 100%; max-height: calc(100vh - 12rem);
@@ -1867,16 +1877,20 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 /* Nav arrows */
 .lightbox-prev, .lightbox-next {
   position: fixed; top: 50%; transform: translateY(-50%);
-  z-index: 902; background: rgba(255,255,255,.08);
-  border: 1.5px solid rgba(255,255,255,.15);
-  border-radius: 50%; width: 48px; height: 48px;
+  z-index: 903; background: rgba(255,255,255,.12);
+  border: 1.5px solid rgba(255,255,255,.25);
+  border-radius: 50%; width: 52px; height: 52px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: background var(--t-fast), opacity var(--t-fast);
-  opacity: .4;
+  cursor: pointer; transition: background .2s ease, opacity .2s ease, border-color .2s ease;
+  opacity: .7;
 }
-.lightbox-prev { left: 1.5rem; }
-.lightbox-next { right: 1.5rem; }
-.lightbox-prev:hover, .lightbox-next:hover { background: rgba(106,184,37,.2); opacity: 1; border-color: rgba(255,255,255,.3); }
+.lightbox-prev { left: 2.5rem; }
+.lightbox-next { right: 2.5rem; }
+.lightbox-prev:hover, .lightbox-next:hover {
+  background: rgba(106,184,37,.25); opacity: 1;
+  border-color: rgba(106,184,37,.5);
+  transform: translateY(-50%) scale(1.08);
+}
 .lightbox-prev svg, .lightbox-next svg { width: 18px; height: 18px; stroke: #fff; stroke-width: 2; fill: none; }
 /* Arrows: always pointer-events:all — they are appended to body directly */
 /* Visibility controlled by opacity + display, not pointer-events */
@@ -1892,7 +1906,7 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 
 /* Close button */
 .lightbox-close {
-  position: fixed; top: 1.5rem; right: 1.5rem; z-index: 902;
+  position: fixed; top: 5rem; right: 2rem; z-index: 902;
   width: 44px; height: 44px; border-radius: 50%;
   background: rgba(255,255,255,.1); border: 1.5px solid rgba(255,255,255,.2);
   display: flex; align-items: center; justify-content: center;
@@ -1903,9 +1917,9 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 
 /* Counter */
 .lightbox-counter {
-  position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%);
+  position: fixed; top: 5rem; left: 50%; transform: translateX(-50%);
   z-index: 902; font-family: var(--font-display); font-size: .72rem; font-weight: 700;
-  letter-spacing: .15em; color: rgba(255,255,255,.4);
+  letter-spacing: .15em; color: rgba(255,255,255,.5);
 }
 
 /* Mobile lightbox */
