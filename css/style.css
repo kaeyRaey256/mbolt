@@ -186,26 +186,7 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 @media (hover: none) { .cursor-dot, .cursor-ring { display: none; } }
 
 /* ── FLOATING CTA ─────────────────────────────────────────── */
-.floating-cta {
-  position: fixed; bottom: 2rem; left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  z-index: 400; opacity: 0; pointer-events: none;
-  transition: opacity var(--t-mid), transform var(--t-mid) var(--ease-out);
-}
-.floating-cta.visible { opacity: 1; pointer-events: all; transform: translateX(-50%) translateY(0); }
-.floating-cta.pulse { animation: ctaPulse .6s var(--ease-bounce) both; }
-@keyframes ctaPulse { 0% { transform: translateX(-50%) translateY(0) scale(.85); } 60% { transform: translateX(-50%) translateY(0) scale(1.06); } 100% { transform: translateX(-50%) translateY(0) scale(1); } }
-.floating-cta a {
-  display: flex; align-items: center; gap: .6rem;
-  background: var(--ink); color: var(--bg);
-  font-family: var(--font-display); font-size: .78rem; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase;
-  padding: .75rem 1.6rem; border-radius: var(--r-pill);
-  box-shadow: var(--shadow-xl);
-  transition: background var(--t-fast), transform var(--t-fast);
-  white-space: nowrap;
-}
-.floating-cta a:hover { background: var(--red); transform: translateY(-2px); }
+/* floating CTA removed — brand does not chase */
 
 /* Scroll-to-top (mobile) */
 .scroll-top-btn {
@@ -413,19 +394,54 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 .btn:hover svg { transform: translateX(3px); }
 .btn:active { transform: translateY(0); }
 
-/* PRIMARY — stroke at rest, solid fill on hover */
+/* PRIMARY — red fill, light-catch shimmer at rest */
 .btn-primary {
   background: var(--red);
   color: #fff;
   border-color: var(--red);
-  box-shadow: 0 2px 12px rgba(204,43,43,.15);
+  box-shadow: 0 2px 16px rgba(204,43,43,.2);
+  overflow: hidden;
+  animation: btnBreathe 4s ease-in-out infinite;
+}
+/* Light-catch shimmer — credit card quality */
+.btn-primary::after {
+  content: '';
+  position: absolute; top: 0; left: -120%;
+  width: 60%; height: 100%;
+  background: linear-gradient(105deg,
+    transparent 20%,
+    rgba(255,255,255,.12) 40%,
+    rgba(255,255,255,.18) 50%,
+    rgba(255,255,255,.12) 60%,
+    transparent 80%
+  );
+  transform: skewX(-15deg);
+  animation: btnShimmer 8s ease-in-out 2s infinite;
+  pointer-events: none;
 }
 .btn-primary:hover {
   background: var(--red-dark);
   border-color: var(--red-dark);
-  box-shadow: 0 6px 24px rgba(204,43,43,.3);
+  box-shadow: 0 8px 28px rgba(204,43,43,.35);
+  animation: none; /* stop shimmer on hover — not needed */
 }
-.btn-primary:active { background: var(--red-dark); }
+.btn-primary:hover::after { animation: none; opacity: 0; }
+.btn-primary:active {
+  background: var(--red-dark);
+  border-color: var(--red-dark);
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(204,43,43,.2);
+  animation: none;
+}
+@keyframes btnShimmer {
+  0%    { left: -120%; opacity: 1; }
+  18%   { left: 120%;  opacity: 1; }
+  19%, 100% { left: -120%; opacity: 0; }
+}
+@keyframes btnBreathe {
+  0%,100% { box-shadow: 0 2px 16px rgba(204,43,43,.2); }
+  50%     { box-shadow: 0 4px 22px rgba(204,43,43,.32); }
+}
 
 /* OUTLINE — stroke rest, fill on hover */
 .btn-outline {
@@ -478,6 +494,21 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
   will-change: transform;
 }
 /* Hero image layers — built by JS for rotation */
+/* ── HERO PHONE — stripped to essentials ───────────────────── */
+@media (max-width: 600px) {
+  .hero-headline { display: none !important; }
+  .hero-sub      { display: none !important; }
+  .hero-signoff  { display: none !important; }
+  .hero-tagline {
+    font-size: clamp(1.5rem, 6.5vw, 2.2rem) !important;
+    letter-spacing: .06em;
+    margin-top: 1.4rem;
+    margin-bottom: 2rem;
+  }
+  .hero-ctas { flex-direction: column; align-items: flex-start; gap: .75rem; }
+  .hero-ctas .btn { width: 100%; justify-content: center; }
+}
+
 .hero-bg-layer {
   position: absolute; inset: 0;
   background-size: cover;
@@ -487,16 +518,16 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 /* Per-image background positions — phone only */
 @media (max-width: 600px) {
   .hero-bg-layer:nth-child(1) {
-    /* hero-1.jpg — slight left shift on phone */
-    background-position: 35% center;
+    /* hero-1.jpg — Safari Telco stage, shift left to show crowd activity */
+    background-position: 38% center;
   }
   .hero-bg-layer:nth-child(2) {
-    /* hero-2.jpg (m-pesa) — up to show crowd, slightly left */
-    background-position: 30% 30%;
+    /* hero-2.jpg (m-pesa) — shift right+up to show woman with phone & customer */
+    background-position: 65% 25%;
   }
   .hero-bg-layer:nth-child(3) {
-    /* hero-3.jpg (Gulf boda boda) — strong left shift, show both men */
-    background-position: 18% center;
+    /* hero-3.jpg (Gulf boda boda) — strong left, both men and bike in frame */
+    background-position: 20% center;
   }
 }
 
@@ -1128,6 +1159,22 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
     text-align: center;
   }
 }
+
+
+/* ── ABOUT MANIFESTO ───────────────────────────────────────── */
+.about-manifesto {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -.01em;
+  color: var(--ink);
+  padding-left: 1.4rem;
+  border-left: 3px solid var(--volt);
+  margin-bottom: 2rem;
+  max-width: 540px;
+}
+[data-theme="dark"] .about-manifesto { color: var(--ink); }
 
 /* ── TESTIMONIAL ──────────────────────────────────────────── */
 .testi-section {
@@ -1966,7 +2013,7 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
   .footer-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .footer-bottom { flex-direction: column; align-items: flex-start; gap: .8rem; }
   .values-grid { grid-template-columns: 1fr; }
-  .floating-cta { display: none; }
+  /* floating-cta removed */
   .scroll-top-btn { display: flex; }
   .work-grid-mobile { grid-template-columns: 1fr; }
 }
