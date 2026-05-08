@@ -760,37 +760,7 @@
   }
 
   /* ── FLOATING CTA ───────────────────────────────────────── */
-  function initFloatingCta() {
-    const cta        = document.getElementById('floating-cta');
-    const scrollTop  = document.getElementById('scroll-top-btn');
-    const heroScroll = document.querySelector('.hero-scroll');
-
-    if (cta) {
-      let ctaPulsed = false;
-      window.addEventListener('scroll', () => {
-        const past    = window.scrollY > window.innerHeight * 0.8;
-        const nearEnd = (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300;
-        const show    = past && !nearEnd;
-        cta.classList.toggle('visible', show);
-        if (show && !ctaPulsed) {
-          ctaPulsed = true;
-          cta.classList.add('pulse');
-          setTimeout(() => cta.classList.remove('pulse'), 700);
-        }
-        // Hide hero scroll indicator once user has scrolled
-        if (heroScroll && window.scrollY > 80) heroScroll.classList.add('hidden');
-      }, { passive: true });
-    }
-    if (scrollTop) {
-      window.addEventListener('scroll', () => {
-        scrollTop.classList.toggle('visible', window.scrollY > 300);
-      }, { passive: true });
-      scrollTop.addEventListener('click', () => {
-        try { if (lenis) { lenis.scrollTo(0); return; } } catch(e) {}
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    }
-  }
+  /* initFloatingCta removed — brand does not chase */
 
   /* ── SMOOTH ANCHORS ─────────────────────────────────────── */
   function initAnchors() {
@@ -1410,7 +1380,6 @@
     initWorkScroll();
     initWorkModal();
     initModals();
-    initFloatingCta();
     initAnchors();
     initForms();
     initA11y();
