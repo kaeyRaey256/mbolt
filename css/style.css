@@ -409,30 +409,38 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 .h-section {
   font-family: var(--font-display); font-size: clamp(2rem, 3.5vw, 3.2rem);
   font-weight: 800; line-height: 1.08; letter-spacing: -.03em; color: var(--ink); max-width: 680px;
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path .8s cubic-bezier(0.16,1,0.3,1);
+  /* Wipe reveal — desktop only. Tablet/phone use opacity reveal */
 }
-.h-section.wipe-revealed { clip-path: inset(0 0% 0 0); }
-/* Eyebrow wipe — only for section eyebrows, not hero eyebrow */
-.section .eyebrow,
-.section-alt .eyebrow,
-.testi-section .eyebrow,
-.contact-section .eyebrow,
-.work-section .eyebrow {
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path .6s cubic-bezier(0.16,1,0.3,1);
+
+/* ── WIPE REVEAL — desktop only (1025px+) ───────────────── */
+@media (min-width: 1025px) {
+  .h-section {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path .8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .h-section.wipe-revealed { clip-path: inset(0 0% 0 0); }
+
+  .section .eyebrow,
+  .section-alt .eyebrow,
+  .testi-section .eyebrow,
+  .contact-section .eyebrow,
+  .work-section .eyebrow {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path .6s cubic-bezier(0.16,1,0.3,1);
+  }
+  .section .eyebrow.wipe-revealed,
+  .section-alt .eyebrow.wipe-revealed,
+  .testi-section .eyebrow.wipe-revealed,
+  .contact-section .eyebrow.wipe-revealed,
+  .work-section .eyebrow.wipe-revealed {
+    clip-path: inset(0 0% 0 0);
+  }
 }
-.section .eyebrow.wipe-revealed,
-.section-alt .eyebrow.wipe-revealed,
-.testi-section .eyebrow.wipe-revealed,
-.contact-section .eyebrow.wipe-revealed,
-.work-section .eyebrow.wipe-revealed {
-  clip-path: inset(0 0% 0 0);
-}
-/* Hero eyebrow: always visible — no clip-path */
-.hero .hero-eyebrow {
-  clip-path: none !important;
-}
+/* Hero eyebrow: always visible — no clip-path ever */
+.hero .hero-eyebrow { clip-path: none !important; }
+
+/* Tablet/phone: wipe-revealed has no effect — clip-path not set */
+/* Elements are visible immediately via normal .reveal opacity */
 .h-section em { font-style: normal; color: var(--ink-4); font-weight: 300; }
 .h-section.light { color: #fff; }
 .h-section.light em { color: rgba(255,255,255,.4); }
@@ -572,12 +580,8 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
   .hero-headline { display: none !important; }
   .hero-sub      { display: none !important; }
   .hero-signoff  { display: none !important; }
-  .hero-tagline {
-    font-size: clamp(1.5rem, 6.5vw, 2.2rem) !important;
-    letter-spacing: .06em;
-    margin-top: 1.4rem;
-    margin-bottom: 2rem;
-  }
+  /* hero-tagline size now controlled by .tl-1 and .tl-2 spans */
+  .hero-tagline { margin-top: 1.4rem; margin-bottom: 1.2rem; }
   .hero-ctas { flex-direction: column; align-items: flex-start; gap: .75rem; }
   .hero-ctas .btn { width: 100%; justify-content: center; }
 }
@@ -728,50 +732,34 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 body.reduce-motion .hero-headline .size-xl { animation: none !important; color: var(--red); }
 
 
-/* ── HERO TAGLINE — stacked billboard: OWN YOUR / MARKET. ──── */
+/* ── HERO TAGLINE — OWN YOUR MARKET. premium single statement ─ */
 .hero-tagline {
-  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4.5rem);
+  font-weight: 800;
+  color: var(--volt);
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+  line-height: 1.05;
   margin-top: 1.4rem;
-  opacity: 0;
-  animation: taglineIn .8s var(--ease-out) .4s forwards;
-}
-/* Line 1: OWN YOUR */
-.hero-tagline .tl-1 {
-  display: block;
-  font-family: var(--font-display);
-  font-size: clamp(2.2rem, 6.5vw, 6.5rem);
-  font-weight: 800;
-  color: var(--volt);
-  letter-spacing: -.03em;
-  text-transform: uppercase;
-  line-height: 1.0;
-}
-/* Line 2: MARKET. — wider so both lines share the same width */
-.hero-tagline .tl-2 {
-  display: block;
-  font-family: var(--font-display);
-  /* MARKET. is shorter than OWN YOUR so needs larger size to match width */
-  font-size: clamp(3rem, 9.2vw, 9.2rem);
-  font-weight: 800;
-  color: var(--volt);
-  letter-spacing: -.03em;
-  text-transform: uppercase;
-  line-height: 1.0;
-  /* Prevent breaking */
   white-space: nowrap;
+  opacity: 0;
+  animation: taglineIn .6s var(--ease-out) .2s both;
+  isolation: isolate;
+  will-change: opacity;
 }
-/* CTAs need more breathing room below the big type */
-.hero .hero-ctas { margin-top: 2rem; }
-/* Phone adjustments */
+/* Phone */
 @media (max-width: 600px) {
-  .hero-tagline { margin-top: 1.6rem; margin-bottom: 1.2rem; }
-  .hero-tagline .tl-1 { font-size: clamp(2rem, 11vw, 3rem); }
-  .hero-tagline .tl-2 { font-size: clamp(2.8rem, 15.5vw, 4.2rem); }
+  .hero-tagline {
+    font-size: clamp(1.8rem, 7.5vw, 2.6rem);
+    margin-top: 1.2rem;
+    margin-bottom: 1.4rem;
+    white-space: normal;
+  }
 }
 /* Tablet */
 @media (min-width: 601px) and (max-width: 1024px) {
-  .hero-tagline .tl-1 { font-size: clamp(2.8rem, 7vw, 5rem); }
-  .hero-tagline .tl-2 { font-size: clamp(4rem, 10vw, 7rem); }
+  .hero-tagline { font-size: clamp(2.2rem, 4.5vw, 3.5rem); }
 }
 @keyframes taglineIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .hero-tagline { animation: none; opacity: 1; transform: none; } }
@@ -1556,11 +1544,14 @@ footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; hei
 /* ── REVEAL ───────────────────────────────────────────────── */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease-out), transform .7s var(--ease-out); }
 .reveal.visible { opacity: 1; transform: translateY(0); }
-/* Wipe elements: clip-path is the reveal — opacity stays 1 */
-.h-section.reveal, .eyebrow.reveal {
-  opacity: 1 !important;
-  transform: none !important;
+/* Desktop: wipe elements revealed by clip-path, not opacity */
+@media (min-width: 1025px) {
+  .h-section.reveal, .eyebrow.reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
+/* Tablet/phone: normal opacity/translate reveal — no clip-path interference */
 .reveal-d1 { transition-delay: .1s; }
 .reveal-d2 { transition-delay: .2s; }
 .reveal-d3 { transition-delay: .3s; }
