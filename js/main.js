@@ -485,13 +485,20 @@
   /* ── BODY SCROLL LOCK UTILITY ───────────────────────────── */
   /* Locks page scroll while keeping modal content scrollable  */
   /* Works on desktop, iOS Safari, Android Chrome              */
+  let _lockScrollY = 0;
   function lockBody() {
-    // Lock on html only — body stays in flow, modal scroll works everywhere
+    _lockScrollY = window.scrollY;
+    // Use both html and body — belt and suspenders for all browsers
     document.documentElement.classList.add('modal-open');
+    document.body.classList.add('modal-open');
+    document.body.style.top = `-${_lockScrollY}px`;
     try { if (lenis) lenis.stop(); } catch(e) {}
   }
   function unlockBody() {
     document.documentElement.classList.remove('modal-open');
+    document.body.classList.remove('modal-open');
+    document.body.style.top = '';
+    window.scrollTo({ top: _lockScrollY, behavior: 'instant' });
     try { if (lenis) lenis.start(); } catch(e) {}
   }
 
@@ -1214,19 +1221,21 @@
     document.body.appendChild(lbPrev);
     document.body.appendChild(lbNext);
 
-    // Show/hide all lightbox UI together
+    // Define all references FIRST — before any function that uses them
+    const lbImg        = lb.querySelector('#lb-img');
+    const lbCaption    = lb.querySelector('#lb-caption');
+    const lbCaptionWrap = lb.querySelector('#lb-caption-wrap');
+    const lbCounter    = lb.querySelector('#lb-counter');
+
+    // Now safe to define setLbUiVisible — lbCounter is defined
     function setLbUiVisible(v) {
       [lbClose, lbCounter, lbPrev, lbNext].forEach(el => {
+        if (!el) return; // guard against null
         el.style.opacity = v ? '1' : '0';
         el.style.pointerEvents = v ? 'all' : 'none';
       });
     }
     setLbUiVisible(false); // hidden until lightbox opens
-
-    const lbImg        = lb.querySelector('#lb-img');
-    const lbCaption    = lb.querySelector('#lb-caption');
-    const lbCaptionWrap = lb.querySelector('#lb-caption-wrap');
-    const lbCounter    = lb.querySelector('#lb-counter');
     let lbCurrent = 0;
 
     // Get only image items (not video)
