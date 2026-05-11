@@ -646,32 +646,24 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 .hero-content {
   position: relative; z-index: 4;
   width: 100%; max-width: 920px;
-  /* Full height so flex children can distribute vertically */
-  height: 100vh;
   padding: 0 var(--page-pad);
-  /* Flex column: eyebrow top, spacer, tagline+CTAs centred, spacer */
-  display: flex;
-  flex-direction: column;
-  /* Nav clearance at top */
-  padding-top: clamp(5rem, 9vh, 7rem);
-  padding-bottom: clamp(3rem, 6vh, 5rem);
 }
-/* Desktop: eyebrow pinned top, tagline+CTAs pushed to centre */
+/* Desktop: entire block centred vertically — all three elements together */
 @media (min-width: 601px) {
-  .hero-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* vertically centres tagline+CTAs */
+  .hero {
+    align-items: center !important;
+  }
+  .hero-content {
+    /* Nav offset — shift block slightly below mathematical centre
+       so it reads as centred (eye reads upper portion first) */
+    margin-top: 3rem;
   }
 }
-/* Mobile: hero-main just stacks naturally */
+/* Mobile: anchor to lower portion of hero */
 @media (max-width: 600px) {
   .hero-content {
-    height: auto;
     padding-top: clamp(4rem, 8vh, 6rem);
     padding-bottom: 2.5rem;
-    justify-content: flex-end;
   }
   .hero-main { display: block; }
 }
@@ -764,12 +756,12 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 /* ── HERO TAGLINE — OWN YOUR MARKET. premium single statement ─ */
 .hero-tagline {
   font-family: var(--font-display);
-  font-size: clamp(2.8rem, 5.8vw, 5.5rem);
-  font-weight: 800;
+  font-size: clamp(2.4rem, 4.8vw, 4.2rem);
+  font-weight: 700;
   color: var(--volt);
-  letter-spacing: -.03em;
+  letter-spacing: -.02em;
   text-transform: uppercase;
-  line-height: 1.0;
+  line-height: 1.05;
   margin-top: 1.4rem;
   white-space: nowrap;
   opacity: 0;
@@ -780,7 +772,8 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 /* Phone */
 @media (max-width: 600px) {
   .hero-tagline {
-    font-size: clamp(2.2rem, 9vw, 3rem);
+    font-size: clamp(1.8rem, 7.5vw, 2.6rem);
+    font-weight: 700;
     margin-top: 1.2rem;
     margin-bottom: 1.4rem;
     white-space: normal;
@@ -788,7 +781,7 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 }
 /* Tablet */
 @media (min-width: 601px) and (max-width: 1024px) {
-  .hero-tagline { font-size: clamp(2.6rem, 5.5vw, 4.2rem); }
+  .hero-tagline { font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 700; }
 }
 @keyframes taglineIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .hero-tagline { animation: none; opacity: 1; transform: none; } }
@@ -1247,6 +1240,11 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
   font-size: 1rem; font-weight: 800;
   color: var(--ink); letter-spacing: -.02em;
   margin-bottom: .2rem;
+}
+@media (max-width: 600px) {
+  .roster-name { font-size: .85rem; letter-spacing: -.01em; }
+  .roster-role { font-size: .62rem; }
+  .roster-member { padding: 1rem 1rem; }
 }
 .roster-role {
   font-size: .68rem; font-weight: 700;
@@ -1831,12 +1829,27 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 .gallery-section {
   padding: var(--section-pad) 0;
   overflow: hidden;
-  background: var(--bg);
+  background: #0D0F12;
 }
 .gallery-section-header {
   padding: 0 var(--page-pad);
   display: flex; justify-content: space-between; align-items: flex-end;
   margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;
+}
+/* Dark section — text goes white */
+.gallery-section .h-section { color: #fff; }
+.gallery-section .h-section em { color: rgba(255,255,255,.4); }
+.gallery-section .eyebrow { color: var(--volt); }
+/* View full gallery button — white outline on dark */
+.gallery-section .btn-outline {
+  color: rgba(255,255,255,.85) !important;
+  border-color: rgba(255,255,255,.35) !important;
+  background: transparent !important;
+}
+.gallery-section .btn-outline:hover {
+  background: rgba(255,255,255,.1) !important;
+  color: #fff !important;
+  border-color: rgba(255,255,255,.6) !important;
 }
 /* Cinematic strip */
 .gallery-strip {
