@@ -1395,7 +1395,7 @@
           o.unobserve(e.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px 0px 0px' });
 
     targets.forEach(t => {
       // If already in viewport on load, reveal immediately
@@ -1406,6 +1406,16 @@
         obs.observe(t);
       }
     });
+
+    // Fallback: any element not revealed after 2.5s gets revealed automatically
+    // Catches edge cases where observer fires late or misses
+    setTimeout(() => {
+      targets.forEach(t => {
+        if (!t.classList.contains('wipe-revealed')) {
+          t.classList.add('wipe-revealed');
+        }
+      });
+    }, 2500);
   }
 
 
