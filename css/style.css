@@ -437,7 +437,13 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
   }
 }
 /* Hero eyebrow: always visible — no clip-path ever */
-.hero .hero-eyebrow { clip-path: none !important; }
+.hero .hero-eyebrow,
+.hero .eyebrow,
+.hero-eyebrow {
+  clip-path: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
 
 /* Tablet/phone: wipe-revealed has no effect — clip-path not set */
 /* Elements are visible immediately via normal .reveal opacity */
@@ -639,13 +645,36 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 
 .hero-content {
   position: relative; z-index: 4;
-  /* Desktop: nav is ~72px, eyebrow needs visible breathing room above headline */
-  /* clamp ensures eyebrow never collides with nav or headline on any viewport */
-  padding: clamp(6.5rem, 14vh, 10rem) var(--page-pad) clamp(3.5rem, 7vh, 5rem);
   width: 100%; max-width: 920px;
+  /* Full height so flex children can distribute vertically */
+  height: 100vh;
+  padding: 0 var(--page-pad);
+  /* Flex column: eyebrow top, spacer, tagline+CTAs centred, spacer */
+  display: flex;
+  flex-direction: column;
+  /* Nav clearance at top */
+  padding-top: clamp(5rem, 9vh, 7rem);
+  padding-bottom: clamp(3rem, 6vh, 5rem);
 }
-/* Eyebrow: normal flow, sits above headline with margin */
-/* On desktop hero is flex-start so content flows naturally from top */
+/* Desktop: eyebrow pinned top, tagline+CTAs pushed to centre */
+@media (min-width: 601px) {
+  .hero-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* vertically centres tagline+CTAs */
+  }
+}
+/* Mobile: hero-main just stacks naturally */
+@media (max-width: 600px) {
+  .hero-content {
+    height: auto;
+    padding-top: clamp(4rem, 8vh, 6rem);
+    padding-bottom: 2.5rem;
+    justify-content: flex-end;
+  }
+  .hero-main { display: block; }
+}
 
 .hero-eyebrow {
   display: flex; align-items: center; gap: .6rem;
@@ -735,12 +764,12 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 /* ── HERO TAGLINE — OWN YOUR MARKET. premium single statement ─ */
 .hero-tagline {
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 5vw, 4.5rem);
+  font-size: clamp(2.8rem, 5.8vw, 5.5rem);
   font-weight: 800;
   color: var(--volt);
   letter-spacing: -.03em;
   text-transform: uppercase;
-  line-height: 1.05;
+  line-height: 1.0;
   margin-top: 1.4rem;
   white-space: nowrap;
   opacity: 0;
@@ -751,7 +780,7 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 /* Phone */
 @media (max-width: 600px) {
   .hero-tagline {
-    font-size: clamp(1.8rem, 7.5vw, 2.6rem);
+    font-size: clamp(2.2rem, 9vw, 3rem);
     margin-top: 1.2rem;
     margin-bottom: 1.4rem;
     white-space: normal;
@@ -759,7 +788,7 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 }
 /* Tablet */
 @media (min-width: 601px) and (max-width: 1024px) {
-  .hero-tagline { font-size: clamp(2.2rem, 4.5vw, 3.5rem); }
+  .hero-tagline { font-size: clamp(2.6rem, 5.5vw, 4.2rem); }
 }
 @keyframes taglineIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .hero-tagline { animation: none; opacity: 1; transform: none; } }
