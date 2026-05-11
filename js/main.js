@@ -1372,19 +1372,38 @@
 
   /* ── SECTION HEADING WIPE REVEAL ───────────────────────── */
   function initWipeReveal() {
-    const targets = document.querySelectorAll('.h-section, .eyebrow');
+    // Only section headings — not hero eyebrow
+    const targets = document.querySelectorAll(
+      '.section .h-section, .section-alt .h-section, .work-section .h-section,' +
+      '.testi-section .h-section, .contact-section .h-section,' +
+      '.section .eyebrow, .section-alt .eyebrow, .work-section .eyebrow,' +
+      '.testi-section .eyebrow, .contact-section .eyebrow'
+    );
     if (!targets.length) return;
+
+    function reveal(el) {
+      const isEyebrow = el.classList.contains('eyebrow');
+      setTimeout(() => el.classList.add('wipe-revealed'), isEyebrow ? 0 : 100);
+    }
+
     const obs = new IntersectionObserver((ents, o) => {
       ents.forEach(e => {
         if (e.isIntersecting) {
-          // Small delay so eyebrow arrives before heading
-          const delay = e.target.classList.contains('eyebrow') ? 0 : 120;
-          setTimeout(() => e.target.classList.add('wipe-revealed'), delay);
+          reveal(e.target);
           o.unobserve(e.target);
         }
       });
-    }, { threshold: 0.15 });
-    targets.forEach(t => obs.observe(t));
+    }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
+
+    targets.forEach(t => {
+      // If already in viewport on load, reveal immediately
+      const rect = t.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        reveal(t);
+      } else {
+        obs.observe(t);
+      }
+    });
   }
 
 
@@ -1392,11 +1411,17 @@
   function initFooterStagger() {
     const el = document.querySelector('.footer-tagline-main');
     if (!el) return;
-    const text = el.textContent;
-    // Wrap each character in a span
-    el.innerHTML = text.split('').map((ch, i) =>
-      `<span class="ft-char" style="transition-delay:${i * 28}ms">${ch === ' ' ? '&nbsp;' : ch}</span>`
-    ).join('');
+    const text = el.textContent.trim();
+    // Split into characters but keep punctuation attached to previous word
+    const chars = text.split('');
+    let delay = 0;
+    el.innerHTML = chars.map((ch, i) => {
+      // Period/punctuation: zero delay gap — attached to previous
+      const isPunct = /[.,!?]/.test(ch);
+      const d = isPunct ? delay : (delay += 28, delay - 28);
+      if (ch === ' ') return `<span class="ft-char" style="transition-delay:${d}ms">&nbsp;</span>`;
+      return `<span class="ft-char" style="transition-delay:${d}ms">${ch}</span>`;
+    }).join('');
     const obs = new IntersectionObserver((ents, o) => {
       if (ents[0].isIntersecting) {
         el.classList.add('revealed');
