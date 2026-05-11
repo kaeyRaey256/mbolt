@@ -223,14 +223,28 @@
 
     let current = 0;
 
+    // Each image has a unique pan direction for cinematic variety
+    const panDirections = [
+      'scale(1.04) translateX(0)',      // hero-1: neutral
+      'scale(1.04) translateX(12px)',   // hero-2: pan left
+      'scale(1.04) translateX(-12px)',  // hero-3: pan right
+    ];
+    const panTargets = [
+      'scale(1) translateX(0)',
+      'scale(1) translateX(-8px)',
+      'scale(1) translateX(8px)',
+    ];
+
     function showLayer(idx) {
       layers.forEach((layer, i) => {
         if (i === idx) {
-          layer.style.transform = 'scale(1.04)';
+          // Reset to start position then breathe+pan
+          layer.style.transition = 'opacity 1.6s cubic-bezier(0.4,0,0.2,1), transform 0s';
+          layer.style.transform = panDirections[i] || 'scale(1.04)';
           layer.style.opacity   = '1';
-          // Double-rAF to allow layout to paint before breath animation
           requestAnimationFrame(() => requestAnimationFrame(() => {
-            layer.style.transform = 'scale(1)';
+            layer.style.transition = 'opacity 1.6s cubic-bezier(0.4,0,0.2,1), transform 9s ease-out';
+            layer.style.transform = panTargets[i] || 'scale(1)';
           }));
         } else {
           layer.style.opacity = '0';
@@ -352,22 +366,23 @@
     const proof = document.querySelector('.proof');
     if (!proof) return;
 
-    function animCount(span, target, dur = 1400) {
+    function animCount(span, target, dur = 1600) {
       const numEl = span.closest('.proof-number');
-      if (numEl) numEl.classList.add('counting');
       let start = null;
       const step = ts => {
         if (!start) start = ts;
         const p    = Math.min((ts - start) / dur, 1);
+        // Smooth ease-out cubic
         const ease = 1 - Math.pow(1 - p, 3);
         span.textContent = Math.round(ease * target);
         if (p < 1) {
           requestAnimationFrame(step);
         } else {
           span.textContent = target;
+          // Graceful single pulse on landing
           if (numEl) {
-            numEl.classList.remove('counting');
-            numEl.classList.add('done');
+            numEl.classList.add('pulse-land');
+            setTimeout(() => numEl.classList.remove('pulse-land'), 600);
           }
         }
       };
@@ -485,20 +500,14 @@
   /* ── BODY SCROLL LOCK UTILITY ───────────────────────────── */
   /* Locks page scroll while keeping modal content scrollable  */
   /* Works on desktop, iOS Safari, Android Chrome              */
-  let _lockScrollY = 0;
   function lockBody() {
-    _lockScrollY = window.scrollY;
-    // Use both html and body — belt and suspenders for all browsers
+    // Lock html only — never touch body position
+    // body.position:fixed kills child scroll on iOS Safari
     document.documentElement.classList.add('modal-open');
-    document.body.classList.add('modal-open');
-    document.body.style.top = `-${_lockScrollY}px`;
     try { if (lenis) lenis.stop(); } catch(e) {}
   }
   function unlockBody() {
     document.documentElement.classList.remove('modal-open');
-    document.body.classList.remove('modal-open');
-    document.body.style.top = '';
-    window.scrollTo({ top: _lockScrollY, behavior: 'instant' });
     try { if (lenis) lenis.start(); } catch(e) {}
   }
 
@@ -621,16 +630,12 @@
       }
     }, { passive: false });
 
-    // Mobile/touch: stop Lenis consuming touch events inside the modal
-    // This is the definitive fix for iOS scroll inside fixed modals
+    // Mobile: stopImmediatePropagation prevents Lenis from eating touch events
+    // passive:false required to allow Lenis interception to be stopped
     modal.addEventListener('touchmove', e => {
       if (!modal.classList.contains('open')) return;
-      // Allow scroll only if modal has scrollable content
-      if (modal.scrollHeight > modal.clientHeight) {
-        e.stopPropagation(); // stop Lenis from eating this touch
-        // Do NOT call e.preventDefault() — that would stop scroll entirely
-      }
-    }, { passive: true });
+      e.stopImmediatePropagation();
+    }, { passive: false });
 
     // Wire up ALL work cards (both horizontal track and mobile grid)
     document.querySelectorAll('.work-card').forEach((card, i) => {
@@ -692,13 +697,11 @@
       }
     }, { passive: false });
 
-    // Mobile: stop Lenis consuming touch events inside service modal
+    // Mobile: stopImmediatePropagation on service modal
     modal.addEventListener('touchmove', e => {
       if (!modal.classList.contains('open')) return;
-      if (modal.scrollHeight > modal.clientHeight) {
-        e.stopPropagation();
-      }
-    }, { passive: true });
+      e.stopImmediatePropagation();
+    }, { passive: false });
 
     document.querySelectorAll('.service-card[data-service-id]').forEach(card => {
       card.addEventListener('click', () => {
@@ -1364,6 +1367,73 @@
     if (!hasVT) {
       document.body.classList.add('page-entering');
     }
+  }
+
+
+  /* ── SECTION HEADING WIPE REVEAL ───────────────────────── */
+  function initWipeReveal() {
+    const targets = document.querySelectorAll('.h-section, .eyebrow');
+    if (!targets.length) return;
+    const obs = new IntersectionObserver((ents, o) => {
+      ents.forEach(e => {
+        if (e.isIntersecting) {
+          // Small delay so eyebrow arrives before heading
+          const delay = e.target.classList.contains('eyebrow') ? 0 : 120;
+          setTimeout(() => e.target.classList.add('wipe-revealed'), delay);
+          o.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    targets.forEach(t => obs.observe(t));
+  }
+
+
+  /* ── FOOTER TAGLINE CHARACTER STAGGER ──────────────────── */
+  function initFooterStagger() {
+    const el = document.querySelector('.footer-tagline-main');
+    if (!el) return;
+    const text = el.textContent;
+    // Wrap each character in a span
+    el.innerHTML = text.split('').map((ch, i) =>
+      `<span class="ft-char" style="transition-delay:${i * 28}ms">${ch === ' ' ? '&nbsp;' : ch}</span>`
+    ).join('');
+    const obs = new IntersectionObserver((ents, o) => {
+      if (ents[0].isIntersecting) {
+        el.classList.add('revealed');
+        o.disconnect();
+      }
+    }, { threshold: 0.5 });
+    obs.observe(el);
+  }
+
+
+  /* ── FLOAT LABEL FORM ───────────────────────────────────── */
+  function initFloatLabels() {
+    document.querySelectorAll('.field').forEach(field => {
+      const input = field.querySelector('input, textarea, select');
+      const label = field.querySelector('label');
+      if (!input || !label) return;
+      // Select always shows label floated
+      if (input.tagName === 'SELECT') { field.classList.add('is-filled'); return; }
+      const update = () => {
+        field.classList.toggle('is-filled', input.value.length > 0);
+      };
+      input.addEventListener('focus', () => field.classList.add('is-focused'));
+      input.addEventListener('blur',  () => { field.classList.remove('is-focused'); update(); });
+      input.addEventListener('input', update);
+      update();
+    });
+  }
+
+
+  /* ── MICRO-HAPTIC — Brief Us button on mobile ──────────── */
+  function initHaptic() {
+    if (!navigator.vibrate) return; // desktop / unsupported
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+      btn.addEventListener('touchstart', () => {
+        try { navigator.vibrate(10); } catch(e) {}
+      }, { passive: true });
+    });
   }
 
   /* ── INIT ───────────────────────────────────────────────── */
