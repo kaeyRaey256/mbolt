@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="MBolt Gallery — Fifteen years of brand activation across Uganda.">
+  <meta name="description" content="MBolt Gallery — Fifteen years of brand activation across Uganda and East Africa.">
   <title>Gallery — MBolt</title>
   <meta name="theme-color" content="#CC2B2B">
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
@@ -38,9 +38,9 @@
   </div>
 </div>
 
-<!-- NAVBAR — no scrolled class, gallery-page CSS handles it -->
+<!-- NAVBAR -->
 <header>
-  <nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+  <nav class="nav" id="main-nav" role="navigation">
     <a href="index.html" class="nav-logo">
       <img src="assets/icons/logo.svg" alt="MBolt" class="logo-colour">
       <img src="assets/icons/logo-white.svg" alt="MBolt" class="logo-white">
@@ -67,7 +67,7 @@
       <a href="index.html#capabilities">Capabilities</a>
       <a href="index.html#work">Work</a>
       <a href="index.html#about">About</a>
-      <a href="gallery.html">Gallery</a>
+      <a href="gallery.html" class="active">Gallery</a>
       <a href="careers.html">Careers</a>
     </nav>
     <div class="drawer-bottom">
@@ -82,8 +82,8 @@
 
 <main>
 
-<!-- GALLERY HERO — cinematic opening -->
-<div class="gallery-hero" id="gallery-hero" aria-label="Gallery">
+<!-- GALLERY HERO -->
+<div class="gallery-hero" id="gallery-hero">
   <div class="gallery-hero-img" style="background-image:url('assets/images/gallery/gallery-1.png')"></div>
   <div class="gallery-hero-overlay"></div>
   <div class="gallery-hero-content">
@@ -91,8 +91,8 @@
     <h1 style="font-family:var(--font-display);font-size:clamp(2.8rem,6vw,5.5rem);font-weight:800;letter-spacing:-.04em;color:#fff;line-height:1;margin-top:.5rem;">
       Fifteen years of<br><span style="color:var(--volt);">activation.</span>
     </h1>
-    <p style="font-family:var(--font-display);font-size:clamp(.95rem,1.8vw,1.2rem);font-weight:300;color:rgba(255,255,255,.5);margin-top:1rem;max-width:460px;line-height:1.7;">
-      Real campaigns. Real markets. Real results. This is the work that makes brands impossible to ignore.
+    <p style="font-family:var(--font-display);font-size:clamp(.9rem,1.6vw,1.1rem);font-weight:400;color:rgba(255,255,255,.45);margin-top:1rem;max-width:420px;line-height:1.7;">
+      Real campaigns. Real markets. Real results.
     </p>
   </div>
   <div class="gallery-hero-scroll" aria-hidden="true">
@@ -100,44 +100,57 @@
   </div>
 </div>
 
-<!-- GALLERY CONTENT -->
-<div class="gallery-page-content">
+<!-- GALLERY GRID -->
+<div class="gallery-page-content" style="padding:0; background:var(--bg);">
 
   <!-- Filter -->
-  <div class="gallery-filter" role="toolbar" aria-label="Filter gallery">
+  <div class="gallery-filter" role="toolbar" style="padding:2rem var(--page-pad) 1.5rem;">
     <button class="gallery-filter-btn active" data-filter="all">All</button>
     <button class="gallery-filter-btn" data-filter="photo">Photos</button>
     <button class="gallery-filter-btn" data-filter="video">Video</button>
   </div>
 
   <!--
-    BENTO EDITORIAL GRID
-    First 2 items: gallery-1 and gallery-2 (your new images) — lead the gallery
-    Followed by activation photography in a considered 3-column arrangement
-    All images displayed at natural 16:9 ratio — no stretching, no cropping
+    DENTSU-STYLE FULL-BLEED EDITORIAL GRID
+    gallery-1 = Raeys Gold Fry
+    gallery-2 = Homely Energy
+    gallery-3 = Hima Cement
+    Work images fill remaining cells
+    Zero-gap tiles — each image is a door
   -->
-  <div class="gallery-grid" role="list" aria-label="Activation gallery">
+  <div class="gallery-grid" role="list">
 
-    <!-- ── FEATURED: gallery-1 and gallery-2 lead ── -->
+    <!-- gallery-1: Raeys Gold Fry -->
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
       <img src="assets/images/gallery/gallery-1.png"
-           alt="Homely Energy — Direct sales activation"
-           loading="eager">
-      <div class="gallery-item-over">
-        <div class="gallery-item-label">Homely Energy · Direct Sales Activation</div>
-      </div>
-    </div>
-
-    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
-      <img src="assets/images/gallery/gallery-2.png"
-           alt="Raeys Gold Fry — Brand experience activation"
+           alt="Raeys Gold Fry brand experience activation"
            loading="eager">
       <div class="gallery-item-over">
         <div class="gallery-item-label">Raeys Gold Fry · Brand Experience</div>
       </div>
     </div>
 
-    <!-- ── ACTIVATION PHOTOGRAPHY ── -->
+    <!-- gallery-2: Homely Energy -->
+    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
+      <img src="assets/images/gallery/gallery-2.png"
+           alt="Homely Energy direct sales activation"
+           loading="eager">
+      <div class="gallery-item-over">
+        <div class="gallery-item-label">Homely Energy · Direct Sales</div>
+      </div>
+    </div>
+
+    <!-- gallery-3: Hima Cement -->
+    <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
+      <img src="assets/images/gallery/gallery-3.png"
+           alt="Hima Cement brand activation"
+           loading="lazy">
+      <div class="gallery-item-over">
+        <div class="gallery-item-label">Hima Cement · Brand Activation</div>
+      </div>
+    </div>
+
+    <!-- Work photography -->
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
       <img src="assets/images/work-3.jpg"
            alt="TotalEnergies brand experience event"
@@ -147,9 +160,10 @@
       </div>
     </div>
 
+    <!-- Span-2 feature item -->
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
       <img src="assets/images/work-1.jpg"
-           alt="Orange Telecom retail outreach"
+           alt="Orange Telecom retail outreach campaign"
            loading="lazy">
       <div class="gallery-item-over">
         <div class="gallery-item-label">Orange Telecom · Retail Outreach</div>
@@ -157,20 +171,20 @@
     </div>
 
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
-      <img src="assets/images/work-4.jpg"
-           alt="Field activation — Pay campaign"
+      <img src="assets/images/work-2.jpg"
+           alt="Gorillo's Snacks branded activation vans"
            loading="lazy">
       <div class="gallery-item-over">
-        <div class="gallery-item-label">Field Activation · Pay Campaign</div>
+        <div class="gallery-item-label">Gorillo's Snacks · Branded Vans</div>
       </div>
     </div>
 
     <div class="gallery-item" data-type="photo" role="listitem" tabindex="0">
-      <img src="assets/images/work-2.jpg"
-           alt="Gorillo's Snacks branded vans activation"
+      <img src="assets/images/work-4.jpg"
+           alt="Field activation Pay campaign"
            loading="lazy">
       <div class="gallery-item-over">
-        <div class="gallery-item-label">Gorillo's Snacks · Branded Vans</div>
+        <div class="gallery-item-label">Field Activation · Pay Campaign</div>
       </div>
     </div>
 
@@ -193,7 +207,6 @@
     </div>
 
   </div>
-
 </div>
 
 </main>
