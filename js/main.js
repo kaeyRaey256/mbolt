@@ -1372,6 +1372,8 @@
 
   /* ── SECTION HEADING WIPE REVEAL ───────────────────────── */
   function initWipeReveal() {
+    // Wipe reveal is desktop-only — clip-path not set on tablet/phone
+    if (window.innerWidth < 1025) return;
     // Only section headings — not hero eyebrow
     const targets = document.querySelectorAll(
       '.section .h-section, .section-alt .h-section, .work-section .h-section,' +
