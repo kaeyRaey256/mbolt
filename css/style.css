@@ -412,30 +412,7 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
   /* Wipe reveal — desktop only. Tablet/phone use opacity reveal */
 }
 
-/* ── WIPE REVEAL — desktop only (1025px+) ───────────────── */
-@media (min-width: 1025px) {
-  .h-section {
-    clip-path: inset(0 100% 0 0);
-    transition: clip-path .8s cubic-bezier(0.16,1,0.3,1);
-  }
-  .h-section.wipe-revealed { clip-path: inset(0 0% 0 0); }
-
-  .section .eyebrow,
-  .section-alt .eyebrow,
-  .testi-section .eyebrow,
-  .contact-section .eyebrow,
-  .work-section .eyebrow {
-    clip-path: inset(0 100% 0 0);
-    transition: clip-path .6s cubic-bezier(0.16,1,0.3,1);
-  }
-  .section .eyebrow.wipe-revealed,
-  .section-alt .eyebrow.wipe-revealed,
-  .testi-section .eyebrow.wipe-revealed,
-  .contact-section .eyebrow.wipe-revealed,
-  .work-section .eyebrow.wipe-revealed {
-    clip-path: inset(0 0% 0 0);
-  }
-}
+/* Wipe reveal removed — replaced with GSAP split entrance */
 /* Hero eyebrow: always visible — no clip-path ever */
 .hero .hero-eyebrow,
 .hero .eyebrow,
@@ -447,6 +424,32 @@ body.page-loading { animation: pageIn .4s var(--ease-out) both; }
 
 /* Tablet/phone: wipe-revealed has no effect — clip-path not set */
 /* Elements are visible immediately via normal .reveal opacity */
+
+/* ── GSAP HEADING ENTRANCE — split word reveal ─────────────── */
+/* Each word wraps in .word-wrap (overflow:hidden clip)         */
+/* Inner .word slides up from below into the clip boundary      */
+/* Result: words emerge from nothing — premium, reliable        */
+.h-section .word-wrap {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* Tiny bit of extra height so descenders don't clip */
+  padding-bottom: .08em;
+  margin-bottom: -.08em;
+}
+.h-section .word-inner {
+  display: inline-block;
+  transform: translateY(105%);
+  transition: transform .75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.h-section.gsap-revealed .word-inner {
+  transform: translateY(0);
+}
+/* Eyebrow — simple fade up, no split needed */
+.eyebrow {
+  opacity: 1; /* always visible — reveal handled by .reveal class */
+}
+
 .h-section em { font-style: normal; color: var(--ink-4); font-weight: 300; }
 .h-section.light { color: #fff; }
 .h-section.light em { color: rgba(255,255,255,.4); }
@@ -1571,14 +1574,7 @@ footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; hei
 /* ── REVEAL ───────────────────────────────────────────────── */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease-out), transform .7s var(--ease-out); }
 .reveal.visible { opacity: 1; transform: translateY(0); }
-/* Desktop: wipe elements revealed by clip-path, not opacity */
-@media (min-width: 1025px) {
-  .h-section.reveal, .eyebrow.reveal {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-}
-/* Tablet/phone: normal opacity/translate reveal — no clip-path interference */
+/* h-section and eyebrow use standard .reveal opacity/translate on all devices */
 .reveal-d1 { transition-delay: .1s; }
 .reveal-d2 { transition-delay: .2s; }
 .reveal-d3 { transition-delay: .3s; }
