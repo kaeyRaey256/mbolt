@@ -1572,9 +1572,26 @@ footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; hei
 .footer-grid.visible > div:nth-child(4) { transition-delay: .24s; }
 
 /* ── REVEAL ───────────────────────────────────────────────── */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease-out), transform .7s var(--ease-out); }
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity .65s var(--ease-out), transform .65s var(--ease-out); }
+/* h-section and eyebrow are always visible — entrance via JS animation */
+.h-section.reveal, .h-section,
+.eyebrow.reveal, .eyebrow {
+  opacity: 1 !important;
+  transform: none !important;
+}
 .reveal.visible { opacity: 1; transform: translateY(0); }
-/* h-section and eyebrow use standard .reveal opacity/translate on all devices */
+/* h-section: opacity always 1 — word-inner translateY handles entrance */
+/* eyebrow: opacity always 1 — uses its own fade via .reveal */
+.h-section.reveal,
+.h-section {
+  opacity: 1 !important;
+  transform: none !important;
+}
+.eyebrow.reveal,
+.eyebrow {
+  opacity: 1 !important;
+  transform: none !important;
+}
 .reveal-d1 { transition-delay: .1s; }
 .reveal-d2 { transition-delay: .2s; }
 .reveal-d3 { transition-delay: .3s; }
