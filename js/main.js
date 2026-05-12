@@ -1413,7 +1413,15 @@
       });
     }
 
-    headings.forEach(h => splitTextNodes(h));
+    headings.forEach(h => {
+      // Always restore from data-src before splitting
+      // This guarantees we start from clean HTML regardless of previous state
+      const src = h.getAttribute('data-src');
+      if (src) {
+        h.innerHTML = src;
+      }
+      splitTextNodes(h);
+    });
 
     // Reveal function — stagger words then mark visible
     function revealHeading(h) {
