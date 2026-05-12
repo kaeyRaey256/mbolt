@@ -1269,56 +1269,50 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 
 
 /* ── TEAM ROSTER — 5 members (3 + 2 centered) ──────────────── */
-.team-roster--five {
-  grid-template-columns: repeat(3, 1fr);
+/* ── TEAM ROSTER — 5 members ────────────────────────────────── */
+/* DESKTOP (3 columns): Jude | Patrick | Abbey / Gerald | David  */
+@media (min-width: 1025px) {
+  .team-roster--five {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .team-roster--five .roster-member:nth-child(4) { grid-column: 1; }
+  .team-roster--five .roster-member:nth-child(5) { grid-column: 2; }
+  .team-roster--five .roster-member:nth-child(4),
+  .team-roster--five .roster-member:nth-child(5) { border-bottom: none; }
+  .team-roster--five .roster-member:nth-child(5) { border-right: none; }
+  .team-roster--five .roster-member:nth-child(3) { border-right: none; }
 }
-.team-roster--five .roster-member:nth-child(4),
-.team-roster--five .roster-member:nth-child(5) {
-  /* Bottom row: 2 cells centred in 3-column grid */
-  grid-column: auto;
-}
-/* Centre the bottom 2 using a wrapper technique via CSS */
-.team-roster--five .roster-member:nth-child(4) { grid-column: 1; }
-.team-roster--five .roster-member:nth-child(5) { grid-column: 2; }
-/* Remove bottom border from last 2 */
-.team-roster--five .roster-member:nth-child(4),
-.team-roster--five .roster-member:nth-child(5) { border-bottom: none; }
-/* Remove right border from 5th */
-.team-roster--five .roster-member:nth-child(5) { border-right: none; }
-/* Fix 3rd item border on 5-member grid */
-.team-roster--five .roster-member:nth-child(3) { border-right: none; }
-/* Mobile: 2 columns — Jude+Patrick, Abbey+Gerald, David centred */
-@media (max-width: 600px) {
+
+/* TABLET + PHONE (2 columns): Jude+Patrick / Abbey+Gerald / David */
+@media (max-width: 1024px) {
   .team-roster--five {
     grid-template-columns: repeat(2, 1fr);
   }
-  /* Reset all desktop column placements */
-  .team-roster--five .roster-member:nth-child(1),
-  .team-roster--five .roster-member:nth-child(2),
-  .team-roster--five .roster-member:nth-child(3),
-  .team-roster--five .roster-member:nth-child(4) {
-    grid-column: auto;
+  /* All members flow naturally — no forced column placement */
+  .team-roster--five .roster-member {
+    grid-column: auto !important;
   }
-  /* Row borders */
+  /* Row 1 borders: Jude + Patrick */
   .team-roster--five .roster-member:nth-child(1),
   .team-roster--five .roster-member:nth-child(2) {
     border-bottom: 1px solid var(--border);
   }
-  .team-roster--five .roster-member:nth-child(2),
-  .team-roster--five .roster-member:nth-child(4) {
-    border-right: none;
-  }
+  /* Row 2 borders: Abbey + Gerald */
   .team-roster--five .roster-member:nth-child(3),
   .team-roster--five .roster-member:nth-child(4) {
     border-bottom: 1px solid var(--border);
   }
-  /* David — 5th member spans both columns, centred */
+  /* Right borders: even children have none */
+  .team-roster--five .roster-member:nth-child(2),
+  .team-roster--five .roster-member:nth-child(4) {
+    border-right: none;
+  }
+  /* David — Row 3: spans both columns, centred */
   .team-roster--five .roster-member:nth-child(5) {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1 !important;
     border-right: none;
     border-bottom: none;
     text-align: center;
-    justify-content: center;
   }
 }
 
