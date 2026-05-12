@@ -1377,44 +1377,69 @@
     const headings = document.querySelectorAll('.h-section');
     if (!headings.length) return;
 
-    // Split each heading into words wrapped in overflow:hidden containers
-    headings.forEach(h => {
-      // Preserve em tags — get HTML not text
-      const html = h.innerHTML;
-      // Split on spaces but preserve HTML tags
-      const parts = html.split(/(\s+)/);
-      h.innerHTML = parts.map(part => {
-        if (/^\s+$/.test(part)) return part; // preserve spaces
-        if (part.startsWith('<') || part === '') return part; // preserve tags
-        // Wrap word
-        return `<span class="word-wrap"><span class="word-inner">${part}</span></span>`;
-      }).join('');
-    });
-
-    // Observe each heading — add gsap-revealed when in view
-    const obs = new IntersectionObserver((entries, o) => {
-      entries.forEach((entry, i) => {
-        if (entry.isIntersecting) {
-          // Stagger each word within the heading
-          const words = entry.target.querySelectorAll('.word-inner');
-          words.forEach((w, idx) => {
-            w.style.transitionDelay = `${idx * 60}ms`;
+    // DOM-based word splitting — never touches HTML elements
+    // Walks text nodes only, leaving <br>, <em>, <strong> completely intact
+    function splitTextNodes(el) {
+      // Walk all child nodes
+      Array.from(el.childNodes).forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          // Split text node into words
+          const text = node.textContent;
+          if (!text.trim()) return; // skip whitespace-only nodes
+          const words = text.split(/(\s+)/);
+          const frag = document.createDocumentFragment();
+          words.forEach(word => {
+            if (/^\s+$/.test(word) || word === '') {
+              // Pure whitespace — keep as text
+              frag.appendChild(document.createTextNode(word));
+            } else {
+              // Wrap word in overflow:hidden container
+              const wrap  = document.createElement('span');
+              const inner = document.createElement('span');
+              wrap.className  = 'word-wrap';
+              inner.className = 'word-inner';
+              inner.textContent = word;
+              wrap.appendChild(inner);
+              frag.appendChild(wrap);
+            }
           });
-          entry.target.classList.add('gsap-revealed');
-          entry.target.classList.add('visible'); // lift parent opacity
-          o.unobserve(entry.target);
+          el.replaceChild(frag, node);
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          // Recurse into element nodes (em, strong, etc) — leave br alone
+          if (node.tagName !== 'BR') {
+            splitTextNodes(node);
+          }
+        }
+      });
+    }
+
+    headings.forEach(h => splitTextNodes(h));
+
+    // Reveal function — stagger words then mark visible
+    function revealHeading(h) {
+      const words = h.querySelectorAll('.word-inner');
+      words.forEach((w, i) => {
+        w.style.transitionDelay = `${i * 55}ms`;
+      });
+      h.classList.add('gsap-revealed');
+      h.classList.add('visible');
+    }
+
+    // Observe headings — reveal on intersection
+    const obs = new IntersectionObserver((entries, o) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          revealHeading(e.target);
+          o.unobserve(e.target);
         }
       });
     }, { threshold: 0, rootMargin: '0px 0px -30px 0px' });
 
     headings.forEach(h => {
-      // Already in viewport on load — reveal immediately
       const rect = h.getBoundingClientRect();
-      if (rect.top < window.innerHeight) {
-        const words = h.querySelectorAll('.word-inner');
-        words.forEach((w, i) => { w.style.transitionDelay = `${i * 60}ms`; });
-        h.classList.add('gsap-revealed');
-        h.classList.add('visible'); // lift parent opacity
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        // Already in viewport on load
+        revealHeading(h);
       } else {
         obs.observe(h);
       }
