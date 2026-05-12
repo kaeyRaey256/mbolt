@@ -1287,16 +1287,38 @@ body.reduce-motion .hero-headline .size-xl { animation: none !important; color: 
 .team-roster--five .roster-member:nth-child(5) { border-right: none; }
 /* Fix 3rd item border on 5-member grid */
 .team-roster--five .roster-member:nth-child(3) { border-right: none; }
-/* Mobile: 2 columns, last item centred */
+/* Mobile: 2 columns — Jude+Patrick, Abbey+Gerald, David centred */
 @media (max-width: 600px) {
   .team-roster--five {
     grid-template-columns: repeat(2, 1fr);
   }
-  .team-roster--five .roster-member:nth-child(4) { grid-column: 1; border-bottom: 1px solid var(--border); }
+  /* Reset all desktop column placements */
+  .team-roster--five .roster-member:nth-child(1),
+  .team-roster--five .roster-member:nth-child(2),
+  .team-roster--five .roster-member:nth-child(3),
+  .team-roster--five .roster-member:nth-child(4) {
+    grid-column: auto;
+  }
+  /* Row borders */
+  .team-roster--five .roster-member:nth-child(1),
+  .team-roster--five .roster-member:nth-child(2) {
+    border-bottom: 1px solid var(--border);
+  }
+  .team-roster--five .roster-member:nth-child(2),
+  .team-roster--five .roster-member:nth-child(4) {
+    border-right: none;
+  }
+  .team-roster--five .roster-member:nth-child(3),
+  .team-roster--five .roster-member:nth-child(4) {
+    border-bottom: 1px solid var(--border);
+  }
+  /* David — 5th member spans both columns, centred */
   .team-roster--five .roster-member:nth-child(5) {
-    grid-column: 1 / -1; /* span full width for the lone last item */
-    border-right: none; border-bottom: none;
+    grid-column: 1 / -1;
+    border-right: none;
+    border-bottom: none;
     text-align: center;
+    justify-content: center;
   }
 }
 
@@ -1917,8 +1939,8 @@ input[type=range] { width: 100%; accent-color: var(--volt); }
 .gallery-progress {
   position: absolute; bottom: 0; left: 0;
   height: 3px; width: 0;
-  background: var(--gradient-h);
-  box-shadow: 0 0 8px rgba(106,184,37,.4);
+  background: var(--volt);
+  box-shadow: 0 0 6px rgba(106,184,37,.4);
   z-index: 3;
   transition: none;
 }
