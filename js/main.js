@@ -1371,105 +1371,51 @@
 
 
   /* ── SECTION HEADING WIPE REVEAL ───────────────────────── */
-  function initWipeReveal() {
-    // Wipe reveal is desktop-only — clip-path not set on tablet/phone
-    if (window.innerWidth < 1025) return;
-    // Only section headings — not hero eyebrow
-    const targets = document.querySelectorAll(
-      '.section .h-section, .section-alt .h-section, .work-section .h-section,' +
-      '.testi-section .h-section, .contact-section .h-section,' +
-      '.section .eyebrow, .section-alt .eyebrow, .work-section .eyebrow,' +
-      '.testi-section .eyebrow, .contact-section .eyebrow'
-    );
-    if (!targets.length) return;
+  /* ── GSAP-STYLE HEADING REVEAL — split word entrance ──────── */
+  /* Works on all browsers, all devices, no clip-path issues    */
+  function initHeadingReveal() {
+    const headings = document.querySelectorAll('.h-section');
+    if (!headings.length) return;
 
-    function reveal(el) {
-      const isEyebrow = el.classList.contains('eyebrow');
-      setTimeout(() => el.classList.add('wipe-revealed'), isEyebrow ? 0 : 100);
-    }
+    // Split each heading into words wrapped in overflow:hidden containers
+    headings.forEach(h => {
+      // Preserve em tags — get HTML not text
+      const html = h.innerHTML;
+      // Split on spaces but preserve HTML tags
+      const parts = html.split(/(\s+)/);
+      h.innerHTML = parts.map(part => {
+        if (/^\s+$/.test(part)) return part; // preserve spaces
+        if (part.startsWith('<') || part === '') return part; // preserve tags
+        // Wrap word
+        return `<span class="word-wrap"><span class="word-inner">${part}</span></span>`;
+      }).join('');
+    });
 
-    const obs = new IntersectionObserver((ents, o) => {
-      ents.forEach(e => {
-        if (e.isIntersecting) {
-          reveal(e.target);
-          o.unobserve(e.target);
+    // Observe each heading — add gsap-revealed when in view
+    const obs = new IntersectionObserver((entries, o) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          // Stagger each word within the heading
+          const words = entry.target.querySelectorAll('.word-inner');
+          words.forEach((w, idx) => {
+            w.style.transitionDelay = `${idx * 60}ms`;
+          });
+          entry.target.classList.add('gsap-revealed');
+          o.unobserve(entry.target);
         }
       });
-    }, { threshold: 0, rootMargin: '0px 0px 0px 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px -30px 0px' });
 
-    targets.forEach(t => {
-      // If already in viewport on load, reveal immediately
-      const rect = t.getBoundingClientRect();
-      if (rect.top < window.innerHeight && rect.bottom > 0) {
-        reveal(t);
+    headings.forEach(h => {
+      // Already in viewport on load — reveal immediately
+      const rect = h.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        const words = h.querySelectorAll('.word-inner');
+        words.forEach((w, i) => { w.style.transitionDelay = `${i * 60}ms`; });
+        h.classList.add('gsap-revealed');
       } else {
-        obs.observe(t);
+        obs.observe(h);
       }
-    });
-
-    // Fallback: any element not revealed after 2.5s gets revealed automatically
-    // Catches edge cases where observer fires late or misses
-    setTimeout(() => {
-      targets.forEach(t => {
-        if (!t.classList.contains('wipe-revealed')) {
-          t.classList.add('wipe-revealed');
-        }
-      });
-    }, 2500);
-  }
-
-
-  /* ── FOOTER TAGLINE CHARACTER STAGGER ──────────────────── */
-  function initFooterStagger() {
-    const el = document.querySelector('.footer-tagline-main');
-    if (!el) return;
-    const text = el.textContent.trim();
-    // Split into characters but keep punctuation attached to previous word
-    const chars = text.split('');
-    let delay = 0;
-    el.innerHTML = chars.map((ch, i) => {
-      // Period/punctuation: zero delay gap — attached to previous
-      const isPunct = /[.,!?]/.test(ch);
-      const d = isPunct ? delay : (delay += 28, delay - 28);
-      if (ch === ' ') return `<span class="ft-char" style="transition-delay:${d}ms">&nbsp;</span>`;
-      return `<span class="ft-char" style="transition-delay:${d}ms">${ch}</span>`;
-    }).join('');
-    const obs = new IntersectionObserver((ents, o) => {
-      if (ents[0].isIntersecting) {
-        el.classList.add('revealed');
-        o.disconnect();
-      }
-    }, { threshold: 0.5 });
-    obs.observe(el);
-  }
-
-
-  /* ── FLOAT LABEL FORM ───────────────────────────────────── */
-  function initFloatLabels() {
-    document.querySelectorAll('.field').forEach(field => {
-      const input = field.querySelector('input, textarea, select');
-      const label = field.querySelector('label');
-      if (!input || !label) return;
-      // Select always shows label floated
-      if (input.tagName === 'SELECT') { field.classList.add('is-filled'); return; }
-      const update = () => {
-        field.classList.toggle('is-filled', input.value.length > 0);
-      };
-      input.addEventListener('focus', () => field.classList.add('is-focused'));
-      input.addEventListener('blur',  () => { field.classList.remove('is-focused'); update(); });
-      input.addEventListener('input', update);
-      update();
-    });
-  }
-
-
-  /* ── MICRO-HAPTIC — Brief Us button on mobile ──────────── */
-  function initHaptic() {
-    if (!navigator.vibrate) return; // desktop / unsupported
-    document.querySelectorAll('.btn-primary').forEach(btn => {
-      btn.addEventListener('touchstart', () => {
-        try { navigator.vibrate(10); } catch(e) {}
-      }, { passive: true });
     });
   }
 
