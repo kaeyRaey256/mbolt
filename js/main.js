@@ -1457,6 +1457,10 @@
     initPageTransitions();
     initGalleryStrip();
     initGallery();
+    initHeadingReveal();
+    initFooterStagger();
+    initFloatLabels();
+    initHaptic();
 
     document.fonts?.ready.then(() => {
       if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
