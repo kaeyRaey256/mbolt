@@ -307,14 +307,14 @@
     const els = document.querySelectorAll('.reveal');
     if (!els.length) return;
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-      els.forEach(el => ScrollTrigger.create({ trigger: el, start: 'top 88%', onEnter: () => el.classList.add('visible'), once: true }));
+      els.forEach(el => ScrollTrigger.create({ trigger: el, start: 'top 92%', onEnter: () => el.classList.add('visible'), once: true }));
     } else {
       // Single observer for all elements (efficient)
       const revealObs = new IntersectionObserver((ents, obs) => {
         ents.forEach(e => {
           if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
         });
-      }, { threshold: 0.12 });
+      }, { threshold: 0.05 });
       els.forEach(el => revealObs.observe(el));
     }
   }
@@ -1401,6 +1401,7 @@
             w.style.transitionDelay = `${idx * 60}ms`;
           });
           entry.target.classList.add('gsap-revealed');
+          entry.target.classList.add('visible'); // lift parent opacity
           o.unobserve(entry.target);
         }
       });
@@ -1413,6 +1414,7 @@
         const words = h.querySelectorAll('.word-inner');
         words.forEach((w, i) => { w.style.transitionDelay = `${i * 60}ms`; });
         h.classList.add('gsap-revealed');
+        h.classList.add('visible'); // lift parent opacity
       } else {
         obs.observe(h);
       }
